@@ -2500,3 +2500,31 @@ for i, v in pairs(getconnections(ReplicatedStorage.DefaultChatSystemChatEvents.O
         end
     end
 end
+																	
+																	
+local pearlware = {["Enabled"] = false}
+    pearlware = GuiLibrary["ObjectsThatCanBeSaved"]["WorldWindow"]["Api"].CreateOptionsButton({
+        ["Name"] = "TP Sky Box",
+        ["HoverText"] = "Temporarily Puts you in the skybox for atleast 5 seconds. Use with balloon for no anticheat. ",
+            ["Function"] = function(callback)
+                if callback then
+                      spawn(function()
+                game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = game:GetService("Workspace").SpectatorPlatform.floor.CFrame
+                end)
+            end
+        end
+    })																
+																	
+																	
+Pearlware = GuiLibrary["ObjectsThatCanBeSaved"]["UtilityWindow"]["Api"].CreateOptionsButton({
+    ["Name"] = "Staff Detector", 
+    ["Function"] = function(callback)
+        if callback then
+            for i, plr in pairs(players:GetChildren()) do
+                if plr:IsInGroup(5774246) and plr:GetRankInGroup(5774246) >= 121 then
+                    createwarning("Pearlware", "Staff detected. Uninject to prevent being banned." .. plr.Name .. "(" .. plr.DisplayName .. ")", 20)
+                    end
+                end
+            end
+        end
+})
