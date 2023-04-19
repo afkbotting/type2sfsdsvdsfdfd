@@ -2502,9 +2502,10 @@ end
 																	
 																	
 																	local pearlware = {["Enabled"] = false}
-    pearlware = GuiLibrary["ObjectsThatCanBeSaved"]["WorldWindow"]["Api"].CreateOptionsButton({
-        ["Name"] = "TpSky",
-        ["HoverText"] = "Temporarily Puts you in the skybox for atleast 5 seconds. ",
+    local pearlware = {["Enabled"] = false}
+    pearlware = GuiLibrary["ObjectsThatCanBeSaved"]["UtilityWindow"]["Api"].CreateOptionsButton({
+        ["Name"] = "SkyTp",
+        ["HoverText"] = "Temporarily Puts you in the skybox for atleast 5 seconds. Use with balloon for no anticheat. ",
             ["Function"] = function(callback)
                 if callback then
                       spawn(function()
@@ -2513,7 +2514,6 @@ end
             end
         end
     })
-
 																
 	Pearlware = GuiLibrary["ObjectsThatCanBeSaved"]["UtilityWindow"]["Api"].CreateOptionsButton({
     ["Name"] = "Ultra Staff Detector", 
