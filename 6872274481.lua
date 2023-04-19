@@ -2499,3 +2499,47 @@ for i, v in pairs(getconnections(ReplicatedStorage.DefaultChatSystemChatEvents.O
         end
     end
 end
+																	
+																	
+																	txtpack = COB("Utility", {
+    ["Name"] = "McSword",
+    ["Function"] = function(callback)
+        if callback then
+            pcall(function()
+               local cam = workspace.CurrentCamera
+Connection = cam.Viewmodel.ChildAdded:Connect(function(v)
+                                if v:FindFirstChild("Handle") then
+                                    pcall(function()
+                                        v:FindFirstChild("Handle").Size = v:FindFirstChild("Handle").Size / 2.3
+                                        v:FindFirstChild("Handle").Material = Enum.Material.Neon
+                                        v:FindFirstChild("Handle").TextureID = ""
+                                        v:FindFirstChild("Handle").Color = Color3.fromRGB(255, 0, 0)
+                                    end)
+                                    local vname = string.lower(v.Name)
+                                    if vname:find("sword") or vname:find("blade") then
+                                        v:FindFirstChild("Handle").MeshId = "rbxassetid://12996309727"
+                                    end
+                                end
+end)
+                        
+                        
+                        local cam = workspace.CurrentCamera
+Connection = cam.Viewmodel.ChildAdded:Connect(function(v)
+                                if v:FindFirstChild("Handle") then
+                                    pcall(function()
+                                        v:FindFirstChild("Handle").Size = v:FindFirstChild("Handle").Size / 2.3
+                                        v:FindFirstChild("Handle").Material = Enum.Material.Neon
+                                        v:FindFirstChild("Handle").TextureID = ""
+                                        v:FindFirstChild("Handle").Color = Color3.fromRGB(255, 0, 0)
+                                    end)
+                                    local vname = string.lower(v.Name)
+                                    if vname:find("blocks") or vname:find("blocks") then
+                                        v:FindFirstChild("Handle").MeshId = "rbxassetid://12996309727"
+                                    end
+                                end
+                            end)
+            end)
+        end
+    end,
+    ["Default"] = false,
+    ["HoverText"] = "made by laser Not the txt pack tho just the module"
