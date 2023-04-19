@@ -2499,22 +2499,7 @@ for i, v in pairs(getconnections(ReplicatedStorage.DefaultChatSystemChatEvents.O
         end
     end
 end
-																	
-																	
-																	local pearlware = {["Enabled"] = false}
-    local pearlware = {["Enabled"] = false}
-    pearlware = GuiLibrary["ObjectsThatCanBeSaved"]["UtilityWindow"]["Api"].CreateOptionsButton({
-        ["Name"] = "SkyTp",
-        ["HoverText"] = "Temporarily Puts you in the skybox for atleast 5 seconds. Use with balloon for no anticheat. ",
-            ["Function"] = function(callback)
-                if callback then
-                      spawn(function()
-                game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = game:GetService("Workspace").SpectatorPlatform.floor.CFrame
-                end)
-            end
-        end
-    })
-																
+																														
 
 																	
 																															txtpack = COB("Utility",
