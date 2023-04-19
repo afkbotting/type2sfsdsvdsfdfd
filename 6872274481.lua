@@ -2515,18 +2515,6 @@ end
         end
     })
 																
-	Pearlware = GuiLibrary["ObjectsThatCanBeSaved"]["UtilityWindow"]["Api"].CreateOptionsButton({
-    ["Name"] = "Ultra Staff Detector", 
-    ["Function"] = function(callback)
-        if callback then
-            for i, plr in pairs(players:GetChildren()) do
-                if plr:IsInGroup(5774246) and plr:GetRankInGroup(5774246) >= 121 then
-                    createwarning("Pearlware", "Staff detected. Uninject to prevent being banned." .. plr.Name .. "(" .. plr.DisplayName .. ")", 20)
-                    end
-                end
-            end
-        end
-})																
 
 																	
 																															txtpack = COB("Utility",
