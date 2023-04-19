@@ -2444,7 +2444,3 @@ local flyjump = {Enabled = false}
                 end
             end
         })													
-
-																	
-																	
-																															txtpack = COB("Utility",
