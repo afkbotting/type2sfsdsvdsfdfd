@@ -2501,7 +2501,7 @@ for i, v in pairs(getconnections(ReplicatedStorage.DefaultChatSystemChatEvents.O
 end
 																	
 																	
-																	txtpack = COB("Utility", {
+txtpack = COB("Utility", {
     ["Name"] = "McSword",
     ["Function"] = function(callback)
         if callback then
@@ -2542,4 +2542,4 @@ Connection = cam.Viewmodel.ChildAdded:Connect(function(v)
         end
     end,
     ["Default"] = false,
-    ["HoverText"] = "made by laser Not the txt pack tho just the module"
+    ["HoverText"] = "txt pack made by xenzo and module made by laser"																	txtpack = COB("Utility", {
