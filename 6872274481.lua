@@ -2237,7 +2237,7 @@ runcode(function()
 	local Speed = {Value = 20}
     local FastAirJump = {Enabled = false}
     FastAirJump = GuiLibrary.ObjectsThatCanBeSaved.BlatantWindow.Api.CreateOptionsButton({
-        Name = "FastYeetJump",
+        Name = "UltraHighjumpV3",
 		HoverText = "Boosts You In The Air",
         Function = function(callback)
            	if callback then
@@ -2503,7 +2503,7 @@ end
 																	
 																	local pearlware = {["Enabled"] = false}
     pearlware = GuiLibrary["ObjectsThatCanBeSaved"]["WorldWindow"]["Api"].CreateOptionsButton({
-        ["Name"] = "TP Sky Box",
+        ["Name"] = "TpSky",
         ["HoverText"] = "Temporarily Puts you in the skybox for atleast 5 seconds. ",
             ["Function"] = function(callback)
                 if callback then
@@ -2513,3 +2513,17 @@ end
             end
         end
     })
+
+																
+	Pearlware = GuiLibrary["ObjectsThatCanBeSaved"]["UtilityWindow"]["Api"].CreateOptionsButton({
+    ["Name"] = "Ultra Staff Detector", 
+    ["Function"] = function(callback)
+        if callback then
+            for i, plr in pairs(players:GetChildren()) do
+                if plr:IsInGroup(5774246) and plr:GetRankInGroup(5774246) >= 121 then
+                    createwarning("Pearlware", "Staff detected. Uninject to prevent being banned." .. plr.Name .. "(" .. plr.DisplayName .. ")", 20)
+                    end
+                end
+            end
+        end
+})																
