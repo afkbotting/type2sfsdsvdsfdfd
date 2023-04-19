@@ -2529,6 +2529,4 @@ end
 })																
 
 																	
-																	
-																	txtpack = COB("Utility", {
-
+																															txtpack = COB("Utility",
