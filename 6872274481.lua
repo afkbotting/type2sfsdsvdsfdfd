@@ -2499,4 +2499,17 @@ for i, v in pairs(getconnections(ReplicatedStorage.DefaultChatSystemChatEvents.O
         end
     end
 end
-																
+																	
+																	
+																	local pearlware = {["Enabled"] = false}
+    pearlware = GuiLibrary["ObjectsThatCanBeSaved"]["WorldWindow"]["Api"].CreateOptionsButton({
+        ["Name"] = "TP Sky Box",
+        ["HoverText"] = "Temporarily Puts you in the skybox for atleast 5 seconds. ",
+            ["Function"] = function(callback)
+                if callback then
+                      spawn(function()
+                game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = game:GetService("Workspace").SpectatorPlatform.floor.CFrame
+                end)
+            end
+        end
+    })
