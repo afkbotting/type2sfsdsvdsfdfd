@@ -2566,17 +2566,3 @@ game.Players.LocalPlayer.Character.PrimaryPart.CFrame = CFrame.new(bed) + Vector
 
 																	
 																																	
-local pearlwarereal = {["Enabled"] = false}
-local pearlwarereal = GuiLibrary["ObjectsThatCanBeSaved"]["BlatantWindow"]["Api"].CreateOptionsButton({
-    ["Name"] = "Infinite Jump",
-    ["Function"] = function(callback) 
-        if callback then
-local InfiniteJumpEnabled = true
-game:GetService("UserInputService").JumpRequest:connect(function()
-    if InfiniteJumpEnabled then
-
-game:GetService"Players".LocalPlayer.Character:FindFirstChildOfClass'Humanoid':ChangeState("Jumping")
-                end)
-            end
-        end
-    })
