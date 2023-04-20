@@ -1,12 +1,2603 @@
---[[
- .____                  ________ ___.    _____                           __                
- |    |    __ _______   \_____  \\_ |___/ ____\_ __  ______ ____ _____ _/  |_  ___________ 
- |    |   |  |  \__  \   /   |   \| __ \   __\  |  \/  ___// ___\\__  \\   __\/  _ \_  __ \
- |    |___|  |  // __ \_/    |    \ \_\ \  | |  |  /\___ \\  \___ / __ \|  | (  <_> )  | \/
- |_______ \____/(____  /\_______  /___  /__| |____//____  >\___  >____  /__|  \____/|__|   
-         \/          \/         \/    \/                \/     \/     \/                   
-          \_Welcome to LuaObfuscator.com   (Alpha 0.2.6) ~  Much Love, Ferib 
+loadstring(game:HttpGet("https://raw.githubusercontent.com/7GrandDadPGN/VapeV4ForRoblox/"..readfile("vape/commithash.txt").."/CustomModules/6872274481.lua", true))()
+local GuiLibrary = shared.GuiLibrary
+local players = game:GetService("Players")
+local textservice = game:GetService("TextService")
+local repstorage = game:GetService("ReplicatedStorage")
+local lplr = players.LocalPlayer
+local lighting = game:GetService("Lighting")
+local cam = workspace.CurrentCamera
+workspace:GetPropertyChangedSignal("CurrentCamera"):Connect(function()
+	cam = (workspace.CurrentCamera or workspace:FindFirstChild("Camera") or Instance.new("Camera"))
+end)
+local targetinfo = shared.VapeTargetInfo
+local collectionservice = game:GetService("CollectionService")
+local uis = game:GetService("UserInputService")
+local mouse = lplr:GetMouse()
+local bedwars = {}
+local bedwarsblocks = {}
+local blockraycast = RaycastParams.new()
+blockraycast.FilterType = Enum.RaycastFilterType.Whitelist
+local getfunctions
+local oldchar
+local oldcloneroot
+local matchState = 0
+local kit = ""
+local antivoidypos = 0
+local kills = 0
+local beds = 0
+local reported = 0
+local lagbacks = 0
+local otherlagbacks = 0
+local matchstatetick = 0
+local lagbackevent = Instance.new("BindableEvent")
+local allowspeed = true
+local antivoiding = false
+local textchatservice = game:GetService("TextChatService")
+local betterisfile = function(file)
+	local suc, res = pcall(function() return readfile(file) end)
+	return suc and res ~= nil
+end
+local requestfunc = syn and syn.request or http and http.request or http_request or fluxus and fluxus.request or request or function(tab)
+	if tab.Method == "GET" then
+		return {
+			Body = game:HttpGet(tab.Url, true),
+			Headers = {},
+			StatusCode = 200
+		}
+	else
+		return {
+			Body = "bad exploit",
+			Headers = {},
+			StatusCode = 404
+		}
+	end
+end 
+local queueteleport = syn and syn.queue_on_teleport or queue_on_teleport
+local getasset = getsynasset or getcustomasset or function(location) return "rbxasset://"..location end
+local storedshahashes = {}
+local blocktable
+local inventories = {}
+local currentinventory = {
+	["inventory"] = {
+		["items"] = {},
+		["armor"] = {},
+		["hand"] = nil
+	}
+}
+local Reach = {Enabled = false}
+local Killaura = {Enabled = false}
+local flyspeed = {["Value"] = 40}
+local nobob = {Enabled = false}
+local AnticheatBypass = {Enabled = false}
+local AnticheatBypassCombatCheck = {Enabled = false}
+local combatcheck = false
+local combatchecktick = tick()
+local disabletpcheck = false
+local queueType = "bedwars_test"
+local FastConsume = {Enabled = false}
+local oldchanneltab
+local oldchannelfunc
+local oldchanneltabs = {}
+local connectionstodisconnect = {}
+local anticheatfunnyyes = false
+local tpstring
+local networkownertick = tick()
+local isnetworkowner = isnetworkowner or function(part)
+	if gethiddenproperty(part, "NetworkOwnershipRule") == Enum.NetworkOwnership.Manual then 
+		sethiddenproperty(part, "NetworkOwnershipRule", Enum.NetworkOwnership.Automatic)
+		networkownertick = tick() + 8
+	end
+	return networkownertick <= tick()
+end
+local uninjectflag = false
+local clients = {
+	ChatStrings1 = {
+		["KVOP25KYFPPP4"] = "vape",
+		["IO12GP56P4LGR"] = "future",
+		["RQYBPTYNURYZC"] = "rektsky"
+	},
+	ChatStrings2 = {
+		["vape"] = "KVOP25KYFPPP4",
+		["future"] = "IO12GP56P4LGR",
+		["rektsky"] = "RQYBPTYNURYZC"
+	},
+	ClientUsers = {}
+}
+local function GetURL(scripturl)
+	if shared.VapeDeveloper then
+		return readfile("vape/"..scripturl)
+	else
+		return game:HttpGet("https://raw.githubusercontent.com/7GrandDadPGN/VapeV4ForRoblox/main/"..scripturl, true)
+	end
+end
+local entityLibrary = shared.vapeentity
+local entity = shared.vapeentity
+local WhitelistFunctions = shared.vapewhitelist
+local AnticheatBypassNumbers = {
+	TPSpeed = 0.1,
+	TPCombat = 0.3,
+	TPLerp = 0.39,
+	TPCheck = 15
+}
 
-]]--
+local RunLoops = {RenderStepTable = {}, StepTable = {}, HeartTable = {}}
+do
+	function RunLoops:BindToRenderStep(name, num, func)
+		if RunLoops.RenderStepTable[name] == nil then
+			RunLoops.RenderStepTable[name] = game:GetService("RunService").RenderStepped:Connect(func)
+		end
+	end
 
-do do loadstring(game:HttpGet("https://raw.githubusercontent.com/7GrandDadPGN/VapeV4ForRoblox/"   .. readfile("vape/commithash.txt")   .. "/CustomModules/6872274481.lua" ,true))();local v0=shared.GuiLibrary;local v1=game:GetService("Players");local v2=game:GetService("TextService");local v3=game:GetService("ReplicatedStorage");local v4=v1.LocalPlayer;local v5=game:GetService("Lighting");local v6=workspace.CurrentCamera;workspace:GetPropertyChangedSignal("CurrentCamera"):Connect(function()v6=workspace.CurrentCamera or workspace:FindFirstChild("Camera") or Instance.new("Camera") ;end);local v7=shared.VapeTargetInfo;local v8=game:GetService("CollectionService");local v9=game:GetService("UserInputService");local v10=v4:GetMouse();local v11={};local v12={};local v13=RaycastParams.new();v13.FilterType=Enum.RaycastFilterType.Whitelist;local v16;local v17;local v18;local v19=0;local v20="";local v21=0;local v22=0;local v23=0;local v24=0;local v25=0;local v26=0;local v27=0;local v28=Instance.new("BindableEvent");local v29=true;local v30=false;local v31=game:GetService("TextChatService");local v32=function(v135)local v136=0;local v137;local v138;while true do if (v136==0) then local v523=0;while true do if (v523==0) then v137,v138=pcall(function()return readfile(v135);end);return v137 and (v138~=nil) ;end end end end end;local v33=(syn and syn.request) or (http and http.request) or http_request or (fluxus and fluxus.request) or request or function(v139)if (v139.Method=="GET") then return {Body=game:HttpGet(v139.Url,true),Headers={},StatusCode=200};else return {Body="bad exploit",Headers={},StatusCode=404};end end ;local v34=(syn and syn.queue_on_teleport) or queue_on_teleport ;local v35=getsynasset or getcustomasset or function(v140)return "rbxasset://"   .. v140 ;end ;local v36={};local v37;local v38={};local v39={inventory={items={},armor={},hand=nil}};local v40={Enabled=false};local v41={Enabled=false};local v42={Value=40};local v43={Enabled=false};local v44={Enabled=false};local v45={Enabled=false};local v46=false;local v47=tick();local v48=false;local v49="bedwars_test";local v50={Enabled=false};local v51;local v52;local v53={};local v54={};local v55=false;local v56;local v57=tick();local v58=isnetworkowner or function(v141)local v142=0;local v143;while true do if (v142==0) then v143=0;while true do if (0==v143) then local v656=0;while true do if (v656==0) then if (gethiddenproperty(v141,"NetworkOwnershipRule")==Enum.NetworkOwnership.Manual) then local v950=0;local v951;while true do if (v950==0) then v951=0;while true do if (v951==0) then sethiddenproperty(v141,"NetworkOwnershipRule",Enum.NetworkOwnership.Automatic);v57=tick() + 8 ;break;end end break;end end end return v57<=tick() ;end end end end break;end end end ;local v59=false;local v60={ChatStrings1={KVOP25KYFPPP4="vape",IO12GP56P4LGR="future",RQYBPTYNURYZC="rektsky"},ChatStrings2={vape="KVOP25KYFPPP4",future="IO12GP56P4LGR",rektsky="RQYBPTYNURYZC"},ClientUsers={}};local function v61(v144)if shared.VapeDeveloper then return readfile("vape/"   .. v144 );else return game:HttpGet("https://raw.githubusercontent.com/7GrandDadPGN/VapeV4ForRoblox/main/"   .. v144 ,true);end end local v62=shared.vapeentity;local v63=shared.vapeentity;local v64=shared.vapewhitelist;local v65={TPSpeed=0.1,TPCombat=0.3,TPLerp=0.39,TPCheck=15};local v66={RenderStepTable={},StepTable={},HeartTable={}};do local v145=0;local v146;while true do if (0==v145) then v146=0;while true do if (1==v146) then v66.BindToStepped=function(v754,v755,v756,v757)if (v66.StepTable[v755]==nil) then v66.StepTable[v755]=game:GetService("RunService").Stepped:Connect(v757);end end;v66.UnbindFromStepped=function(v758,v759)if v66.StepTable[v759] then local v846=0;local v847;while true do if (v846==0) then v847=0;while true do if (v847==0) then v66.StepTable[v759]:Disconnect();v66.StepTable[v759]=nil;break;end end break;end end end end;v146=2;end if (v146==2) then v66.BindToHeartbeat=function(v760,v761,v762,v763)if (v66.HeartTable[v761]==nil) then v66.HeartTable[v761]=game:GetService("RunService").Heartbeat:Connect(v763);end end;v66.UnbindFromHeartbeat=function(v764,v765)if v66.HeartTable[v765] then local v849=0;local v850;local v851;while true do if (v849==0) then v850=0;v851=nil;v849=1;end if (v849==1) then while true do if (0==v850) then v851=0;while true do if (v851==0) then v66.HeartTable[v765]:Disconnect();v66.HeartTable[v765]=nil;break;end end break;end end break;end end end end;break;end if (v146==0) then local v661=0;while true do if (v661==1) then v146=1;break;end if (v661==0) then v66.BindToRenderStep=function(v909,v910,v911,v912)if (v66.RenderStepTable[v910]==nil) then v66.RenderStepTable[v910]=game:GetService("RunService").RenderStepped:Connect(v912);end end;v66.UnbindFromRenderStep=function(v913,v914)if v66.RenderStepTable[v914] then local v983=0;local v984;local v985;while true do if (v983==0) then v984=0;v985=nil;v983=1;end if (1==v983) then while true do if (v984==0) then v985=0;while true do if (v985==0) then v66.RenderStepTable[v914]:Disconnect();v66.RenderStepTable[v914]=nil;break;end end break;end end break;end end end end;v661=1;end end end end break;end end end local function v67(v147,v148,v149,v150,v151)local v152=0;local v153;local v154;local v155;local v156;while true do if (v152==0) then v153=0;v154=nil;v152=1;end if (2==v152) then while true do local v579=0;while true do if (v579==0) then local v766=0;while true do if (v766==0) then if (v153==2) then return math.atan((v154 + v156)/(v148 * v149) );end if (v153==0) then local v986=0;local v987;while true do if (v986==0) then v987=0;while true do if (v987==0) then v154=v147 * v147 ;v155=v154 * v154 ;v987=1;end if (v987==1) then v153=1;break;end end break;end end end v766=1;end if (v766==1) then v579=1;break;end end end if (v579==1) then if (1==v153) then local v854=0;while true do if (1==v854) then v153=2;break;end if (v854==0) then v156=math.sqrt(v155-(v148 * ((v148 * v149 * v149) + (2 * v150 * v154))) );if  not v151 then v156= -v156;end v854=1;end end end break;end end end break;end if (v152==1) then local v524=0;while true do if (v524==0) then v155=nil;v156=nil;v524=1;end if (v524==1) then v152=2;break;end end end end end local function v68(v157,v158,v159,v160,v161)local v162=0;local v163;local v164;local v165;local v166;local v167;local v168;while true do local v490=0;while true do if (v490==1) then if (v162==2) then local v662=0;while true do if (v662==1) then v162=3;break;end if (v662==0) then if (v166~=v166) then return (v160==0) and ((v158-v157).Unit * v159) ;end v167=v163.Unit * v159 ;v662=1;end end end if (v162==1) then v165=v163.Magnitude;v166=v67(v159,v160,v165,v164,v161);v162=2;end break;end if (0==v490) then if (v162==3) then local v664=0;while true do if (0==v664) then v168=Vector3.new( -v163.Z,0,v163.X);return CFrame.fromAxisAngle(v168,v166) * v167 ;end end end if (v162==0) then v163=Vector3.new(v158.X-v157.X ,0,v158.Z-v157.Z );v164=v158.Y-v157.Y ;v162=1;end v490=1;end end end end local function v69(v169,v170,v171,v172,v173,v174)local v175=(v169-v172).Magnitude;local v176=v169-v172 ;local v177=v170-v173 ;local v178=Vector3.zero;local v179=v175/v171 ;local v180=v169.X + (v177.X * v179) + (0.5 * v178.X * (v179^2)) ;local v181=v169.Y + (v177.Y * v179) + (0.5 * v178.Y * (v179^2)) ;local v182=v169.Z + (v177.Z * v179) + (0.5 * v178.Z * (v179^2)) ;return Vector3.new(v180,v181,v182);end local function v70(v183,v184)local v185=0;local v186;local v187;local v188;local v189;local v190;local v191;local v192;local v193;local v194;local v195;local v196;local v197;local v198;while true do if (v185==1) then v190=nil;v191=nil;v192=nil;v193=nil;v185=2;end if (v185==0) then local v525=0;while true do if (v525==1) then v188=nil;v189=nil;v525=2;end if (v525==2) then v185=1;break;end if (v525==0) then v186=0;v187=nil;v525=1;end end end if (3==v185) then v198=nil;while true do if (v186==0) then local v665=0;local v666;while true do if (0==v665) then v666=0;while true do if (v666==0) then v187,v188,v189,v190,v191,v192,v193,v194,v195,v196,v197,v198=v183:GetComponents();return CFrame.new(v187 + v184.X ,v188 + v184.Y ,v189 + v184.Z ,v190,v191,v192,v193,v194,v195,v196,v197,v198);end end break;end end end end break;end if (v185==2) then local v526=0;while true do if (1==v526) then v196=nil;v197=nil;v526=2;end if (v526==0) then v194=nil;v195=nil;v526=1;end if (v526==2) then v185=3;break;end end end end end local function v71(v199,v200)local v201=0;local v202;local v203;local v204;local v205;local v206;local v207;local v208;local v209;local v210;local v211;local v212;local v213;local v214;local v215;while true do if (v201==1) then v205=nil;v206=nil;v207=nil;v201=2;end if (v201==4) then v214=nil;v215=nil;while true do if (0==v202) then v203=0;v204=nil;v205=nil;v202=1;end if (v202==2) then v209=nil;v210=nil;v211=nil;v202=3;end if (v202==1) then local v667=0;while true do if (v667==0) then v206=nil;v207=nil;v667=1;end if (v667==1) then v208=nil;v202=2;break;end end end if (3==v202) then local v668=0;while true do if (v668==0) then v212=nil;v213=nil;v668=1;end if (v668==1) then v214=nil;v202=4;break;end end end if (4==v202) then v215=nil;while true do if (v203==0) then local v855=0;local v856;while true do if (v855==0) then v856=0;while true do if (0==v856) then v204,v205,v206,v207,v208,v209,v210,v211,v212,v213,v214,v215=v199:GetComponents();return CFrame.new(v204,v200,v206,v207,v208,v209,v210,v211,v212,v213,v214,v215);end end break;end end end end break;end end break;end if (v201==0) then v202=0;v203=nil;v204=nil;v201=1;end if (v201==2) then v208=nil;v209=nil;v210=nil;v201=3;end if (v201==3) then v211=nil;v212=nil;v213=nil;v201=4;end end end local function v72(v216)v216();end v72(function()local v217=0;local v218;local v219;while true do if (v217==1) then while true do if (v218==3) then v219.Position=UDim2.new(0,0,0, -36);v219.Parent=v0['MainGui'].ScaledGui.ClickGui;task.spawn(function()local v767=0;while true do if (v767==0) then repeat task.wait();until v19~=0  v219:Remove();break;end end end);break;end if (2==v218) then v219.TextScaled=true;v219.Font=Enum.Font.SourceSans;v219.TextColor3=Color3.new(1,1,1);v218=3;end if (0==v218) then v219=Instance.new("TextLabel");v219.Size=UDim2.new(1,0,0,36);v219.Text="Moderators can ban you at any time, Always use alts.";v218=1;end if (v218==1) then v219.BackgroundTransparency=1;v219.ZIndex=10;v219.TextStrokeTransparency=0;v218=2;end end break;end if (0==v217) then v218=0;v219=nil;v217=1;end end end);local v73={};local function v74(v220)local v221=0;while true do if (v221==0) then if  not v32(v220) then local v634=0;local v635;local v636;local v637;while true do if (0==v634) then v635=0;v636=nil;v634=1;end if (1==v634) then v637=nil;while true do if (v635==1) then while true do if (v636==0) then local v1068=0;local v1069;while true do if (v1068==0) then v1069=0;while true do if (v1069==1) then v636=1;break;end if (0==v1069) then local v1376=0;while true do if (0==v1376) then task.spawn(function()local v1542=0;local v1543;local v1544;local v1545;while true do if (v1542==1) then v1545=nil;while true do if (v1543==0) then v1544=0;v1545=nil;v1543=1;end if (v1543==1) then while true do if (2==v1544) then v1545.Position=UDim2.new(0,0,0, -36);v1545.Parent=v0['MainGui'];repeat task.wait();until v32(v220) v1545:Remove();break;end if (v1544==0) then v1545=Instance.new("TextLabel");v1545.Size=UDim2.new(1,0,0,36);v1545.Text="Downloading "   .. v220 ;v1545.BackgroundTransparency=1;v1544=1;end if (v1544==1) then local v1739=0;while true do if (v1739==2) then v1544=2;break;end if (v1739==0) then v1545.TextStrokeTransparency=0;v1545.TextSize=30;v1739=1;end if (v1739==1) then v1545.Font=Enum.Font.SourceSans;v1545.TextColor3=Color3.new(1,1,1);v1739=2;end end end end break;end end break;end if (v1542==0) then v1543=0;v1544=nil;v1542=1;end end end);v637=v33({Url="https://raw.githubusercontent.com/7GrandDadPGN/VapeV4ForRoblox/main/"   .. v220:gsub("vape/assets","assets") ,Method="GET"});v1376=1;end if (v1376==1) then v1069=1;break;end end end end break;end end end if (v636==1) then writefile(v220,v637.Body);break;end end break;end if (0==v635) then local v952=0;while true do if (v952==1) then v635=1;break;end if (0==v952) then v636=0;v637=nil;v952=1;end end end end break;end end end if (v73[v220]==nil) then v73[v220]=v35(v220);end v221=1;end if (1==v221) then return v73[v220];end end end local function v75(v222,v223)local v224=0;local v225;local v226;local v227;local v228;local v229;local v230;local v231;local v232;local v233;local v234;local v235;local v236;local v237;local v238;local v239;local v240;local v241;local v242;local v243;local v244;local v245;local v246;local v247;local v248;local v249;local v250;local v251;local v252;local v253;local v254;local v255;local v256;local v257;local v258;while true do if (v224==4) then v245=nil;v246=nil;v247=nil;v248=nil;v249=nil;v224=5;end if (v224==0) then v225=0;v226=nil;v227=nil;v228=nil;v229=nil;v224=1;end if (v224==1) then v230=nil;v231=nil;v232=nil;v233=nil;v234=nil;v224=2;end if (6==v224) then v255=nil;v256=nil;v257=nil;v258=nil;while true do if (v225==6) then v256=nil;v257=nil;v258=nil;while true do local v768=0;local v769;while true do if (v768==0) then v769=0;while true do if (v769==4) then if (v226==9) then local v1112=0;local v1113;while true do if (v1112==0) then v1113=0;while true do if (v1113==1) then v243.CornerRadius=UDim.new(0,16);v243.Parent=v242;v1113=2;end if (0==v1113) then v242.Parent=v241;v243=Instance.new("UICorner");v1113=1;end if (v1113==2) then v242.MouseEnter:Connect(function()game:GetService("TweenService"):Create(v242,TweenInfo.new(0.1,Enum.EasingStyle.Quad,Enum.EasingDirection.InOut),{BackgroundColor3=Color3.fromRGB(60,60,60),ImageColor3=Color3.fromRGB(255,255,255)}):Play();end);v242.MouseLeave:Connect(function()game:GetService("TweenService"):Create(v242,TweenInfo.new(0.1,Enum.EasingStyle.Quad,Enum.EasingDirection.InOut),{BackgroundColor3=Color3.fromRGB(26,25,26),ImageColor3=Color3.fromRGB(121,121,121)}):Play();end);v1113=3;end if (v1113==4) then v244.AnchorPoint=Vector2.new(0.5,0.5);v226=10;break;end if (v1113==3) then v242.MouseButton1Click:Connect(function()local v1490=0;while true do if (v1490==0) then v240.Visible=false;v0['MainGui'].ScaledGui.ClickGui.Visible=true;break;end end end);v244=Instance.new("ImageLabel");v1113=4;end end break;end end end if (v226==5) then local v1114=0;while true do if (v1114==0) then v236.Name=v223['Name']   .. "Children" ;v236.BackgroundTransparency=1;v1114=1;end if (v1114==3) then v237.Parent=v236;v237:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()v236.Size=UDim2.new(1,0,0,v237.AbsoluteContentSize.Y);end);v1114=4;end if (v1114==1) then local v1268=0;while true do if (v1268==0) then v236.LayoutOrder=v229;v236.Size=UDim2.new(0,220,0,0);v1268=1;end if (v1268==1) then v1114=2;break;end end end if (2==v1114) then v236.Parent=v222;v237=Instance.new("UIListLayout");v1114=3;end if (4==v1114) then v238=Instance.new("UICorner");v226=6;break;end end end if (v226==2) then local v1115=0;while true do if (v1115==0) then local v1270=0;while true do if (v1270==1) then v1115=1;break;end if (v1270==0) then v232.TextSize=17;v232.Font=Enum.Font.SourceSans;v1270=1;end end end if (3==v1115) then local v1271=0;while true do if (v1271==0) then v233.Position=UDim2.new(0,10,0,4);v233.BackgroundColor3=Color3.fromRGB(38,37,38);v1271=1;end if (v1271==1) then v1115=4;break;end end end if (v1115==1) then v232.Position=UDim2.new(0,0,0,0);v232.Parent=v222;v1115=2;end if (v1115==2) then v233=Instance.new("Frame");v233.Size=UDim2.new(0,200,0,31);v1115=3;end if (v1115==4) then v233.Name="ToggleFrame2";v226=3;break;end end end v769=5;end if (v769==3) then if (6==v226) then local v1116=0;while true do if (v1116==4) then v240.Size=UDim2.new(1,0,1,0);v226=7;break;end if (v1116==2) then v239.Parent=v233;v232.MouseEnter:Connect(function()game:GetService("TweenService"):Create(v233,TweenInfo.new(0.2,Enum.EasingStyle.Quad,Enum.EasingDirection.InOut),{BackgroundColor3=Color3.fromRGB(79,78,79)}):Play();end);v1116=3;end if (v1116==0) then local v1278=0;while true do if (v1278==1) then v1116=1;break;end if (v1278==0) then v238.CornerRadius=UDim.new(0,5);v238.Parent=v234;v1278=1;end end end if (v1116==3) then local v1279=0;while true do if (v1279==0) then v232.MouseLeave:Connect(function()game:GetService("TweenService"):Create(v233,TweenInfo.new(0.2,Enum.EasingStyle.Quad,Enum.EasingDirection.InOut),{BackgroundColor3=Color3.fromRGB(38,37,38)}):Play();end);v240=Instance.new("Frame");v1279=1;end if (1==v1279) then v1116=4;break;end end end if (v1116==1) then v239=Instance.new("UICorner");v239.CornerRadius=UDim.new(0,5);v1116=2;end end end if (v226==18) then v0['Settings'][v222.Name   .. v223['Name']   .. "ItemList" ]={Type="ItemList",Items=v227['Hotbars'],CurrentlySelected=v227['CurrentlySelected']};v0['ObjectsThatCanBeSaved'][v222.Name   .. v223['Name']   .. "ItemList" ]={Type="ItemList",Items=v227['Hotbars'],Api=v227,Object=v232};return v227;end if (v226==10) then local v1119=0;while true do if (v1119==0) then v244.Position=UDim2.new(0.5,0,0.5,0);v244.Image=v74("vape/assets/WindowBlur.png");v1119=1;end if (3==v1119) then v244.ScaleType=Enum.ScaleType.Slice;v244.SliceCenter=Rect.new(10,10,118,118);v1119=4;end if (2==v1119) then v244.Size=UDim2.new(1,6,1,6);v244.ImageColor3=Color3.new(0,0,0);v1119=3;end if (v1119==1) then v244.BackgroundTransparency=1;v244.ZIndex= -1;v1119=2;end if (v1119==4) then v244.Parent=v241;v226=11;break;end end end v769=4;end if (v769==5) then local v1029=0;while true do if (0==v1029) then if (v226==7) then local v1291=0;while true do if (v1291==2) then v241=Instance.new("Frame");v241.Size=UDim2.new(0,660,0,445);v1291=3;end if (v1291==4) then v241.Parent=v240;v226=8;break;end if (v1291==0) then v240.Name="ItemList";v240.BackgroundTransparency=1;v1291=1;end if (v1291==3) then local v1438=0;while true do if (v1438==0) then v241.Position=UDim2.new(0.5, -330,0.5, -223);v241.BackgroundColor3=Color3.fromRGB(26,25,26);v1438=1;end if (v1438==1) then v1291=4;break;end end end if (v1291==1) then local v1439=0;while true do if (v1439==1) then v1291=2;break;end if (0==v1439) then v240.Visible=false;v240.Parent=v0['MainGui'];v1439=1;end end end end end if (v226==16) then local v1292=0;while true do if (v1292==4) then v254=1;v226=17;break;end if (v1292==1) then v252=Instance.new("UICorner");v252.CornerRadius=UDim.new(0,5);v1292=2;end if (3==v1292) then v253.CornerRadius=UDim.new(0,5);v253.Parent=v249;v1292=4;end if (v1292==2) then v252.Parent=v248;v253=Instance.new("UICorner");v1292=3;end if (v1292==0) then local v1444=0;while true do if (0==v1444) then v251.Parent=v250;v251:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()v250.CanvasSize=UDim2.new(0,0,0,v251.AbsoluteContentSize.Y * (1/v0['MainRescale'].Scale) );end);v1444=1;end if (1==v1444) then v1292=1;break;end end end end end v1029=1;end if (v1029==1) then if (v226==1) then local v1293=0;while true do if (v1293==3) then v232.Size=UDim2.new(1,0,0,40);v232.Active=false;v1293=4;end if (v1293==0) then v232.AutoButtonColor=false;v232.BackgroundTransparency=1;v1293=1;end if (4==v1293) then v232.TextColor3=Color3.fromRGB(162,162,162);v226=2;break;end if (v1293==1) then v232.Name="ButtonText";v232.Text="";v1293=2;end if (v1293==2) then local v1452=0;while true do if (v1452==1) then v1293=3;break;end if (0==v1452) then v232.Name=v223['Name'];v232.LayoutOrder=1;v1452=1;end end end end end v769=6;break;end end end if (0==v769) then if (v226==3) then local v1120=0;while true do if (2==v1120) then local v1294=0;while true do if (1==v1294) then v1120=3;break;end if (v1294==0) then v234.BorderSizePixel=0;v234.Name="ToggleFrame1";v1294=1;end end end if (v1120==4) then v235=Instance.new("ImageLabel");v226=4;break;end if (v1120==1) then v234.Size=UDim2.new(0,198,0,29);v234.BackgroundColor3=Color3.fromRGB(26,25,26);v1120=2;end if (v1120==3) then v234.Position=UDim2.new(0,1,0,1);v234.Parent=v233;v1120=4;end if (v1120==0) then local v1299=0;while true do if (1==v1299) then v1120=1;break;end if (v1299==0) then v233.Parent=v232;v234=Instance.new("Frame");v1299=1;end end end end end if (v226==11) then local v1121=0;local v1122;while true do if (v1121==0) then v1122=0;while true do if (v1122==0) then local v1456=0;while true do if (v1456==1) then v1122=1;break;end if (v1456==0) then v245=Instance.new("TextLabel");v245.Size=UDim2.new(1,0,0,41);v1456=1;end end end if (4==v1122) then v245.Text="    New AutoHotbar";v226=12;break;end if (1==v1122) then v245.BackgroundTransparency=1;v245.Name="WindowTitle";v1122=2;end if (v1122==3) then v245.Font=Enum.Font.SourceSans;v245.TextSize=17;v1122=4;end if (v1122==2) then v245.Position=UDim2.new(0,0,0,0);v245.TextXAlignment=Enum.TextXAlignment.Left;v1122=3;end end break;end end end if (8==v226) then local v1123=0;while true do if (1==v1123) then v242.ImageColor3=Color3.fromRGB(121,121,121);v242.Size=UDim2.new(0,24,0,24);v1123=2;end if (v1123==4) then v242.BackgroundColor3=Color3.fromRGB(26,25,26);v226=9;break;end if (3==v1123) then v242.Visible=true;v242.Position=UDim2.new(1, -31,0,8);v1123=4;end if (v1123==2) then v242.AutoButtonColor=false;v242.Image=v74("vape/assets/ExitIcon1.png");v1123=3;end if (v1123==0) then v242=Instance.new("ImageButton");v242.Name="ItemListExitButton";v1123=1;end end end v769=1;end if (v769==2) then if (v226==12) then local v1124=0;while true do if (v1124==3) then v246.Position=UDim2.new(0,0,0,41);v246.Parent=v241;v1124=4;end if (v1124==2) then v246.BorderSizePixel=0;v246.Size=UDim2.new(1,0,0,1);v1124=3;end if (v1124==1) then v246=Instance.new("Frame");v246.BackgroundColor3=Color3.fromRGB(40,39,40);v1124=2;end if (v1124==4) then v247=Instance.new("UICorner");v226=13;break;end if (v1124==0) then v245.TextColor3=Color3.fromRGB(201,201,201);v245.Parent=v241;v1124=1;end end end if (17==v226) then v255=0;v256=nil;v257=nil;function v256()local v1167=144;local v1168=v255;for v1211,v1212 in pairs(v241:GetChildren()) do if v1212.Name:find("ItemSlot") then v1212:Remove();end end for v1213,v1214 in pairs(v250:GetChildren()) do if v1214:IsA("TextButton") then v1214:Remove();end end for v1215,v1216 in pairs(v230) do local v1217=Instance.new("TextButton");v1217.Text="";v1217.BackgroundColor3=Color3.fromRGB(31,30,31);v1217.Parent=v250;v1217.AutoButtonColor=false;local v1222=Instance.new("ImageLabel");v1222.Size=UDim2.new(0,32,0,32);v1222.Image=v11['getIcon']({itemType=v1216.itemDisplayType},true);v1222.ResampleMode=(v11['getIcon']({itemType=v1216.itemDisplayType},true):find("rbxasset://") and Enum.ResamplerMode.Pixelated) or Enum.ResamplerMode.Default ;v1222.Position=UDim2.new(0,10,0,10);v1222.BackgroundTransparency=1;v1222.Parent=v1217;local v1229=Instance.new("UICorner");v1229.CornerRadius=UDim.new(0,5);v1229.Parent=v1217;v1217.MouseButton1Click:Connect(function()local v1315=0;while true do if (v1315==0) then local v1466=0;while true do if (v1466==1) then v1315=1;break;end if (v1466==0) then local v1556=0;while true do if (v1556==1) then v1466=1;break;end if (v1556==0) then for v1649,v1650 in pairs(v227['Hotbars'][v227['CurrentlySelected']]['Items']) do if (v1650.itemType==v1216.itemType) then v227['Hotbars'][v227['CurrentlySelected']]['Items'][tostring(v1649)]=nil;end end v227['Hotbars'][v227['CurrentlySelected']]['Items'][tostring(v254)]=v1216;v1556=1;end end end end end if (v1315==1) then v256();v257();break;end end end);end for v1232=1,9 do local v1233=0;local v1234;local v1235;local v1236;local v1237;local v1238;local v1239;local v1240;while true do if (v1233==4) then local v1377=0;local v1378;while true do if (v1377==0) then v1378=0;while true do if (v1378==2) then v1237.Parent=v1236;v1233=5;break;end if (v1378==1) then v1237.ResampleMode=(v1238:find("rbxasset://") and Enum.ResamplerMode.Pixelated) or Enum.ResamplerMode.Default ;v1237.Position=UDim2.new(0,10,0,10);v1378=2;end if (v1378==0) then local v1598=0;while true do if (v1598==1) then v1378=1;break;end if (v1598==0) then v1238=(v1234 and v11['getIcon']({itemType=v1234.itemDisplayType},true)) or "" ;v1237.Image=v1238;v1598=1;end end end end break;end end end if (v1233==0) then local v1379=0;local v1380;while true do if (v1379==0) then v1380=0;while true do if (v1380==2) then v1235.BackgroundTransparency=((v254==v1232) and 0) or 1 ;v1233=1;break;end if (v1380==0) then v1234=v227['Hotbars'][v227['CurrentlySelected']]['Items'][tostring(v1232)];v1235=Instance.new("Frame");v1380=1;end if (v1380==1) then local v1601=0;while true do if (v1601==1) then v1380=2;break;end if (v1601==0) then v1235.Size=UDim2.new(0,55,0,56);v1235.Position=UDim2.new(0,v1167-2 ,0,380);v1601=1;end end end end break;end end end if (v1233==3) then local v1381=0;while true do if (v1381==0) then local v1519=0;while true do if (v1519==0) then v1236.Position=UDim2.new(0,2,0,2);v1236.Parent=v1235;v1519=1;end if (v1519==1) then v1381=1;break;end end end if (1==v1381) then v1237=Instance.new("ImageLabel");v1237.Size=UDim2.new(0,32,0,32);v1381=2;end if (2==v1381) then v1237.BackgroundTransparency=1;v1233=4;break;end end end if (2==v1233) then local v1382=0;local v1383;while true do if (v1382==0) then v1383=0;while true do if (v1383==2) then v1236.Name="ItemListFrame4";v1233=3;break;end if (v1383==1) then v1236.AutoButtonColor=false;v1236.Text="";v1383=2;end if (v1383==0) then v1236.BackgroundColor3=((v1168==v1232) and Color3.fromRGB(31,30,31)) or Color3.fromRGB(20,20,20) ;v1236.BorderSizePixel=0;v1383=1;end end break;end end end if (v1233==5) then local v1384=0;local v1385;while true do if (v1384==0) then v1385=0;while true do if (v1385==0) then v1239=Instance.new("UICorner");v1239.CornerRadius=UDim.new(0,5);v1385=1;end if (v1385==2) then v1240.CornerRadius=UDim.new(0,5);v1233=6;break;end if (v1385==1) then local v1611=0;while true do if (v1611==1) then v1385=2;break;end if (v1611==0) then v1239.Parent=v1235;v1240=Instance.new("UICorner");v1611=1;end end end end break;end end end if (v1233==6) then local v1386=0;local v1387;while true do if (v1386==0) then v1387=0;while true do if (v1387==0) then local v1612=0;while true do if (v1612==1) then v1387=1;break;end if (v1612==0) then v1240.Parent=v1236;v1236.MouseEnter:Connect(function()v1236.BackgroundColor3=Color3.fromRGB(31,30,31);v255=v1232;end);v1612=1;end end end if (v1387==2) then v1236.MouseButton2Click:Connect(function()local v1633=0;local v1634;while true do if (v1633==0) then v1634=0;while true do if (0==v1634) then local v1740=0;while true do if (v1740==1) then v1634=1;break;end if (v1740==0) then v227['Hotbars'][v227['CurrentlySelected']]['Items'][tostring(v1232)]=nil;v256();v1740=1;end end end if (v1634==1) then v257();break;end end break;end end end);v1233=7;break;end if (v1387==1) then v1236.MouseLeave:Connect(function()local v1635=0;local v1636;while true do if (v1635==0) then v1636=0;while true do if (v1636==0) then v1236.BackgroundColor3=Color3.fromRGB(20,20,20);v255=0;break;end end break;end end end);v1236.MouseButton1Click:Connect(function()local v1637=0;while true do if (v1637==0) then v254=v1232;v256();break;end end end);v1387=2;end end break;end end end if (v1233==1) then v1235.BackgroundColor3=Color3.fromRGB(35,34,35);v1235.Name="ItemSlot";v1235.Parent=v241;v1236=Instance.new("TextButton");v1236.Size=UDim2.new(0,51,0,52);v1233=2;end if (v1233==7) then v1167=v1167 + 55 ;break;end end end end v258=nil;function v258(v1169,v1170)local v1171=0;local v1172;local v1173;local v1174;local v1175;local v1176;local v1177;while true do if (v1171==2) then v1176=nil;v1177=nil;v1171=3;end if (v1171==3) then while true do if (v1172==2) then v1177=nil;while true do if (6==v1173) then for v1613=1,9 do local v1614=0;local v1615;local v1616;local v1617;while true do if (v1614==1) then v1617=nil;while true do if (2==v1615) then v1617.BackgroundColor3=Color3.fromRGB(20,20,20);v1617.Parent=v1175;v1177=v1177 + 18 ;break;end if (0==v1615) then v1616=v227['Hotbars'][v1169]['Items'][tostring(v1613)];v1617=Instance.new("ImageLabel");v1617.Name=v1613;v1617.Size=UDim2.new(0,17,0,18);v1615=1;end if (v1615==1) then v1617.Position=UDim2.new(0,v1177,0,5);v1617.BorderSizePixel=0;v1617.Image=(v1616 and v11['getIcon']({itemType=v1616.itemDisplayType},true)) or "" ;v1617.ResampleMode=(((v1616 and v11['getIcon']({itemType=v1616.itemDisplayType},true)) or ""):find("rbxasset://") and Enum.ResamplerMode.Pixelated) or Enum.ResamplerMode.Default ;v1615=2;end end break;end if (v1614==0) then v1615=0;v1616=nil;v1614=1;end end end v1174.MouseButton1Click:Connect(function()local v1618=0;local v1619;local v1620;while true do if (v1618==0) then v1619=0;v1620=nil;v1618=1;end if (v1618==1) then while true do if (v1619==0) then v1620=0;while true do if (1==v1620) then v257();break;end if (v1620==0) then local v1757=0;while true do if (v1757==1) then v1620=1;break;end if (v1757==0) then if (v227['CurrentlySelected']==v1169) then local v1805=0;local v1806;while true do if (v1805==0) then v1806=0;while true do if (v1806==0) then v240.Visible=true;v0['MainGui'].ScaledGui.ClickGui.Visible=false;v1806=1;end if (v1806==1) then v256();break;end end break;end end end v227['CurrentlySelected']=v1169;v1757=1;end end end end break;end end break;end end end);v1174.MouseButton2Click:Connect(function()local v1621=0;local v1622;while true do if (v1621==0) then v1622=0;while true do if (v1622==1) then v257();break;end if (v1622==0) then local v1723=0;local v1724;while true do if (0==v1723) then v1724=0;while true do if (v1724==1) then v1622=1;break;end if (v1724==0) then if (v227['CurrentlySelected']==v1169) then v227['CurrentlySelected']=((v1169==2) and 0) or 1 ;end table.remove(v227['Hotbars'],v1169);v1724=1;end end break;end end end end break;end end end);break;end if (v1173==0) then local v1576=0;while true do if (v1576==1) then v1174.Size=UDim2.new(1,0,0,30);v1173=1;break;end if (v1576==0) then v1169=tonumber(v1169) or ( #v227['Hotbars'] + 1) ;v1174=Instance.new("TextButton");v1576=1;end end end if (v1173==3) then local v1577=0;local v1578;while true do if (v1577==0) then v1578=0;while true do if (v1578==1) then v1175.Size=UDim2.new(0,200,0,27);v1173=4;break;end if (v1578==0) then v1175=Instance.new("Frame");v1175.BackgroundColor3=((v1169==v227['CurrentlySelected']) and Color3.fromRGB(54,53,54)) or Color3.fromRGB(31,30,31) ;v1578=1;end end break;end end end if (v1173==5) then local v1579=0;local v1580;while true do if (v1579==0) then v1580=0;while true do if (v1580==1) then v1177=11;v1173=6;break;end if (v1580==0) then v1176.CornerRadius=UDim.new(0,5);v1176.Parent=v1175;v1580=1;end end break;end end end if (v1173==4) then local v1581=0;while true do if (v1581==0) then v1175.Position=UDim2.new(0,10,0,1);v1175.Parent=v1174;v1581=1;end if (v1581==1) then v1176=Instance.new("UICorner");v1173=5;break;end end end if (2==v1173) then v1174.Text="";v1174.Parent=v236;v227['Hotbars'][v1169]={Items=v1170 or {} ,Object=v1174,Number=v1169};v1173=3;end if (v1173==1) then local v1585=0;local v1586;while true do if (v1585==0) then v1586=0;while true do if (v1586==0) then local v1705=0;while true do if (0==v1705) then v1174.BackgroundTransparency=1;v1174.LayoutOrder=v1169;v1705=1;end if (v1705==1) then v1586=1;break;end end end if (v1586==1) then v1174.AutoButtonColor=false;v1173=2;break;end end break;end end end end break;end if (0==v1172) then v1173=0;v1174=nil;v1172=1;end if (1==v1172) then local v1491=0;while true do if (v1491==0) then v1175=nil;v1176=nil;v1491=1;end if (1==v1491) then v1172=2;break;end end end end break;end if (1==v1171) then v1174=nil;v1175=nil;v1171=2;end if (v1171==0) then v1172=0;v1173=nil;v1171=1;end end end function v257()local v1178=0;local v1179;local v1180;local v1181;while true do if (v1178==1) then v1181=nil;while true do if (v1179==3) then v0['Settings'][v222.Name   .. v223['Name']   .. "ItemList" ]={Type="ItemList",Items=v227['Hotbars'],CurrentlySelected=v227['CurrentlySelected']};break;end if (v1179==2) then local v1493=0;while true do if (v1493==1) then v1179=3;break;end if (0==v1493) then local v1587=0;while true do if (v1587==0) then for v1671,v1672 in pairs(v236:GetChildren()) do if v1672:IsA("TextButton") then v1672:Remove();end end for v1673,v1674 in pairs(v227['Hotbars']) do v258(v1673,v1674['Items']);end v1587=1;end if (1==v1587) then v1493=1;break;end end end end end if (v1179==0) then local v1494=0;while true do if (v1494==0) then v1180=0;v1181={};v1494=1;end if (1==v1494) then v1179=1;break;end end end if (v1179==1) then local v1495=0;local v1496;while true do if (0==v1495) then v1496=0;while true do if (1==v1496) then v1179=2;break;end if (v1496==0) then for v1675,v1676 in pairs(v227['Hotbars']) do local v1677=0;local v1678;while true do if (v1677==0) then v1678=0;while true do if (v1678==0) then v1180=v1180 + 1 ;v1181[v1180]=v1676;break;end end break;end end end v227['Hotbars']=v1181;v1496=1;end end break;end end end end break;end if (v1178==0) then v1179=0;v1180=nil;v1178=1;end end end v227['RefreshList']=v257;v232.MouseButton1Click:Connect(function()v258();end);v226=18;end if (v226==13) then local v1126=0;while true do if (v1126==0) then local v1316=0;while true do if (0==v1316) then v247.CornerRadius=UDim.new(0,4);v247.Parent=v241;v1316=1;end if (v1316==1) then v1126=1;break;end end end if (v1126==3) then v248.Name="ItemListFrame1";v248.Parent=v241;v1126=4;end if (v1126==2) then v248.Position=UDim2.new(0,10,0,71);v248.BackgroundColor3=Color3.fromRGB(38,37,38);v1126=3;end if (v1126==4) then v249=Instance.new("Frame");v226=14;break;end if (1==v1126) then v248=Instance.new("Frame");v248.Size=UDim2.new(0,112,0,113);v1126=2;end end end v769=3;end if (v769==1) then if (v226==4) then local v1127=0;local v1128;while true do if (0==v1127) then v1128=0;while true do if (0==v1128) then v235.BackgroundTransparency=1;v235.Name="AddButton";v1128=1;end if (v1128==2) then v235.Size=UDim2.new(0,12,0,12);v235.ImageColor3=Color3.fromRGB(5,133,104);v1128=3;end if (v1128==4) then v236=Instance.new("Frame");v226=5;break;end if (v1128==3) then local v1473=0;while true do if (0==v1473) then v235.Image=v74("vape/assets/AddItem.png");v235.Parent=v234;v1473=1;end if (v1473==1) then v1128=4;break;end end end if (v1128==1) then local v1474=0;while true do if (0==v1474) then v235.BackgroundColor3=Color3.fromRGB(20,20,20);v235.Position=UDim2.new(0,93,0,9);v1474=1;end if (v1474==1) then v1128=2;break;end end end end break;end end end if (v226==0) then local v1129=0;local v1130;while true do if (v1129==0) then v1130=0;while true do if (v1130==4) then v232=Instance.new("TextButton");v226=1;break;end if (v1130==0) then v227={};v227['Hotbars']={};v1130=1;end if (v1130==1) then v227['CurrentlySelected']=1;v228=nil;v1130=2;end if (v1130==2) then local v1477=0;while true do if (v1477==1) then v1130=3;break;end if (v1477==0) then v229= #v222:GetChildren();v230={{itemType="swords",itemDisplayType="diamond_sword"},{itemType="pickaxes",itemDisplayType="diamond_pickaxe"},{itemType="axes",itemDisplayType="diamond_axe"},{itemType="shears",itemDisplayType="shears"},{itemType="wool",itemDisplayType="wool_white"},{itemType="iron",itemDisplayType="iron"},{itemType="diamond",itemDisplayType="diamond"},{itemType="emerald",itemDisplayType="emerald"},{itemType="bows",itemDisplayType="wood_bow"}};v1477=1;end end end if (v1130==3) then local v1478=0;while true do if (0==v1478) then v231=v11['ItemTable'];if v231 then for v1638,v1639 in pairs(v231) do if (((v1638:find("axe")==nil) or v1638:find("void")) and (v1638:find("bow")==nil) and (v1638:find("shears")==nil) and (v1638:find("wool")==nil) and (v1639.sword==nil) and (v1639.armor==nil) and (v1639['dontGiveItem']==nil) and v11['ItemTable'][v1638] and v11['ItemTable'][v1638].image) then table.insert(v230,{itemType=v1638,itemDisplayType=v1638});end end end v1478=1;end if (v1478==1) then v1130=4;break;end end end end break;end end end if (v226==14) then local v1131=0;while true do if (v1131==2) then v249.Position=UDim2.new(0,1,0,1);v249.Parent=v248;v1131=3;end if (0==v1131) then v249.Size=UDim2.new(0,110,0,111);v249.BackgroundColor3=Color3.fromRGB(20,20,20);v1131=1;end if (1==v1131) then v249.BorderSizePixel=0;v249.Name="ItemListFrame2";v1131=2;end if (v1131==3) then v250=Instance.new("ScrollingFrame");v250.Size=UDim2.new(0,495,0,220);v1131=4;end if (v1131==4) then v250.Position=UDim2.new(0,144,0,122);v226=15;break;end end end v769=2;end if (v769==6) then if (15==v226) then local v1132=0;while true do if (v1132==2) then v250.BackgroundTransparency=1;v250.Parent=v241;v1132=3;end if (v1132==3) then v251=Instance.new("UIGridLayout");v251.CellPadding=UDim2.new(0,4,0,3);v1132=4;end if (v1132==4) then v251.CellSize=UDim2.new(0,51,0,52);v226=16;break;end if (v1132==1) then v250.ScrollBarImageTransparency=0.8;v250.VerticalScrollBarInset=Enum.ScrollBarInset.None;v1132=2;end if (v1132==0) then v250.BorderSizePixel=0;v250.ScrollBarThickness=3;v1132=1;end end end break;end end break;end end end break;end if (v225==3) then v241=nil;v242=nil;v243=nil;v244=nil;v245=nil;v225=4;end if (v225==4) then v246=nil;v247=nil;v248=nil;v249=nil;v250=nil;v225=5;end if (v225==1) then v231=nil;v232=nil;v233=nil;v234=nil;v235=nil;v225=2;end if (v225==5) then local v681=0;while true do if (v681==1) then v253=nil;v254=nil;v681=2;end if (v681==2) then v255=nil;v225=6;break;end if (v681==0) then v251=nil;v252=nil;v681=1;end end end if (v225==2) then local v682=0;while true do if (v682==0) then v236=nil;v237=nil;v682=1;end if (v682==1) then v238=nil;v239=nil;v682=2;end if (2==v682) then v240=nil;v225=3;break;end end end if (0==v225) then local v683=0;while true do if (v683==2) then v230=nil;v225=1;break;end if (v683==1) then v228=nil;v229=nil;v683=2;end if (v683==0) then v226=0;v227=nil;v683=1;end end end end break;end if (v224==5) then v250=nil;v251=nil;v252=nil;v253=nil;v254=nil;v224=6;end if (3==v224) then v240=nil;v241=nil;v242=nil;v243=nil;v244=nil;v224=4;end if (v224==2) then v235=nil;v236=nil;v237=nil;v238=nil;v239=nil;v224=3;end end end v0['LoadSettingsEvent'].Event:Connect(function(v259)for v491,v492 in pairs(v259) do local v493=0;local v494;while true do if (v493==0) then v494=v0['ObjectsThatCanBeSaved'][v491];if (v494 and (v492['Type']=="ItemList") and v494.Api) then local v684=0;local v685;while true do if (0==v684) then v685=0;while true do if (v685==0) then v494['Api']['Hotbars']=v492['Items'];v494['Api']['CurrentlySelected']=v492['CurrentlySelected'];v685=1;end if (v685==1) then v494['Api']['RefreshList']();break;end end break;end end end break;end end end end);local function v76(v260,v261,v262)local v263=0;local v264;local v265;while true do if (v263==0) then local v527=0;while true do if (v527==0) then v264,v265=pcall(function()local v770=0;local v771;local v772;while true do if (1==v770) then while true do local v953=0;while true do if (v953==0) then if (v771==1) then return v772;end if (v771==0) then local v1182=0;while true do if (v1182==1) then v771=1;break;end if (v1182==0) then v772=v0['CreateNotification'](v260,v261,v262,"assets/WarningNotification.png");v772.Frame.Frame.ImageColor3=Color3.fromRGB(236,129,44);v1182=1;end end end break;end end end break;end if (v770==0) then v771=0;v772=nil;v770=1;end end end);return v264 and v265 ;end end end end end local function v77(v266,v267)local v268=0;local v269;while true do if (v268==0) then v269=0;while true do if (v269==0) then local v686=0;while true do if (0==v686) then local v857=0;while true do if (v857==0) then for v1030,v1031 in pairs(v267 or v39.inventory.items ) do if v1031.itemType:find(v266) then return v1031,v1030;end end return nil;end end end end end end break;end end end local function v78(v270,v271)local v272=0;local v273;while true do if (v272==0) then v273=0;while true do if (v273==0) then local v687=0;while true do if (v687==0) then for v915,v916 in pairs(v271 or v39.inventory.items ) do if (v916.itemType==v270) then return v916,v915;end end return nil;end end end end break;end end end local function v79(v274)local v275=0;local v276;while true do if (v275==0) then v276=0;while true do if (v276==0) then local v688=0;while true do if (v688==0) then for v917,v918 in pairs(v39.hotbar) do if (v918['item'] and (v918['item'].itemType==v274)) then return v917-1 ;end end return nil;end end end end break;end end end local function v80()local v277=0;local v278;local v279;local v280;while true do if (v277==0) then v278,v279,v280=nil,nil,0;for v581,v582 in pairs(v39.inventory.items) do if v11['ItemTable'][v582.itemType]['sword'] then local v689=0;local v690;while true do if (v689==0) then v690=v11['ItemTable'][v582.itemType]['sword']['damage'] or 0 ;if (v690>v280) then local v954=0;while true do if (v954==0) then v280=v690;v279=v581;v954=1;end if (v954==1) then v278=v582;break;end end end break;end end end end v277=1;end if (v277==1) then return v278,v279;end end end local function v81()local v281=0;while true do if (v281==0) then for v583,v584 in pairs(v39.inventory.items) do if v11['ItemTable'][v584.itemType]['block'] then return v584.itemType,v584.amount;end end return;end end end local function v82(v282)local v283=0;local v284;local v285;while true do if (v283==0) then v284=0;v285=nil;v283=1;end if (v283==1) then while true do if (v284==0) then v285=0;while true do if (v285==0) then for v919,v920 in pairs(v39.inventory.items) do if (v920.itemType==v282.itemType) then return v919;end end return nil;end end break;end end break;end end end local function v83(v286)local v287=0;local v288;local v289;while true do if (v287==0) then v288=0;v289=nil;v287=1;end if (v287==1) then while true do local v585=0;while true do if (0==v585) then if (1==v288) then return v289;end if (v288==0) then local v858=0;while true do if (v858==1) then v288=1;break;end if (v858==0) then v289=0;for v1032,v1033 in pairs(v286:GetAttributes()) do if (v1032:find("Shield") and (type(v1033)=="number")) then v289=v289 + v1033 ;end end v858=1;end end end break;end end end break;end end end local function v84()local v290=0;local v291;local v292;local v293;local v294;while true do if (v290==1) then v293=nil;v294=nil;v290=2;end if (v290==2) then while true do local v586=0;local v587;while true do if (v586==0) then v587=0;while true do if (v587==0) then if (v291==1) then return v292,v293;end if (v291==0) then local v992=0;local v993;while true do if (v992==0) then v993=0;while true do if (v993==0) then local v1339=0;while true do if (v1339==1) then v993=1;break;end if (v1339==0) then v292,v293,v294=nil,nil,0;for v1497,v1498 in pairs(v39.inventory.items) do if (v1498.itemType:find("axe") and (v1498.itemType:find("pickaxe")==nil) and (v1498.itemType:find("void")==nil)) then local v1562=0;local v1563;while true do if (0==v1562) then v1563=0;while true do if (v1563==1) then v292=v1498;break;end if (v1563==0) then local v1686=0;while true do if (v1686==1) then v1563=1;break;end if (v1686==0) then local v1742=0;while true do if (0==v1742) then v294=swordrank;v293=v1497;v1742=1;end if (v1742==1) then v1686=1;break;end end end end end end break;end end end end v1339=1;end end end if (v993==1) then v291=1;break;end end break;end end end break;end end break;end end end break;end if (v290==0) then local v528=0;while true do if (v528==1) then v290=1;break;end if (0==v528) then v291=0;v292=nil;v528=1;end end end end end local function v85()return v77("pick");end local function v86()return v77("baguette");end local function v87()local v295=0;local v296;while true do if (0==v295) then local v529=0;while true do if (v529==0) then v296=v77("wool");return v296 and v296.itemType ,v296 and v296.amount ;end end end end end local function v88(v297,v298)local v299=0;local v300;local v301;while true do if (v299==0) then v300=0;v301=nil;v299=1;end if (1==v299) then while true do if (v300==0) then v301=0;while true do if (0==v301) then local v859=0;while true do if (v859==0) then if v297 then return v297 and v297.Character and (v297.Character.Parent~=nil) and v297.Character:FindFirstChild("HumanoidRootPart") and v297.Character:FindFirstChild("Head") and v297.Character:FindFirstChild("Humanoid") ;end return v62.isAlive;end end end end break;end end break;end end end local function v89(v302,v303)local v304=0;local v305;while true do if (v304==0) then v305=0;while true do if (0==v305) then local v691=0;while true do if (0==v691) then if v302 then local v955=0;local v956;local v957;local v958;while true do if (v955==0) then v956=0;v957=nil;v955=1;end if (1==v955) then v958=nil;while true do if (v956==0) then v957,v958=v62.getEntityFromPlayer(v302);return ( not v303 or (v958 and (v958.Humanoid:GetState()~=Enum.HumanoidStateType.Dead))) and v958 ;end end break;end end end return v62.isAlive;end end end end break;end end end local function v90(v306)return {value=v306};end local function v91(v307)local v308=0;local v309;while true do if (v308==0) then v309=0;while true do if (v309==0) then local v692=0;while true do if (v692==0) then for v921,v922 in pairs(v307) do if (v922=="Client") then return v307[v921 + 1 ];end end return "";end end end end break;end end end local function v92(v310,v311)local v312=0;local v313;local v314;while true do if (v312==0) then v313=0;v314=nil;v312=1;end if (1==v312) then while true do if (v313==0) then v314=0;while true do if (v314==0) then local v860=0;while true do if (v860==0) then local v994=0;while true do if (v994==0) then for v1183,v1184 in pairs(v310) do if ((v1184==v311) or ((type(v1184)=="table") and (v1184.hash==v311))) then return v1184;end end return nil;end end end end end end break;end end break;end end end local v93=function()end;local function v94()local v315=0;local v316;local v317;local v318;local v319;while true do if (0==v315) then v316=0;v317=nil;v315=1;end if (v315==2) then while true do if (v316==0) then v317=0;v318=nil;v316=1;end if (v316==1) then v319=nil;while true do local v773=0;while true do if (v773==0) then if (v317==1) then local v995=0;while true do if (v995==0) then for v1185=1,v318 do v319[v1185]=string.char(math.random(32,126));end return table.concat(v319);end end end if (0==v317) then v318=math.random(10,100);v319={};v317=1;end break;end end end break;end end break;end if (v315==1) then v318=nil;v319=nil;v315=2;end end end local function v95(v320)local v321=0;local v322;while true do if (v321==0) then v322=0;while true do if (0==v322) then for v774,v775 in pairs(v1:GetPlayers()) do if (v775:GetAttribute("Team") and v320 and v320:GetAttribute("Team"   .. v775:GetAttribute("Team")   .. "NoBreak" ) and v64:CheckWhitelisted(v775)) then return true;end end return false;end end break;end end end local v96;local v97;local v98;local v99=tick();local v100={};v72(function()function v16()local v495=0;local v496;local v497;local v498;local v499;local v500;local v501;local v502;while true do if (v495==0) then local v588=0;while true do if (v588==0) then v496=0;v497=nil;v588=1;end if (v588==1) then v495=1;break;end end end if (2==v495) then local v589=0;while true do if (v589==1) then v495=3;break;end if (v589==0) then v500=nil;v501=nil;v589=1;end end end if (v495==3) then v502=nil;while true do if (5==v496) then v54[ #v54 + 1 ]=v8:GetInstanceAddedSignal("block"):Connect(function(v811)local v812=0;local v813;while true do if (v812==0) then v813=0;while true do if (v813==0) then table.insert(v12,v811);v13.FilterDescendantsInstances=v12;break;end end break;end end end);v54[ #v54 + 1 ]=v8:GetInstanceRemovedSignal("block"):Connect(function(v814)local v815=0;local v816;local v817;while true do if (v815==0) then v816=0;v817=nil;v815=1;end if (v815==1) then while true do if (v816==1) then v13.FilterDescendantsInstances=v12;break;end if (v816==0) then v817=table.find(v12,v814);if v817 then table.remove(v12,v817);end v816=1;end end break;end end end);v13.FilterDescendantsInstances=v12;v496=6;end if (v496==1) then repeat task.wait();until debug.getupvalue(v499.Start,1)==true  v500=require(v3.TS.remotes).default.Client;v501=require(v3.TS.inventory["inventory-util"]).InventoryUtil;v496=2;end if (v496==4) then local v780=0;local v781;while true do if (v780==0) then v781=0;while true do if (v781==0) then v11['placeBlock']=function(v1072,v1073)if v78(v1073) then local v1187=0;while true do if (v1187==0) then v37.blockType=v1073;return v37:placeBlock(Vector3.new(v1072.X/3 ,v1072.Y/3 ,v1072.Z/3 ));end end end end;task.spawn(function()repeat local v1133=0;while true do if (v1133==1) then for v1355,v1356 in pairs(v62.entityList) do local v1357=0;local v1358;while true do if (v1357==0) then v1358=0;while true do if (v1358==1) then if ((tick() -v1356.JumpTick)>0.4) then v1356.Jumps=0;end break;end if (0==v1358) then local v1588=0;local v1589;while true do if (v1588==0) then v1589=0;while true do if (v1589==1) then v1358=1;break;end if (v1589==0) then v1356.JumpTick=((v1356.Humanoid.FloorMaterial==Enum.Material.Air) and tick()) or v1356.JumpTick ;v1356.Jumping=((tick() -v1356.JumpTick)<0.4) and (v1356.Jumps>2) ;v1589=1;end end break;end end end end break;end end end break;end if (v1133==0) then task.wait();if v62.isAlive then if (v62.character.Humanoid.FloorMaterial~=Enum.Material.Air) then v99=tick();end end v1133=1;end end until v59 end);v781=1;end if (1==v781) then v12=v8:GetTagged("block");v496=5;break;end end break;end end end if (v496==6) then local v782=0;local v783;while true do if (v782==0) then v783=0;while true do if (v783==0) then v54[ #v54 + 1 ]=v11['ClientStoreHandler'].changed:connect(function(v1074,v1075)local v1076=0;while true do if (v1076==1) then if (v1074.Bedwars~=v1075.Bedwars) then v20=((v1074.Bedwars.kit~="none") and v1074.Bedwars.kit) or "" ;end if (v1074.Inventory~=v1075.Inventory) then v39=v1074.Inventory.observedInventory;end break;end if (v1076==0) then if (v1074.Game~=v1075.Game) then local v1360=0;while true do if (v1360==0) then v19=v1074.Game.matchState;v49=v1074.Game.queueType or "bedwars_test" ;break;end end end if (v1074.Kit~=v1075.Kit) then v11['BountyHunterTarget']=v1074.Kit.bountyHunterTarget;end v1076=1;end end end);v502=v11['ClientStoreHandler']:getState();v783=1;end if (v783==1) then v19=v502.Game.matchState or 0 ;v496=7;break;end end break;end end end if (v496==0) then local v784=0;local v785;while true do if (v784==0) then v785=0;while true do if (v785==0) then local v1036=0;while true do if (v1036==1) then v785=1;break;end if (v1036==0) then v497=require(v3['rbxts_include']['node_modules']["@flamework"].core.out).Flamework;v498,v499=nil;v1036=1;end end end if (v785==1) then repeat local v1077=0;local v1078;local v1079;while true do if (v1077==0) then v1078=0;v1079=nil;v1077=1;end if (v1077==1) then while true do if (v1078==0) then v1079=0;while true do if (v1079==0) then task.wait();v498,v499=pcall(function()return debug.getupvalue(require(v4.PlayerScripts.TS.knit).setup,6);end);break;end end break;end end break;end end until v498 v496=1;break;end end break;end end end if (v496==2) then local v786=0;while true do if (v786==0) then v96=getmetatable(v500).Get;getmetatable(v500).Get=function(v959,v960)local v961=0;local v962;while true do if (v961==0) then if v59 then return v96(v959,v960);end v962=v96(v959,v960);v961=1;end if (v961==1) then local v1080=0;while true do if (v1080==0) then if (v960=="DamageBlock") then return {CallServerAsync=function(v1392,v1393)local v1394=0;local v1395;while true do if (1==v1394) then return v962:CallServerAsync(v1393);end if (v1394==0) then v1395=v11['BlockController']:getStore():getBlockAt(v1393.blockRef.blockPosition);if (v1395 and (v1395.Name=="bed")) then if v95(v1395) then return {andThen=function(v1655,v1656)v1656("failed");end};end end v1394=1;end end end,CallServer=function(v1396,v1397)local v1398=0;local v1399;local v1400;while true do if (v1398==0) then local v1522=0;while true do if (0==v1522) then v1399=0;v1400=nil;v1522=1;end if (v1522==1) then v1398=1;break;end end end if (v1398==1) then while true do local v1564=0;while true do if (v1564==0) then if (v1399==0) then local v1679=0;while true do if (v1679==0) then local v1725=0;while true do if (v1725==1) then v1679=1;break;end if (v1725==0) then v1400=v11['BlockController']:getStore():getBlockAt(v1397.blockRef.blockPosition);if (v1400 and (v1400.Name=="bed")) then if v95(v1400) then return {andThen=function(v1808,v1809)v1809("failed");end};end end v1725=1;end end end if (v1679==1) then v1399=1;break;end end end if (v1399==1) then return v962:CallServer(v1397);end break;end end end break;end end end};elseif (v960==v11['AttackRemote']) then return {instance=v962['instance'],SendToServer=function(v1500,v1501)local v1502=0;local v1503;local v1504;while true do if (v1502==1) then return v962:SendToServer(v1501);end if (v1502==0) then v1503,v1504=pcall(function()return v1:GetPlayerFromCharacter(v1501.entityInstance);end);if (v1503 and v1504) then local v1641=0;local v1642;local v1643;local v1644;while true do if (v1641==1) then v1644=nil;while true do if (1==v1642) then if v40.Enabled then local v1759=0;local v1760;local v1761;local v1762;while true do if (v1759==2) then v1501.validate.selfPosition=v1762;break;end if (0==v1759) then local v1794=0;while true do if (v1794==0) then v1760=v62.LocalPosition or v1501.validate.selfPosition.value ;if ((v1760-(v62.OtherPosition[v1504] or v1501.validate.targetPosition.value)).Magnitude>18) then return v962:SendToServer(v1501);end v1794=1;end if (v1794==1) then v1759=1;break;end end end if (v1759==1) then local v1795=0;while true do if (v1795==0) then local v1814=0;while true do if (v1814==1) then v1795=1;break;end if (v1814==0) then v1761=(v1501.validate.selfPosition.value-v1501.validate.targetPosition.value).magnitude;v1762=v90(v1501.validate.selfPosition.value + (((v1761>14.4) and (CFrame.lookAt(v1501.validate.selfPosition.value,v1501.validate.targetPosition.value).lookVector * 4)) or Vector3.zero) );v1814=1;end end end if (v1795==1) then v1759=2;break;end end end end end break;end if (v1642==0) then local v1743=0;while true do if (v1743==1) then v1642=1;break;end if (v1743==0) then v1643,v1644=v64:CheckPlayerType(v1504);if  not v1644 then return nil;end v1743=1;end end end end break;end if (v1641==0) then local v1687=0;while true do if (v1687==0) then v1642=0;v1643=nil;v1687=1;end if (v1687==1) then v1641=1;break;end end end end end v1502=1;end end end};end return v962;end end end end end;v786=1;end if (v786==1) then v11={AngelUtil=require(v3.TS.games.bedwars.kit.kits.angel["angel-kit"]),AnimationType=require(v3.TS.animation["animation-type"]).AnimationType,AnimationUtil=require(v3['rbxts_include']['node_modules']["@easy-games"]["game-core"].out['shared'].util["animation-util"]).AnimationUtil,AppController=require(v3['rbxts_include']['node_modules']["@easy-games"]["game-core"].out.client.controllers["app-controller"]).AppController,AbilityController=v497.resolveDependency("@easy-games/game-core:client/controllers/ability/ability-controller@AbilityController"),AttackRemote=v91(debug.getconstants(getmetatable(v499.Controllers.SwordController)['attackEntity'])),BalloonController=v499.Controllers.BalloonController,BatteryEffectController=v499.Controllers.BatteryEffectsController,BatteryRemote=v91(debug.getconstants(debug.getproto(debug.getproto(v499.Controllers.BatteryController.KnitStart,1),1))),BedwarsKits=require(v3.TS.games.bedwars.kit["bedwars-kit-shop"]).BedwarsKitShop,BlockBreaker=v499.Controllers.BlockBreakController.blockBreaker,BlockController=require(v3['rbxts_include']['node_modules']["@easy-games"]["block-engine"].out).BlockEngine,BlockController2=require(v3['rbxts_include']['node_modules']["@easy-games"]["block-engine"].out.client.placement["block-placer"]).BlockPlacer,BlockCPSConstants=require(v3.TS["shared-constants"]).CpsConstants,BlockEngine=require(v4.PlayerScripts.TS.lib["block-engine"]["client-block-engine"]).ClientBlockEngine,BlockEngineClientEvents=require(v3['rbxts_include']['node_modules']["@easy-games"]["block-engine"].out.client["block-engine-client-events"]).BlockEngineClientEvents,BlockPlacementController=v499.Controllers.BlockPlacementController,BowConstantsTable=debug.getupvalue(v499.Controllers.ProjectileController.enableBeam,5),BowTable=v499.Controllers.ProjectileController,ChestController=v499.Controllers.ChestController,ClickHold=require(v3['rbxts_include']['node_modules']["@easy-games"]["game-core"].out.client.ui.lib.util["click-hold"]).ClickHold,ClientHandler=v500,ClientHandlerDamageBlock=require(v3['rbxts_include']['node_modules']["@easy-games"]["block-engine"].out.shared.remotes).BlockEngineRemotes.Client,ClientHandlerSyncEvents=require(v4.PlayerScripts.TS["client-sync-events"]).ClientSyncEvents,ClientStoreHandler=require(v4.PlayerScripts.TS.ui.store).ClientStore,CombatConstant=require(v3.TS.combat["combat-constant"]).CombatConstant,CombatController=v499.Controllers.CombatController,ConstantManager=require(v3['rbxts_include']['node_modules']["@easy-games"]["game-core"].out['shared'].constant["constant-manager"]).ConstantManager,ConsumeSoulRemote=v91(debug.getconstants(v499.Controllers.GrimReaperController.consumeSoul)),CooldownController=v499.Controllers.CooldownController,DamageController=v499.Controllers.DamageController,DamageIndicator=v499.Controllers.DamageIndicatorController.spawnDamageIndicator,DamageIndicatorController=v499.Controllers.DamageIndicatorController,damageTable=v499.Controllers.DamageController,DaoRemote=v91(debug.getconstants(debug.getprotos(v499.Controllers.DaoController.onEnable)[4])),DefaultKillEffect=require(v4.PlayerScripts.TS.controllers.game.locker["kill-effect"].effects["default-kill-effect"]),DetonateRavenRemote=v91(debug.getconstants(getmetatable(v499.Controllers.RavenController).detonateRaven)),DinoRemote=v91(debug.getconstants(debug.getproto(v499.Controllers.DinoTamerController.KnitStart,3))),DropItem=getmetatable(v499.Controllers.ItemDropController).dropItemInHand,DropItemRemote=v91(debug.getconstants(getmetatable(v499.Controllers.ItemDropController).dropItemInHand)),EatRemote=v91(debug.getconstants(debug.getproto(getmetatable(v499.Controllers.ConsumeController).onEnable,1))),EquipItemRemote=v91(debug.getconstants(debug.getprotos(shared.oldequipitem or require(v3.TS.entity.entities["inventory-entity"]).InventoryEntity.equipItem )[3])),FishermanTable=v499.Controllers.FishermanController,FovController=v499.Controllers.FovController,GameAnimationUtil=require(v3.TS.animation["animation-util"]).GameAnimationUtil,GamePlayerUtil=require(v3.TS.player["player-util"]).GamePlayerUtil,getEntityTable=require(v3.TS.entity["entity-util"]).EntityUtil,getIcon=function(v963,v964)local v965=0;local v966;while true do local v996=0;local v997;while true do if (v996==0) then v997=0;while true do if (v997==0) then if (v965==0) then local v1401=0;while true do if (v1401==1) then v965=1;break;end if (0==v1401) then v966=v11['ItemTable'][v963.itemType];if (v966 and v964) then return v966.image;end v1401=1;end end end if (v965==1) then return "";end break;end end break;end end end end,getInventory2=function(v967)local v968=0;local v969;local v970;while true do if (v968==0) then v969,v970=pcall(function()return v501.getInventory(v967);end);return (v969 and v970) or {items={},armor={},hand=nil} ;end end end,getItemMetadata=require(v3.TS.item["item-meta"]).getItemMeta,GrimReaperController=v499.Controllers.GrimReaperController,GuitarHealRemote=v91(debug.getconstants(v499.Controllers.GuitarController.performHeal)),HangGliderController=v499.Controllers.HangGliderController,HighlightController=v499.Controllers.EntityHighlightController,ItemTable=debug.getupvalue(require(v3.TS.item["item-meta"]).getItemMeta,1),JuggernautRemote=v91(debug.getconstants(debug.getprotos(debug.getprotos(v499.Controllers.JuggernautController.KnitStart)[1])[4])),KatanaController=v499.Controllers.DaoController,KatanaRemote=v91(debug.getconstants(debug.getproto(v499.Controllers.DaoController.onEnable,4))),KnockbackTable=debug.getupvalue(require(v3.TS.damage["knockback-util"]).KnockbackUtil.calculateKnockbackVelocity,1),LobbyClientEvents=v499.Controllers.QueueController,MapMeta=require(v3.TS.game.map["map-meta"]),MinerController=v499.Controllers.MinerController,MinerRemote="",MissileController=v499.Controllers.GuidedProjectileController,PaintRemote=v91(debug.getconstants(v499.Controllers.PaintShotgunController.fire)),PickupMetalRemote=v91(debug.getconstants(debug.getproto(v499.Controllers.MetalDetectorController.KnitStart,1))),PickupRemote=v91(debug.getconstants(getmetatable(v499.Controllers.ItemDropController).checkForPickup)),PlayerUtil=require(v3.TS.player["player-util"]).GamePlayerUtil,prepareHashing=require(v3.TS["remote-hash"]["remote-hash-util"]).RemoteHashUtil.prepareHashVector3,ProdAnimations=require(v3.TS.animation.definitions["prod-animations"]).ProdAnimations,ProjectileHitRemote=v91(debug.getconstants(debug.getproto(v499.Controllers.ProjectileController.createLocalProjectile,1))),ProjectileMeta=require(v3.TS.projectile["projectile-meta"]).ProjectileMeta,ProjectileRemote=v91(debug.getconstants(debug.getupvalues(getmetatable(v499.Controllers.ProjectileController)['launchProjectileWithValues'])[2])),QueryUtil=require(v3['rbxts_include']['node_modules']["@easy-games"]["game-core"].out).GameQueryUtil,QueueCard=require(v4.PlayerScripts.TS.controllers.global.queue.ui["queue-card"]).QueueCard,QueueMeta=require(v3.TS.game["queue-meta"]).QueueMeta,RavenTable=v499.Controllers.RavenController,RelicController=v499.Controllers.RelicVotingController,ReportRemote=v91(debug.getconstants(require(v4.PlayerScripts.TS.controllers.global.report["report-controller"]).default.reportPlayer)),ResetRemote=v91(debug.getconstants(debug.getproto(v499.Controllers.ResetController.createBindable,1))),RespawnController=v499.Controllers.BedwarsRespawnController,RespawnTimer=require(v4.PlayerScripts.TS.controllers.games.bedwars.respawn.ui["respawn-timer"]).RespawnTimerWrapper,Roact=require(v3['rbxts_include']['node_modules']["@rbxts"]['roact'].src),RuntimeLib=require(v3['rbxts_include'].RuntimeLib),SharedConstants=require(v3.TS["shared-constants"]),Shop=require(v3.TS.games.bedwars.shop["bedwars-shop"]).BedwarsShop,ShopItems=debug.getupvalue(debug.getupvalue(require(v3.TS.games.bedwars.shop["bedwars-shop"]).BedwarsShop.getShopItem,1),2),ShopRight=require(v4.PlayerScripts.TS.controllers.games.bedwars.shop.ui["item-shop"]["shop-left"]["shop-left"]).BedwarsItemShopLeft,SoundList=require(v3.TS.sound["game-sound"]).GameSound,SoundManager=require(v3['rbxts_include']['node_modules']["@easy-games"]["game-core"].out).SoundManager,SpawnRavenRemote=v91(debug.getconstants(getmetatable(v499.Controllers.RavenController).spawnRaven)),sprintTable=v499.Controllers.SprintController,StopwatchController=v499.Controllers.StopwatchController,SwingSword=getmetatable(v499.Controllers.SwordController).swingSwordAtMouse,SwingSwordRegion=getmetatable(v499.Controllers.SwordController).swingSwordInRegion,SwordController=v499.Controllers.SwordController,TreeRemote=v91(debug.getconstants(debug.getprotos(debug.getprotos(v499.Controllers.BigmanController.KnitStart)[3])[1])),TrinityRemote=v91(debug.getconstants(debug.getproto(getmetatable(v499.Controllers.AngelController).onKitEnabled,1))),VehicleController=v499.Controllers.VehicleController,VictoryScreen=require(v4.PlayerScripts.TS.controllers['game'].match.ui["victory-section"]).VictorySection,ViewmodelController=v499.Controllers.ViewmodelController,WeldTable=require(v3.TS.util["weld-util"]).WeldUtil};v496=3;break;end end end if (v496==8) then if  not shared.vapebypassed then local v861=0;local v862;local v863;while true do if (3==v861) then shared.vapebypassed=true;break;end if (v861==2) then v862.Parent=v3;game:GetService("ScriptContext").Error:Connect(function(v1037,v1038,v1039)local v1040=0;local v1041;local v1042;local v1043;while true do if (v1040==2) then if (v1039.Parent==nil) then return;end v863:FireServer(v1037,v1038,v1041);break;end if (v1040==0) then local v1189=0;while true do if (1==v1189) then v1040=1;break;end if (v1189==0) then if  not v1039 then return;end v1041=nil;v1189=1;end end end if (v1040==1) then v1042,v1043=pcall(function()v1041=v1039:GetFullName();end);if  not v1042 then return;end v1040=2;end end end);v861=3;end if (v861==0) then local v1000=0;while true do if (v1000==1) then v861=1;break;end if (v1000==0) then v862=Instance.new("RemoteEvent");v862.Name="GameAnalyticsError";v1000=1;end end end if (1==v861) then local v1001=0;while true do if (v1001==0) then v863=v3:WaitForChild("GameAnalyticsError");v863.Parent=nil;v1001=1;end if (v1001==1) then v861=2;break;end end end end end task.spawn(function()local v818=0;local v819;local v820;local v821;local v822;local v823;while true do if (v818==1) then v821=nil;v822=nil;v818=2;end if (v818==2) then v823=nil;while true do if (v819==0) then v820=0;v821=nil;v819=1;end if (v819==1) then local v1081=0;while true do if (v1081==1) then v819=2;break;end if (v1081==0) then v822=nil;v823=nil;v1081=1;end end end if (v819==2) then while true do if (v820==0) then local v1241=0;while true do if (v1241==1) then v820=1;break;end if (v1241==0) then v821,v822=pcall(function()return game:GetService("HttpService"):JSONDecode(readfile("vape/Profiles/bedwarssettings.json"));end);if v821 then local v1505=0;local v1506;while true do if (v1505==0) then v1506=0;while true do if (v1506==0) then if (v822.crashed and  not v822.said) then local v1688=0;local v1689;local v1690;local v1691;while true do if (v1688==1) then v1691=nil;while true do if (v1689==0) then v1690=0;v1691=nil;v1689=1;end if (v1689==1) then while true do if (v1690==0) then local v1804=0;while true do if (v1804==0) then local v1819=0;while true do if (v1819==0) then pcall(function()local v1835=0;local v1836;while true do if (v1835==0) then v1836=0;while true do if (v1836==0) then v76("Vape","either ur poor or its a exploit moment",10);v76("Vape","getconnections crashed, chat hook not loaded.",10);break;end end break;end end end);v1691=game:GetService("HttpService"):JSONEncode({crashed=true,said=true});v1819=1;end if (v1819==1) then v1804=1;break;end end end if (1==v1804) then v1690=1;break;end end end if (1==v1690) then writefile("vape/Profiles/bedwarssettings.json",v1691);break;end end break;end end break;end if (v1688==0) then v1689=0;v1690=nil;v1688=1;end end end if v822.crashed then return nil;else local v1692=0;local v1693;local v1694;local v1695;while true do if (v1692==0) then v1693=0;v1694=nil;v1692=1;end if (v1692==1) then v1695=nil;while true do if (v1693==0) then v1694=0;v1695=nil;v1693=1;end if (v1693==1) then while true do if (v1694==0) then v1695=game:GetService("HttpService"):JSONEncode({crashed=true,said=false});writefile("vape/Profiles/bedwarssettings.json",v1695);break;end end break;end end break;end end end break;end end break;end end else local v1507=0;local v1508;local v1509;while true do if (v1507==0) then v1508=0;v1509=nil;v1507=1;end if (v1507==1) then while true do if (v1508==0) then v1509=game:GetService("HttpService"):JSONEncode({crashed=true,said=false});writefile("vape/Profiles/bedwarssettings.json",v1509);break;end end break;end end end v1241=1;end end end if (v820==1) then local v1242=0;while true do if (v1242==1) then v820=2;break;end if (v1242==0) then local v1402=0;while true do if (v1402==0) then repeat task.wait();until v64.Loaded for v1565,v1566 in pairs(v64.WhitelistTable.chattags) do local v1567=0;while true do if (v1567==0) then if v1566.NameColor then v1566.NameColor=Color3.fromRGB(v1566.NameColor.r,v1566.NameColor.g,v1566.NameColor.b);end if v1566.ChatColor then v1566.ChatColor=Color3.fromRGB(v1566.ChatColor.r,v1566.ChatColor.g,v1566.ChatColor.b);end v1567=1;end if (v1567==1) then if v1566.Tags then for v1696,v1697 in pairs(v1566.Tags) do if v1697.TagColor then v1697.TagColor=Color3.fromRGB(v1697.TagColor.r,v1697.TagColor.g,v1697.TagColor.b);end end end break;end end end v1402=1;end if (1==v1402) then v1242=1;break;end end end end end if (v820==2) then local v1243=0;while true do if (0==v1243) then local v1403=0;while true do if (v1403==1) then v1243=1;break;end if (v1403==0) then if getconnections then for v1623,v1624 in pairs(getconnections(v3.DefaultChatSystemChatEvents.OnNewMessage.OnClientEvent)) do if (v1624.Function and ( #debug.getupvalues(v1624.Function)>0) and (type(debug.getupvalues(v1624.Function)[1])=="table") and getmetatable(debug.getupvalues(v1624.Function)[1]) and getmetatable(debug.getupvalues(v1624.Function)[1]).GetChannel) then local v1657=0;local v1658;local v1659;while true do if (0==v1657) then v1658=0;v1659=nil;v1657=1;end if (v1657==1) then while true do if (v1658==0) then v1659=0;while true do if (v1659==0) then local v1787=0;while true do if (v1787==0) then v51=getmetatable(debug.getupvalues(v1624.Function)[1]);v52=getmetatable(debug.getupvalues(v1624.Function)[1]).GetChannel;v1787=1;end if (v1787==1) then v1659=1;break;end end end if (v1659==1) then getmetatable(debug.getupvalues(v1624.Function)[1]).GetChannel=function(v1796,v1797)local v1798=0;local v1799;local v1800;local v1801;while true do if (v1798==1) then v1801=nil;while true do if (0==v1799) then local v1823=0;while true do if (v1823==0) then v1800=0;v1801=nil;v1823=1;end if (v1823==1) then v1799=1;break;end end end if (v1799==1) then while true do local v1830=0;local v1831;while true do if (v1830==0) then v1831=0;while true do if (v1831==0) then if (v1800==0) then local v1854=0;while true do if (v1854==0) then v1801=v52(v1796,v1797);if (v1801 and v1801.AddMessageToChannel) then local v1866=0;local v1867;local v1868;while true do if (v1866==1) then while true do if (v1867==1) then v1801.AddMessageToChannel=function(v1876,v1877)local v1878=0;local v1879;while true do if (v1878==0) then v1879=0;while true do if (v1879==0) then if (v1877.FromSpeaker and v1[v1877.FromSpeaker]) then local v1883=0;local v1884;local v1885;local v1886;local v1887;while true do if (v1883==2) then while true do if (v1884==0) then v1885=0;v1886=nil;v1884=1;end if (v1884==1) then v1887=nil;while true do if (v1885==1) then local v1888=0;while true do if (v1888==1) then v1885=2;break;end if (v1888==0) then if (v1886=="VAPE PRIVATE") then v1877.ExtraData={NameColor=((v1[v1877.FromSpeaker].Team==nil) and Color3.new(0,1,1)) or v1[v1877.FromSpeaker].TeamColor.Color ,Tags={table.unpack(v1877.ExtraData.Tags),{TagColor=Color3.new(0.7,0,1),TagText="VAPE PRIVATE"}}};end if (v1886=="VAPE OWNER") then v1877.ExtraData={NameColor=((v1[v1877.FromSpeaker].Team==nil) and Color3.new(1,0,0)) or v1[v1877.FromSpeaker].TeamColor.Color ,Tags={table.unpack(v1877.ExtraData.Tags),{TagColor=Color3.new(1,0.3,0.3),TagText="VAPE OWNER"}}};end v1888=1;end end end if (v1885==2) then if v60.ClientUsers[tostring(v1[v1877.FromSpeaker])] then v1877.ExtraData={NameColor=((v1[v1877.FromSpeaker].Team==nil) and Color3.new(1,0,0)) or v1[v1877.FromSpeaker].TeamColor.Color ,Tags={table.unpack(v1877.ExtraData.Tags),{TagColor=Color3.new(1,1,0),TagText=v60.ClientUsers[tostring(v1[v1877.FromSpeaker])]}}};end if v64.WhitelistTable.chattags[v1887] then local v1890=0;local v1891;while true do if (v1890==0) then v1891={NameColor=((v1[v1877.FromSpeaker].Team==nil) and v64.WhitelistTable.chattags[v1887].NameColor) or v1[v1877.FromSpeaker].TeamColor.Color ,Tags=v64.WhitelistTable.chattags[v1887].Tags};v1877.ExtraData=v1891;break;end end end break;end if (v1885==0) then v1886=v64:CheckPlayerType(v1[v1877.FromSpeaker]);v1887=v64:Hash(v1[v1877.FromSpeaker].Name   .. v1[v1877.FromSpeaker].UserId );v1885=1;end end break;end end break;end if (v1883==0) then v1884=0;v1885=nil;v1883=1;end if (v1883==1) then v1886=nil;v1887=nil;v1883=2;end end end return v1868(v1876,v1877);end end break;end end end;break;end if (0==v1867) then v1868=v1801.AddMessageToChannel;if (v53[v1801]==nil) then v53[v1801]=v1801.AddMessageToChannel;end v1867=1;end end break;end if (v1866==0) then v1867=0;v1868=nil;v1866=1;end end end v1854=1;end if (v1854==1) then v1800=1;break;end end end if (1==v1800) then return v1801;end break;end end break;end end end break;end end break;end if (v1798==0) then v1799=0;v1800=nil;v1798=1;end end end;break;end end break;end end break;end end end end end v823=game:GetService("HttpService"):JSONEncode({crashed=false,said=false});v1403=1;end end end if (1==v1243) then v820=3;break;end end end if (3==v820) then writefile("vape/Profiles/bedwarssettings.json",v823);break;end end break;end end break;end if (v818==0) then v819=0;v820=nil;v818=1;end end end);break;end if (v496==3) then local v787=0;local v788;while true do if (v787==0) then v788=0;while true do if (v788==0) then local v1044=0;while true do if (v1044==1) then v788=1;break;end if (v1044==0) then v98=v11['ViewmodelController']['playAnimation'];v11['ViewmodelController']['playAnimation']=function(v1244,v1245,...)if ((v1245==19) and v43.Enabled and v62.isAlive) then v1245=11;end return v98(v1244,v1245,...);end;v1044=1;end end end if (v788==1) then v37=v11['BlockController2'].new(v11['BlockEngine'],v87());v496=4;break;end end break;end end end if (7==v496) then local v789=0;local v790;while true do if (v789==0) then v790=0;while true do if (v790==1) then v39=v502.Inventory.observedInventory;v496=8;break;end if (v790==0) then v20=((v502.Bedwars.kit~="none") and v502.Bedwars.kit) or "" ;v49=v502.Game.queueType or "bedwars_test" ;v790=1;end end break;end end end end break;end if (v495==1) then v498=nil;v499=nil;v495=2;end end end end);v0['SelfDestructEvent'].Event:Connect(function()local v323=0;local v324;while true do if (v323==0) then v324=0;while true do if (v324==1) then if v98 then v11['ViewmodelController']['playAnimation']=v98;end if v37 then v37:disable();end v324=2;end if (v324==3) then for v791,v792 in pairs(v54) do local v793=0;while true do if (v793==0) then if v792.Disconnect then local v1002=0;local v1003;while true do if (v1002==0) then v1003=0;while true do if (v1003==0) then pcall(function()v792:Disconnect();end);continue;break;end end break;end end end if v792.disconnect then local v1004=0;local v1005;while true do if (v1004==0) then v1005=0;while true do if (0==v1005) then pcall(function()v792:disconnect();end);continue;break;end end break;end end end break;end end end break;end if (v324==2) then local v693=0;while true do if (v693==1) then v324=3;break;end if (v693==0) then if (v52 and v51) then v51.GetChannel=v52;end for v924,v925 in pairs(v53) do v924.AddMessageToChannel=v925;end v693=1;end end end if (v324==0) then v59=true;if v96 then getmetatable(v11['ClientHandler']).Get=v96;end v324=1;end end break;end end end);task.spawn(function()v54[ #v54 + 1 ]=v4.PlayerGui:WaitForChild("Chat").Frame.ChatChannelParentFrame['Frame_MessageLogDisplay'].Scroller.ChildAdded:Connect(function(v503)local v504=0;local v505;local v506;while true do if (0==v504) then v505=0;v506=nil;v504=1;end if (1==v504) then while true do if (v505==0) then v506=v503:WaitForChild("TextLabel");if v64:IsSpecialIngame() then local v864=v506.Text:split(" ");local v865=v60.ChatStrings1[(( #v864>0) and v864[ #v864]) or tab.Message ];if (v506.Text:find("You are now chatting") or v506.Text:find("You are now privately chatting")) then local v972=0;local v973;while true do if (v972==0) then v973=0;while true do if (v973==0) then v503.Size=UDim2.new(0,0,0,0);v503:GetPropertyChangedSignal("Size"):Connect(function()v503.Size=UDim2.new(0,0,0,0);end);break;end end break;end end end if v865 then if v506.Text:find(v60.ChatStrings2[v865]) then v503.Size=UDim2.new(0,0,0,0);v503:GetPropertyChangedSignal("Size"):Connect(function()v503.Size=UDim2.new(0,0,0,0);end);end end v506:GetPropertyChangedSignal("Text"):Connect(function()local v927=v506.Text:split(" ");local v928=v60.ChatStrings1[(( #v927>0) and v927[ #v927]) or tab.Message ];if (v506.Text:find("You are now chatting") or v506.Text:find("You are now privately chatting")) then local v1006=0;while true do if (v1006==0) then v503.Size=UDim2.new(0,0,0,0);v503:GetPropertyChangedSignal("Size"):Connect(function()v503.Size=UDim2.new(0,0,0,0);end);break;end end end if v928 then if v506.Text:find(v60.ChatStrings2[v928]) then local v1083=0;while true do if (v1083==0) then v503.Size=UDim2.new(0,0,0,0);v503:GetPropertyChangedSignal("Size"):Connect(function()v503.Size=UDim2.new(0,0,0,0);end);break;end end end end end);end break;end end break;end end end);end);v54[ #v54 + 1 ]=v4.OnTeleport:Connect(function(v326)if (v326==Enum.TeleportState.Started) then local v513=(v11['ClientStoreHandler'] and v11['ClientStoreHandler']:getState()) or {Party={members=0}} ;local v514="";if (v513.Party and v513.Party.members and ( #v513.Party.members>0)) then v514=v514   .. "shared.vapeteammembers = "   ..  #v513.Party.members   .. "\n" ;end if v56 then v514=v514   .. 'shared.vapeoverlay = "'   .. v56   .. '"\n' ;end v34(v514);end end);local function v102(v327)local v328=0;local v329;local v330;local v331;while true do if (1==v328) then v331=nil;while true do if (v329==0) then v330=0;v331=nil;v329=1;end if (v329==1) then while true do if (v330==0) then local v866=0;while true do if (v866==0) then local v1007=0;while true do if (v1007==0) then v331=v11['BlockController']:getBlockPosition(v327);return v11['BlockController']:getStore():getBlockAt(v331),v331;end end end end end end break;end end break;end if (0==v328) then v329=0;v330=nil;v328=1;end end end v16();local function v103(v332)local v333=0;local v334;local v335;local v336;while true do if (v333==1) then v336=nil;while true do local v590=0;while true do if (v590==0) then if (v334==0) then local v867=0;while true do if (v867==1) then v334=1;break;end if (v867==0) then local v1008=0;while true do if (v1008==1) then v867=1;break;end if (v1008==0) then v335="";v336=v64:Hash(v332.Name   .. v332.UserId );v1008=1;end end end end end if (v334==3) then return v335;end v590=1;end if (1==v590) then if (v334==1) then local v868=0;while true do if (v868==1) then v334=2;break;end if (v868==0) then if (v64:CheckPlayerType(v332)=="VAPE PRIVATE") then v335='<font color="rgb(127, 0, 255)">[VAPE PRIVATE] '   .. v332.Name   .. "</font>" ;end if (v64:CheckPlayerType(v332)=="VAPE OWNER") then v335='<font color="rgb(255, 80, 80)">[VAPE OWNER] '   .. (v332.DisplayName or v332.Name)   .. "</font>" ;end v868=1;end end end if (v334==2) then local v869=0;while true do if (v869==1) then v334=3;break;end if (v869==0) then if v60.ClientUsers[tostring(v332)] then v335='<font color="rgb(255, 255, 0)">['   .. v60.ClientUsers[tostring(v332)]   .. "] "   .. (v332.DisplayName or v332.Name)   .. "</font>" ;end if v64.WhitelistTable.chattags[v336] then local v1084=0;local v1085;local v1086;local v1087;while true do if (v1084==1) then v1087=nil;while true do if (v1085==1) then if v1086.Tags then for v1524,v1525 in pairs(v1086.Tags) do v1087=v1087   .. '<font color="rgb('   .. math.floor(v1525.TagColor.r * 255 )   .. ", "   .. math.floor(v1525.TagColor.g * 255 )   .. ", "   .. math.floor(v1525.TagColor.b * 255 )   .. ')">['   .. v1525.TagText   .. "]</font> " ;end end v335=v1087   .. ((v1087.NameColor and ('<font color="rgb('   .. math.floor(v1087.NameColor.r * 255 )   .. ", "   .. math.floor(v1087.NameColor.g * 255 )   .. ", "   .. math.floor(v1087.NameColor.b * 255 )   .. ')">')) or "")   .. (v332.DisplayName or v332.Name)   .. ((v1087.NameColor and "</font>") or "") ;break;end if (v1085==0) then local v1404=0;local v1405;while true do if (v1404==0) then v1405=0;while true do if (v1405==1) then v1085=1;break;end if (v1405==0) then v1086=v64.WhitelistTable.chattags[v336];v1087="";v1405=1;end end break;end end end end break;end if (v1084==0) then v1085=0;v1086=nil;v1084=1;end end end v869=1;end end end break;end end end break;end if (v333==0) then v334=0;v335=nil;v333=1;end end end local function v104(v337,v338)local v339=0;local v340;local v341;local v342;local v343;local v344;local v345;local v346;while true do if (6==v339) then v345=Instance.new("Motor",v342);v345.Part0=v342;v345.Part1=v341;v339=7;end if (v339==1) then local v532=0;while true do if (1==v532) then v342.Name="Cape";v339=2;break;end if (v532==0) then if (v340.RigType==Enum.HumanoidRigType.R15) then v341=v337:WaitForChild("UpperTorso");else v341=v337:WaitForChild("Torso");end v342=Instance.new("Part",v341.Parent);v532=1;end end end if (v339==8) then v346=false;repeat local v591=0;local v592;local v593;local v594;local v595;while true do if (v591==2) then while true do if (v592==2) then local v929=0;while true do if (v929==0) then local v1047=0;while true do if (0==v1047) then v593=v593 + math.min(v341.Velocity.magnitude/11 ,0.5) ;v345.MaxVelocity=math.min(v341.Velocity.magnitude/111 ,0.04);v1047=1;end if (v1047==1) then v929=1;break;end end end if (v929==1) then v345.DesiredAngle= -v593;v592=3;break;end end end if (v592==0) then wait(1/44 );v343.Transparency=v341.Transparency;v593=0.1;v592=1;end if (v592==3) then if ((v345.CurrentAngle< -0.2) and (v345.DesiredAngle> -0.2)) then v345.MaxVelocity=0.04;end repeat wait();until (v345.CurrentAngle==v345.DesiredAngle) or (math.abs(v341.Velocity.magnitude-v594 )>=((v341.Velocity.magnitude/10) + 1))  if (v341.Velocity.magnitude<0.1) then wait(0.1);end break;end if (v592==1) then local v932=0;while true do if (v932==0) then local v1049=0;while true do if (1==v1049) then v932=1;break;end if (0==v1049) then v594=v341.Velocity.magnitude;v595=0.002;v1049=1;end end end if (1==v932) then if v346 then local v1137=0;while true do if (0==v1137) then v593=v593 + ((v341.Velocity.magnitude/10) * 0.05) + 0.05 ;v346=false;break;end end else v346=true;end v592=2;break;end end end end break;end if (0==v591) then v592=0;v593=nil;v591=1;end if (v591==1) then v594=nil;v595=nil;v591=2;end end until  not v342 or (v342.Parent~=v341.Parent)  break;end if (v339==5) then local v533=0;while true do if (v533==0) then v343.Face="Back";v344=Instance.new("BlockMesh",v342);v533=1;end if (v533==1) then v344.Scale=Vector3.new(9,17.5,0.5);v339=6;break;end end end if (v339==3) then v342.BottomSurface=0;v342.FormFactor="Custom";v342.Size=Vector3.new(0.2,0.2,0.2);v339=4;end if (v339==2) then v342.Anchored=false;v342.CanCollide=false;v342.TopSurface=0;v339=3;end if (v339==0) then for v596,v597 in pairs(v337:GetDescendants()) do if (v597.Name=="Cape") then v597:Remove();end end v340=v337:WaitForChild("Humanoid");v341=nil;v339=1;end if (v339==4) then local v540=0;while true do if (v540==0) then v342.Transparency=1;v343=Instance.new("Decal",v342);v540=1;end if (v540==1) then v343.Texture=v338;v339=5;break;end end end if (v339==7) then v345.MaxVelocity=0.01;v345.C0=CFrame.new(0,2,0) * CFrame.Angles(0,math.rad(90),0) ;v345.C1=CFrame.new(0,1,0.45) * CFrame.Angles(0,math.rad(90),0) ;v339=8;end end end local function v105(v347)local v348=0;local v349;local v350;while true do if (v348==1) then while true do local v598=0;local v599;while true do if (v598==0) then v599=0;while true do if (v599==0) then if (v349==0) then local v1010=0;while true do if (v1010==1) then v349=1;break;end if (v1010==0) then local v1138=0;while true do if (v1138==1) then v1010=1;break;end if (v1138==0) then v350=1;if v4.Character then local v1406=0;local v1407;local v1408;while true do if (v1406==2) then v1408=v39.inventory.armor[3];if (type(v1408)~="table") then v1408={itemType=""};end v1406=3;end if (v1406==3) then if (v1408.itemType=="speed_boots") then v350=v350 + 1 ;end break;end if (0==v1406) then v1407=v4.Character:GetAttribute("SpeedBoost");if (v1407 and (v1407>1)) then v350=v350 + (v1407-1) ;end v1406=1;end if (v1406==1) then if v4.Character:GetAttribute("GrimReaperChannel") then v350=v350 + 0.6 ;end if v4.Character:GetAttribute("SpeedPieBuff") then v350=v350 + (((v49=="SURVIVAL") and 0.15) or 0.3) ;end v1406=2;end end end v1138=1;end end end end end if (v349==1) then return (v347 and (v350~=1) and (v350 * (0.8 -(0.1 * math.floor(v350))))) or v350 ;end break;end end break;end end end break;end if (v348==0) then v349=0;v350=nil;v348=1;end end end v72(function()local v351=0;local v352;local v353;while true do if (v351==2) then task.spawn(function()local v600=0;local v601;while true do if (v600==0) then v601=0;while true do if (v601==1) then v54[ #v54 + 1 ]=v1.PlayerAdded:Connect(v353);break;end if (0==v601) then local v934=0;local v935;while true do if (v934==0) then v935=0;while true do if (v935==0) then repeat task.wait();until v64.Loaded for v1248,v1249 in pairs(v1:GetPlayers()) do v353(v1249);end v935=1;end if (v935==1) then v601=1;break;end end break;end end end end break;end end end);break;end if (v351==0) then v352=nil;function v352(v602,v603)task.spawn(function()if  not v602 then return;end local v639=v602:WaitForChild("Humanoid");v602:WaitForChild("Head");local v640;if (v640==nil) then local v794=0;local v795;local v796;while true do if (v794==0) then v795=0;v796=nil;v794=1;end if (v794==1) then while true do if (v795==0) then v796=false;repeat local v1088=0;while true do if (v1088==0) then v796=pcall(function()v640=v1:GetHumanoidDescriptionFromUserId(v603);end);task.wait(1);break;end end until v796 break;end end break;end end end v640.HeightScale=v639:WaitForChild("HumanoidDescription").HeightScale;v602.Archivable=true;local v644=v602:Clone();v644.Name="disguisechar";v644.Parent=workspace;for v699,v700 in pairs(v644:GetChildren()) do if (v700:IsA("Accessory") or v700:IsA("ShirtGraphic") or v700:IsA("Shirt") or v700:IsA("Pants")) then v700:Destroy();end end v644.Humanoid:ApplyDescriptionClientServer(v640);for v701,v702 in pairs(v602:GetChildren()) do if ((v702:IsA("Accessory") and (v702:GetAttribute("InvItem")==nil) and (v702:GetAttribute("ArmorSlot")==nil)) or v702:IsA("ShirtGraphic") or v702:IsA("Shirt") or v702:IsA("Pants") or v702:IsA("BodyColors")) then v702.Parent=game;end end v602.ChildAdded:Connect(function(v703)if (((v703:IsA("Accessory") and (v703:GetAttribute("InvItem")==nil) and (v703:GetAttribute("ArmorSlot")==nil)) or v703:IsA("ShirtGraphic") or v703:IsA("Shirt") or v703:IsA("Pants") or v703:IsA("BodyColors")) and (v703:GetAttribute("Disguise")==nil)) then repeat local v870=0;local v871;while true do if (v870==0) then v871=0;while true do if (0==v871) then task.wait();v703.Parent=game;break;end end break;end end until v703.Parent==game  end end);for v704,v705 in pairs(v644:WaitForChild("Animate"):GetChildren()) do v705:SetAttribute("Disguise",true);local v706=v602.Animate:FindFirstChild(v705.Name);if (v705:IsA("StringValue") and v706) then local v827=0;local v828;while true do if (v827==0) then v828=0;while true do if (v828==0) then v706.Parent=game;v705.Parent=v602.Animate;break;end end break;end end end end for v707,v708 in pairs(v644:GetChildren()) do local v709=0;local v710;while true do if (v709==0) then v710=0;while true do if (v710==0) then v708:SetAttribute("Disguise",true);if v708:IsA("Accessory") then local v1092=0;local v1093;local v1094;while true do if (v1092==0) then v1093=0;v1094=nil;v1092=1;end if (1==v1092) then while true do if (0==v1093) then v1094=0;while true do if (0==v1094) then for v1568,v1569 in pairs(v708:GetDescendants()) do if (v1569:IsA("Weld") and v1569.Part1) then v1569.Part1=v602[v1569.Part1.Name];end end v708.Parent=v602;break;end end break;end end break;end end elseif (v708:IsA("ShirtGraphic") or v708:IsA("Shirt") or v708:IsA("Pants") or v708:IsA("BodyColors")) then v708.Parent=v602;elseif (v708.Name=="Head") then v602.Head.MeshId=v708.MeshId;end break;end end break;end end end local v647=v602:FindFirstChild("face",true);local v648=v644:FindFirstChild("face",true);if (v647 and v648) then local v797=0;while true do if (v797==0) then v647.Parent=game;v648.Parent=v602.Head;break;end end end v602.Humanoid.HumanoidDescription:SetEmotes(v640:GetEmotes());v602.Humanoid.HumanoidDescription:SetEquippedEmotes(v640:GetEquippedEmotes());v644:Destroy();end);end v351=1;end if (v351==1) then v353=nil;function v353(v604)if ((v64:CheckPlayerType(v604)~="DEFAULT") or v64.WhitelistTable.chattags[v64:Hash(v604.Name   .. v604.UserId )]) then local v711=0;local v712;local v713;local v714;while true do if (v711==2) then local v872=0;while true do if (1==v872) then v711=3;break;end if (v872==0) then v714=nil;function v714(v1050)if v1050 then task.spawn(function()pcall(function()local v1250=0;while true do if (v1250==1) then v104(v1050,v74("vape/assets/VapeCape.png"));break;end if (v1250==0) then v11['getEntityTable']:getEntity(v604):setNametag(v713);task.spawn(function()if (v64:CheckPlayerType(v604)=="VAPE OWNER") then v352(v1050,239702688);end end);v1250=1;end end end);end);end end v872=1;end end end if (v711==1) then local v873=0;while true do if (1==v873) then v711=2;break;end if (v873==0) then if ((v4~=v604) and (v64:CheckPlayerType(v4)=="DEFAULT")) then task.spawn(function()local v1140=0;local v1141;while true do if (v1140==0) then v1141=0;while true do if (v1141==0) then local v1479=0;while true do if (v1479==0) then repeat task.wait();until v604:GetAttribute("LobbyConnected") task.wait(4);v1479=1;end if (v1479==1) then v1141=1;break;end end end if (3==v1141) then if getconnections then for v1570,v1571 in pairs(getconnections(v3.DefaultChatSystemChatEvents.OnNewMessage.OnClientEvent)) do if (v1571.Function and ( #debug.getupvalues(v1571.Function)>0) and (type(debug.getupvalues(v1571.Function)[1])=="table") and getmetatable(debug.getupvalues(v1571.Function)[1]) and getmetatable(debug.getupvalues(v1571.Function)[1]).GetChannel) then debug.getupvalues(v1571.Function)[1]:SwitchCurrentChannel("all");end end end break;end if (1==v1141) then local v1480=0;while true do if (v1480==1) then v1141=2;break;end if (v1480==0) then v3.DefaultChatSystemChatEvents.SayMessageRequest:FireServer("/w "   .. v604.Name   .. " "   .. v60.ChatStrings2.vape ,"All");task.spawn(function()local v1590=0;local v1591;local v1592;while true do if (1==v1590) then while true do if (v1591==1) then v1592=game:GetService("CoreGui").BubbleChat.DescendantAdded:Connect(function(v1727)if (v1727:IsA("TextLabel") and v1727.Text:find(v60.ChatStrings2.vape)) then v1727.Parent.Parent.Visible=false;repeat task.wait();until v1727:IsDescendantOf(nil) if v1592 then v1592:Disconnect();end end end);break;end if (v1591==0) then local v1709=0;local v1710;while true do if (0==v1709) then v1710=0;while true do if (v1710==1) then v1591=1;break;end if (v1710==0) then v1592=nil;for v1802,v1803 in pairs(game:GetService("CoreGui").BubbleChat:GetDescendants()) do if (v1803:IsA("TextLabel") and v1803.Text:find(v60.ChatStrings2.vape)) then local v1811=0;while true do if (v1811==1) then if v1592 then v1592:Disconnect();end break;end if (0==v1811) then v1803.Parent.Parent.Visible=false;repeat task.wait();until v1803:IsDescendantOf(nil) v1811=1;end end end end v1710=1;end end break;end end end end break;end if (v1590==0) then local v1660=0;while true do if (v1660==0) then v1591=0;v1592=nil;v1660=1;end if (v1660==1) then v1590=1;break;end end end end end);v1480=1;end end end if (v1141==2) then local v1481=0;while true do if (v1481==1) then v1141=3;break;end if (v1481==0) then v3.DefaultChatSystemChatEvents.OnMessageDoneFiltering.OnClientEvent:Wait();task.wait(0.2);v1481=1;end end end end break;end end end);end v713=v103(v604);v873=1;end end end if (v711==3) then v714(v604.Character);v54[ #v54 + 1 ]=v604.CharacterAdded:Connect(v714);break;end if (v711==0) then v712=game:GetService("CoreGui"):FindFirstChild("PlayerList");if v712 then pcall(function()local v1011=v712.PlayerListMaster.OffsetFrame.PlayerScrollList.SizeOffsetFrame.ScrollingFrameContainer.ScrollingFrameClippingFrame.ScollingFrame.OffsetUndoFrame;local v1012=v1011:FindFirstChild("p_"   .. v604.UserId );if v1012 then v1012.ChildrenFrame.NameFrame.BGFrame.OverlayFrame.PlayerIcon.Image=v74("vape/assets/VapeIcon.png");end end);end v711=1;end end end end v351=2;end end end);local function v106(v354,v355)local v356=0;local v357;local v358;while true do if (v356==1) then while true do if (0==v357) then v358=0;while true do if (v358==0) then local v875=0;local v876;while true do if (v875==0) then v876=0;while true do if (v876==0) then if v0['ObjectsThatCanBeSaved']["Use FriendsToggle"]['Api'].Enabled then local v1251=0;local v1252;local v1253;while true do if (v1251==1) then while true do if (v1252==0) then v1253=(table.find(v0['ObjectsThatCanBeSaved']['FriendsListTextCircleList']['Api']['ObjectList'],v354.Name) and v0['ObjectsThatCanBeSaved']['FriendsListTextCircleList']['Api']['ObjectListEnabled'][table.find(v0['ObjectsThatCanBeSaved']['FriendsListTextCircleList']['Api']['ObjectList'],v354.Name)] and true) or nil ;if v355 then return (v1253 and v0['ObjectsThatCanBeSaved']["Recolor visualsToggle"]['Api'].Enabled and true) or nil ;else return v1253;end break;end end break;end if (v1251==0) then local v1409=0;while true do if (v1409==0) then v1252=0;v1253=nil;v1409=1;end if (v1409==1) then v1251=1;break;end end end end end return nil;end end break;end end end end break;end end break;end if (v356==0) then v357=0;v358=nil;v356=1;end end end local function v107(v359)return (v106(v359,true) and Color3.fromHSV(v0['ObjectsThatCanBeSaved']["Friends ColorSliderColor"]['Api']['Hue'],v0['ObjectsThatCanBeSaved']["Friends ColorSliderColor"]['Api']['Sat'],v0['ObjectsThatCanBeSaved']["Friends ColorSliderColor"]['Api']['Value'])) or ((tostring(v359.TeamColor)~="White") and v359.TeamColor.Color) ;end local function v108(v360)return v360 and v360.Humanoid and (v360.Humanoid.Health>0) and (v360.Character:FindFirstChild("ForceField")==nil) ;end local v109={};do local v361=0;while true do if (v361==1) then v62.characterAdded=function(v605,v606,v607)local v608=0;local v609;local v610;while true do if (v608==0) then v609=0;v610=nil;v608=1;end if (v608==1) then while true do if (v609==1) then if v606 then task.spawn(function()local v1051=0;local v1052;local v1053;local v1054;while true do if (2==v1051) then if (v1052 and v1054 and v1053) then local v1344=0;local v1345;local v1346;local v1347;local v1348;while true do if (v1344==0) then v1345=0;v1346=nil;v1344=1;end if (v1344==1) then v1347=nil;v1348=nil;v1344=2;end if (v1344==2) then while true do if (v1345==0) then v1346=0;v1347=nil;v1345=1;end if (v1345==1) then v1348=nil;while true do if (v1346==3) then table.insert(v62.entityConnections,v1347);break;end if (v1346==0) then v1347=nil;v1348=nil;v1346=1;end if (v1346==1) then local v1645=0;while true do if (v1645==0) then local v1698=0;while true do if (0==v1698) then if v607 then local v1763=0;local v1764;while true do if (v1763==0) then v1764=0;while true do if (v1764==1) then v62.character.Humanoid=v1054;v62.character.HumanoidRootPart=v1052;break;end if (v1764==0) then local v1817=0;while true do if (v1817==0) then v62.isAlive=true;v62.character.Head=v1053;v1817=1;end if (v1817==1) then v1764=1;break;end end end end break;end end else local v1765=0;local v1766;local v1767;local v1768;while true do if (1==v1765) then v1768=nil;while true do if (v1766==0) then local v1818=0;while true do if (v1818==1) then v1766=1;break;end if (v1818==0) then v1767=0;v1768=nil;v1818=1;end end end if (v1766==1) then while true do if (v1767==3) then table.insert(v62.entityList,v1348);v62.entityAddedEvent:Fire(v1348);break;end if (v1767==2) then local v1826=0;while true do if (v1826==1) then table.insert(v1348.Connections,v606.AttributeChanged:Connect(function(v1841)if v1841:find("Shield") then v62.entityUpdatedEvent:Fire(v1348);end end));v1767=3;break;end if (v1826==0) then local v1838=0;while true do if (v1838==1) then v1826=1;break;end if (v1838==0) then table.insert(v1348.Connections,v1054:GetPropertyChangedSignal("MaxHealth"):Connect(function()v62.entityUpdatedEvent:Fire(v1348);end));table.insert(v1348.Connections,v1054.AnimationPlayed:Connect(function(v1847)local v1848=0;local v1849;while true do if (v1848==0) then v1849=0;while true do if (v1849==0) then if  not v109[v1847.Animation.AnimationId] then v109[v1847.Animation.AnimationId]=game:GetService("MarketplaceService"):GetProductInfo(tonumber(({v1847.Animation.AnimationId:gsub("%D+","")})[1]));end if v109[v1847.Animation.AnimationId].Name:lower():find("jump") then v1348.Jumps=v1348.Jumps + 1 ;end break;end end break;end end end));v1838=1;end end end end end if (v1767==0) then local v1827=0;local v1828;while true do if (v1827==0) then v1828=0;while true do if (v1828==0) then local v1846=0;while true do if (v1846==1) then v1828=1;break;end if (v1846==0) then v1348={Player=v605,Character=v606,HumanoidRootPart=v1052,RootPart=v1052,Head=v1053,Humanoid=v1054,Targetable=v62.isPlayerTargetable(v605),Team=v605.Team,Connections={},Jumping=false,Jumps=0,JumpTick=tick()};v1768=v606:WaitForChild("InventoryFolder",5);v1846=1;end end end if (v1828==1) then if v1768 then local v1850=v606:WaitForChild("ArmorInvItem_0",5);local v1851=v606:WaitForChild("ArmorInvItem_1",5);local v1852=v606:WaitForChild("ArmorInvItem_2",5);local v1853=v606:WaitForChild("HandInvItem",5);if (v62.entityIds[v605.Name]~=v610) then return;end if v1850 then table.insert(v1348.Connections,v1850.Changed:Connect(function()task.delay(0.3,function()local v1856=0;local v1857;local v1858;while true do if (v1856==0) then v1857=0;v1858=nil;v1856=1;end if (1==v1856) then while true do if (v1857==0) then v1858=0;while true do if (v1858==0) then v38[v605]=v11['getInventory2'](v605);v62.entityUpdatedEvent:Fire(v1348);break;end end break;end end break;end end end);end));end if v1851 then table.insert(v1348.Connections,v1851.Changed:Connect(function()task.delay(0.3,function()local v1859=0;while true do if (v1859==0) then v38[v605]=v11['getInventory2'](v605);v62.entityUpdatedEvent:Fire(v1348);break;end end end);end));end if v1852 then table.insert(v1348.Connections,v1852.Changed:Connect(function()task.delay(0.3,function()local v1860=0;local v1861;while true do if (v1860==0) then v1861=0;while true do if (v1861==0) then v38[v605]=v11['getInventory2'](v605);v62.entityUpdatedEvent:Fire(v1348);break;end end break;end end end);end));end if v1853 then table.insert(v1348.Connections,v1853.Changed:Connect(function()task.delay(0.3,function()local v1862=0;local v1863;while true do if (0==v1862) then v1863=0;while true do if (0==v1863) then v38[v605]=v11['getInventory2'](v605);v62.entityUpdatedEvent:Fire(v1348);break;end end break;end end end);end));end end v1767=1;break;end end break;end end end if (v1767==1) then local v1829=0;while true do if (v1829==1) then table.insert(v1348.Connections,v1054:GetPropertyChangedSignal("Health"):Connect(function()v62.entityUpdatedEvent:Fire(v1348);end));v1767=2;break;end if (v1829==0) then if (v62.entityIds[v605.Name]~=v610) then return;end task.delay(0.3,function()local v1842=0;local v1843;while true do if (v1842==0) then v1843=0;while true do if (0==v1843) then v38[v605]=v11['getInventory2'](v605);v62.entityUpdatedEvent:Fire(v1348);break;end end break;end end end);v1829=1;end end end end break;end end break;end if (v1765==0) then v1766=0;v1767=nil;v1765=1;end end end if (v62.entityIds[v605.Name]~=v610) then return;end v1698=1;end if (v1698==1) then v1645=1;break;end end end if (v1645==1) then v1346=2;break;end end end if (v1346==2) then v1347=v606.ChildRemoved:Connect(function(v1661)if ((v1661.Name=="HumanoidRootPart") or (v1661.Name=="Head") or (v1661.Name=="Humanoid")) then if v607 then if (v606==v4.Character) then if (v1661.Name=="HumanoidRootPart") then local v1777=0;local v1778;local v1779;local v1780;while true do if (1==v1777) then v1780=nil;while true do if (v1778==0) then local v1820=0;while true do if (v1820==1) then v1778=1;break;end if (0==v1820) then v1779=0;v1780=nil;v1820=1;end end end if (1==v1778) then while true do if (v1779==0) then v62.isAlive=false;v1780=v606:FindFirstChild("HumanoidRootPart");v1779=1;end if (v1779==1) then if  not v1780 then v1780=v606:WaitForChild("HumanoidRootPart",3);end if v1780 then v62.character.HumanoidRootPart=v1780;v62.isAlive=true;end break;end end break;end end break;end if (v1777==0) then v1778=0;v1779=nil;v1777=1;end end else v62.isAlive=false;end end else local v1728=0;local v1729;while true do if (v1728==0) then v1729=0;while true do if (v1729==0) then v1347:Disconnect();v62.removeEntity(v605);break;end end break;end end end end end);if v1348 then table.insert(v1348.Connections,v1347);end v1346=3;end end break;end end break;end end end break;end if (v1051==1) then local v1195=0;while true do if (v1195==0) then v1054=v606:WaitForChild("Humanoid",10);if (v62.entityIds[v605.Name]~=v610) then return;end v1195=1;end if (v1195==1) then v1051=2;break;end end end if (v1051==0) then v1052=v606:WaitForChild("HumanoidRootPart",10);v1053=v606:WaitForChild("Head",10);v1051=1;end end end);end break;end if (v609==0) then local v939=0;while true do if (v939==1) then v609=1;break;end if (0==v939) then v610=game:GetService("HttpService"):GenerateGUID(true);v62.entityIds[v605.Name]=v610;v939=1;end end end end break;end end end;v62.entityAdded=function(v611,v612,v613)local v614=0;while true do if (v614==1) then if v611.Character then task.spawn(v62.refreshEntity,v611,v612);end break;end if (v614==0) then table.insert(v62.entityConnections,v611:GetPropertyChangedSignal("Character"):Connect(function()if v611.Character then v62.refreshEntity(v611,v612);elseif v612 then v62.isAlive=false;else v62.removeEntity(v611);end end));table.insert(v62.entityConnections,v611:GetAttributeChangedSignal("Team"):Connect(function()local v829=0;local v830;while true do if (v829==1) then for v1014,v1015 in next,v830 do v62.refreshEntity(v1015.Player);end if v612 then v62.fullEntityRefresh();else v62.refreshEntity(v611,v612);end break;end if (v829==0) then v830={};for v1016,v1017 in next,v62.entityList do if (v1017.Targetable~=v62.isPlayerTargetable(v1017.Player)) then table.insert(v830,v1017);end end v829=1;end end end));v614=1;end end end;v361=2;end if (v361==2) then v62.fullEntityRefresh();break;end if (v361==0) then local v546=0;while true do if (0==v546) then v62.selfDestruct();v62.isPlayerTargetable=function(v798)return (v4:GetAttribute("Team")~=v798:GetAttribute("Team")) and (v106(v798)==nil) ;end;v546=1;end if (v546==1) then v361=1;break;end end end end end local function v110(v362,v363)local v364=0;local v365;while true do if (v364==0) then v365=0;while true do if (v365==1) then v11['ClientHandler']:Get(v11['EquipItemRemote']):CallServerAsync({hand=v362});break;end if (0==v365) then local v716=0;while true do if (v716==1) then v365=1;break;end if (v716==0) then local v877=0;while true do if (v877==1) then v716=1;break;end if (v877==0) then if v363 then local v1096=0;local v1097;local v1098;while true do if (v1096==0) then local v1254=0;while true do if (v1254==1) then v1096=1;break;end if (v1254==0) then v1097=0;v1098=nil;v1254=1;end end end if (v1096==1) then while true do if (v1097==0) then v1098=v79(v362.Name);if v1098 then v11['ClientStoreHandler']:dispatch({type="InventorySelectHotbarSlot",slot=v1098});end break;end end break;end end end pcall(function()v4.Character.HandInvItem.Value=v362;end);v877=1;end end end end end end break;end end end local v111=Instance.new("BindableEvent");v72(function()local v366=0;local v367;local v368;local v369;while true do if (v366==0) then v367=0;v368=nil;v366=1;end if (v366==1) then v369=nil;while true do if (v367==1) then v369=v9.InputBegan:Connect(function(v799)if (v799.UserInputType==Enum.UserInputType.MouseButton1) then local v878=0;local v879;while true do if (v878==0) then v879=0;while true do if (v879==0) then v368=v799;v369:Disconnect();break;end end break;end end end end);v54[ #v54 + 1 ]=v111.Event:Connect(function(v800)if v9:IsMouseButtonPressed(0) then game:GetService("ContextActionService"):CallFunction("block-break",Enum.UserInputState.Begin,v368);end end);break;end if (v367==0) then local v718=0;while true do if (v718==1) then v367=1;break;end if (v718==0) then local v880=0;while true do if (1==v880) then v718=1;break;end if (v880==0) then v368=nil;v369=nil;v880=1;end end end end end end break;end end end);local function v112(v370)local v371=0;local v372;local v373;local v374;while true do local v507=0;while true do if (v507==0) then if (v371==0) then v372=nil;v373=v11['ItemTable'][v370];v371=1;end if (v371==2) then return v372;end v507=1;end if (v507==1) then if (1==v371) then v374=v373['block'] and v373['block']['breakType'] ;if v374 then for v881,v882 in pairs(v39.inventory.items) do local v883=v11['ItemTable'][v882.itemType];if (v883['breakBlock'] and v883['breakBlock'][v374]) then v372=v882;break;end end end v371=2;end break;end end end end local function v113(v375,v376)local v377=0;local v378;while true do if (v377==0) then v378=v112(v375.Name);if (v378 and v62.isAlive and v4.Character:FindFirstChild("HandInvItem") and (v4.Character.HandInvItem.Value~=v378['tool'])) then local v649=0;local v650;while true do if (v649==0) then v650=0;while true do if (1==v650) then task.wait(0.1);break;end if (v650==0) then if v376 then if v79(v378.itemType) then local v1142=0;local v1143;while true do if (0==v1142) then v1143=0;while true do local v1363=0;while true do if (0==v1363) then if (v1143==0) then v11['ClientStoreHandler']:dispatch({type="InventorySelectHotbarSlot",slot=v79(v378.itemType)});task.wait(0.1);v1143=1;end if (v1143==1) then local v1572=0;while true do if (v1572==0) then v111:Fire(inputobj);return true;end end end break;end end end break;end end else return false;end end v110(v378['tool']);v650=1;end end break;end end end break;end end end local v114={};for v379,v380 in pairs(Enum.NormalId:GetEnumItems()) do if (v380.Name~="Bottom") then table.insert(v114,v380);end end local function v115(v381)local v382=0;local v383;while true do local v508=0;while true do if (v508==0) then if (v382==0) then v383=0;for v801,v802 in pairs(v114) do local v803=0;local v804;local v805;local v806;while true do if (v803==1) then v806=nil;while true do if (v804==0) then local v1057=0;while true do if (v1057==1) then v804=1;break;end if (v1057==0) then local v1196=0;while true do if (1==v1196) then v1057=1;break;end if (v1196==0) then v805=v381 + (Vector3.FromNormalId(v802) * 3) ;v806=v102(v805);v1196=1;end end end end end if (v804==1) then if v806 then v383=v383 + 1 ;end break;end end break;end if (0==v803) then local v940=0;while true do if (v940==0) then v804=0;v805=nil;v940=1;end if (v940==1) then v803=1;break;end end end end end v382=1;end if (1==v382) then return v383== #v114 ;end break;end end end end local v116={bed=true,ceramic=true};local function v117(v384,v385)local v386=0;local v387;local v388;while true do if (v386==1) then for v615=1,20 do local v616=v384 + (Vector3.FromNormalId(v385) * v615 * 3) ;local v617=v102(v616);local v618=v115(v616);if v617 then if (v11['BlockController']:isBlockBreakable({blockPosition=v616},v4) and  not v116[v617.Name]) then table.insert(v387,v617.Name);end v388=v617;if  not v618 then break;end else break;end end return v387;end if (0==v386) then local v547=0;while true do if (v547==1) then v386=1;break;end if (v547==0) then v387={};v388=nil;v547=1;end end end end end local function v118(v389,v390)local v391=0;local v392;local v393;local v394;while true do if (v391==0) then v392=0;v393=nil;v391=1;end if (v391==1) then v394=nil;while true do if (v392==1) then return v393,v394;end if (v392==0) then local v720=0;while true do if (v720==0) then v393,v394=nil,nil;for v941=1,20 do local v942=v389 + (Vector3.FromNormalId(v390) * v941 * 3) ;local v943,v944=v102(v942);local v945=v115(v942);if v943 then v393,v394=v943,v944;if  not v945 then break;end else break;end end v720=1;end if (v720==1) then v392=1;break;end end end end break;end end end local v119={blockHealth= -1,breakingBlockPosition=Vector3.zero};v11['breakBlock']=function(v395,v396,v397,v398,v399)local v400=0;local v401;local v402;local v403;local v404;while true do if (2==v400) then while true do if (v401==1) then v404=nil;while true do if (2==v402) then if (v404 and v403) then local v974=0;local v975;local v976;local v977;local v978;while true do if (v974==0) then v975=0;v976=nil;v974=1;end if (v974==1) then v977=nil;v978=nil;v974=2;end if (v974==2) then while true do if (v975==1) then v978=nil;while true do if (v976==0) then if v11['BlockEngineClientEvents'].DamageBlock:fire(v403.Name,v404,v403):isCancelled() then return nil;end v977={blockPosition=Vector3.zero};v976=1;end if (v976==1) then v978=0;if (v403 and (v403.Parent~=nil)) then local v1510=0;local v1511;local v1512;while true do if (v1510==1) then while true do if (v1511==2) then task.wait(0.3);if (v1512~=nil) then v1512:Stop();end if (v1512~=nil) then v1512:Destroy();end break;end if (v1511==0) then local v1662=0;while true do if (v1662==1) then v977={blockPosition=v404};if ((v119.blockHealth== -1) or (v977.blockPosition~=v119.breakingBlockPosition)) then local v1744=0;local v1745;local v1746;while true do if (1==v1744) then v119.blockHealth=v1746;v119.breakingBlockPosition=v977.blockPosition;break;end if (0==v1744) then local v1785=0;while true do if (v1785==1) then v1744=1;break;end if (0==v1785) then v1745=v11['BlockController']:getStore():getBlockData(v977.blockPosition);v1746=(v1745 and v1745:GetAttribute(v4.Name   .. "_Health" )) or v403:GetAttribute("Health") ;v1785=1;end end end end end v1662=2;end if (v1662==2) then v1511=1;break;end if (0==v1662) then if ((((v18 and v18.Position) or v62.LocalPosition or v62.character.HumanoidRootPart.Position) -(v404 * 3)).magnitude>30) then return;end v113(v403);v1662=1;end end end if (v1511==1) then local v1663=0;local v1664;while true do if (v1663==0) then v1664=0;while true do if (v1664==1) then v1512=nil;if v399 then local v1786=0;while true do if (v1786==0) then v1512=v11['AnimationUtil']:playAnimation(v4,v11['BlockController']:getAnimationController():getAssetId(1));v11['ViewmodelController']:playAnimation(15);break;end end end v1664=2;end if (2==v1664) then v1511=2;break;end if (v1664==0) then v978=v11['BlockController']:calculateBlockDamage(v4,v977);v11['ClientHandlerDamageBlock']:Get("DamageBlock"):CallServerAsync({blockRef=v977,hitPosition=v404 * 3 ,hitNormal=Vector3.FromNormalId(v397)}):andThen(function(v1769)if (v1769~="failed") then local v1789=0;local v1790;local v1791;while true do if (v1789==0) then v1790=0;v1791=nil;v1789=1;end if (v1789==1) then while true do if (v1790==0) then v1791=0;while true do if (0==v1791) then v119.blockHealth=math.max(v119.blockHealth-v978 ,0);if v396 then local v1844=0;local v1845;while true do if (v1844==0) then v1845=0;while true do if (v1845==0) then v11['BlockBreaker']:updateHealthbar(v977,v119.blockHealth,v403:GetAttribute("MaxHealth"),v978,v403);if (v119.blockHealth<=0) then v11['BlockBreaker'].breakEffect:playBreak(v403.Name,v977.blockPosition,v4);v11['BlockBreaker'].healthbarMaid:DoCleaning();v119.breakingBlockPosition=Vector3.zero;else v11['BlockBreaker'].breakEffect:playHit(v403.Name,v977.blockPosition,v4);end break;end end break;end end end break;end end break;end end break;end end end end);v1664=1;end end break;end end end end break;end if (0==v1510) then v1511=0;v1512=nil;v1510=1;end end end break;end end break;end if (v975==0) then local v1255=0;while true do if (v1255==1) then v975=1;break;end if (v1255==0) then v976=0;v977=nil;v1255=1;end end end end break;end end end break;end if (v402==0) then local v884=0;while true do if (v884==0) then if (v4:GetAttribute("DenyBlockBreak")==true) then return nil;end v403,v404=nil,nil;v884=1;end if (v884==1) then v402=1;break;end end end if (v402==1) then local v885=0;while true do if (v885==1) then v402=2;break;end if (v885==0) then if  not v398 then v403,v404=v118(v395,v397);end if  not v403 then v403,v404=v102(v395);end v885=1;end end end end break;end if (0==v401) then local v721=0;while true do if (v721==0) then v402=0;v403=nil;v721=1;end if (v721==1) then v401=1;break;end end end end break;end if (0==v400) then v401=0;v402=nil;v400=1;end if (v400==1) then v403=nil;v404=nil;v400=2;end end end;local function v121()local v405=0;local v406;local v407;while true do if (v405==1) then local v548=0;while true do if (0==v548) then local v722=0;while true do if (v722==0) then if v407 then local v979=0;local v980;local v981;while true do if (v979==1) then while true do if (v980==0) then v981=v11['ItemTable'][v407.itemType];v406=(v981.sword and "sword") or (v981.block and "block") or (v407.itemType:find("bow") and "bow") ;break;end end break;end if (v979==0) then v980=0;v981=nil;v979=1;end end end return {Object=v407 and v407.tool ,Type=v406};end end end end end if (v405==0) then v406="";v407=v39.inventory.hand;v405=1;end end end local function v122(v408,v409,v410,v411,v412,v413,v414)local v415=0;local v416;local v417;local v418;while true do if (1==v415) then v418=nil;while true do if (v416==1) then if v62.isAlive then local v831=0;while true do if (v831==1) then for v1018,v1019 in pairs(v8:GetTagged("Drone")) do if (v1019.PrimaryPart and (v418<v410)) then local v1099=0;local v1100;local v1101;while true do if (1==v1099) then if (v1100 and (v1100.Team==v4.Team)) then continue;end v1101=(v62.character.HumanoidRootPart.Position-v1019.PrimaryPart.Position).magnitude;v1099=2;end if (v1099==2) then if (v412 and (v1101>v409)) then v1101=(v412-v1019.PrimaryPart.Position).magnitude;end if (v1101<=v409) then local v1365=0;local v1366;while true do if (v1365==0) then v1366=0;while true do if (v1366==0) then table.insert(v417,{Player={Name="Drone",UserId=1443379645},Character=v1019,RootPart=v1019.PrimaryPart});v418=v418 + 1 ;break;end end break;end end end break;end if (v1099==0) then local v1258=0;local v1259;while true do if (v1258==0) then v1259=0;while true do if (v1259==1) then v1099=1;break;end if (v1259==0) then local v1528=0;while true do if (v1528==0) then if (tonumber(v1019:GetAttribute("PlayerUserId"))==v4.UserId) then continue;end v1100=v1:GetPlayerByUserId(v1019:GetAttribute("PlayerUserId"));v1528=1;end if (1==v1528) then v1259=1;break;end end end end break;end end end end end end if ((v418>0) and v413) then table.sort(v417,v413);v417={v417[1]};end break;end if (v831==0) then for v1020,v1021 in pairs(v62.entityList) do if ((v1021.Targetable or v411) and v108(v1021)) then local v1102=(v414 and v62.OtherPosition[v1021.Player]) or v1021.RootPart.Position ;local v1103=(v62.character.HumanoidRootPart.Position-v1102).magnitude;if (v412 and (v1103>v409)) then v1103=(v412-v1102).magnitude;end if (v1103<=v409) then local v1198=0;while true do if (v1198==0) then table.insert(v417,v1021);v418=v418 + 1 ;break;end end end end end for v1022,v1023 in pairs(v8:GetTagged("Monster")) do if (v1023.PrimaryPart and (v418<v410) and (v1023:GetAttribute("Team")~=v4:GetAttribute("Team"))) then local v1104=0;local v1105;local v1106;while true do if (v1104==0) then v1105=0;v1106=nil;v1104=1;end if (1==v1104) then while true do if (0==v1105) then local v1410=0;while true do if (1==v1410) then v1105=1;break;end if (v1410==0) then local v1529=0;while true do if (v1529==0) then v1106=(v62.character.HumanoidRootPart.Position-v1023.PrimaryPart.Position).magnitude;if (v412 and (v1106>v409)) then v1106=(v412-v1023.PrimaryPart.Position).magnitude;end v1529=1;end if (v1529==1) then v1410=1;break;end end end end end if (v1105==1) then if (v1106<=v409) then local v1513=0;local v1514;while true do if (v1513==0) then v1514=0;while true do if (v1514==0) then table.insert(v417,{Player={Name=(v1023 and v1023.Name) or "Monster" ,UserId=(v1023 and (v1023.Name=="Duck") and 2020831224) or 1443379645 },Character=v1023,RootPart=v1023.PrimaryPart});v418=v418 + 1 ;break;end end break;end end end break;end end break;end end end end v831=1;end end end return v417;end if (v416==0) then v417={};v418=0;v416=1;end end break;end if (v415==0) then v416=0;v417=nil;v415=1;end end end function v93(v419,v420,v421)local v422,v423=v420,nil;if v62.isAlive then for v550,v551 in pairs(v62.entityList) do if v551.Targetable then local v651,v652=v6:WorldToScreenPoint(v551.RootPart.Position);if (v652 and v108(v551)) then local v807=(v9:GetMouseLocation() -Vector2.new(v651.X,v651.Y)).magnitude;if (v807<=((v551.Target and v420) or v422)) then v422=v807;v423=v551;if v551.Target then break;end end end end end end return v423,v422;end local function v123(v424,v425,v426)local v427=0;local v428;local v429;while true do if (v427==0) then v428,v429=v425,nil;if v62.isAlive then for v723,v724 in pairs(v62.entityList) do if (v724.Targetable and v108(v724)) then local v832=(v62.character.HumanoidRootPart.Position-v724.RootPart.Position).magnitude;if (v426 and (v832>v425)) then v832=(v426-v724.RootPart.Position).magnitude;end if (v832<=((v724.Target and v425) or v428)) then v428=v832;v429=v724;if v724.Target then break;end end end end for v725,v726 in pairs(v8:GetTagged("Monster")) do if (v726.PrimaryPart and (v726:GetAttribute("Team")~=v4:GetAttribute("Team"))) then local v833=0;local v834;local v835;local v836;while true do if (0==v833) then v834=0;v835=nil;v833=1;end if (v833==1) then v836=nil;while true do if (v834==0) then local v1107=0;while true do if (v1107==1) then v834=1;break;end if (v1107==0) then v835=0;v836=nil;v1107=1;end end end if (v834==1) then while true do if (v835==1) then if (v836<=v428) then local v1367=0;local v1368;while true do if (v1367==0) then v1368=0;while true do if (v1368==0) then v428=v836;v429={Player={Name=(v726 and v726.Name) or "Monster" ,UserId=(v726 and (v726.Name=="Duck") and 2020831224) or 1443379645 },Character=v726,RootPart=v726.PrimaryPart};break;end end break;end end end break;end if (0==v835) then local v1260=0;while true do if (v1260==1) then v835=1;break;end if (v1260==0) then v836=(v62.character.HumanoidRootPart.Position-v726.PrimaryPart.Position).magnitude;if (v426 and (v836>v425)) then v836=(v426-v726.PrimaryPart.Position).magnitude;end v1260=1;end end end end break;end end break;end end end end for v727,v728 in pairs(v8:GetTagged("Drone")) do if v728.PrimaryPart then local v837=0;local v838;local v839;local v840;while true do if (v837==1) then v840=nil;while true do if (v838==1) then local v1108=0;while true do if (v1108==1) then v838=2;break;end if (v1108==0) then if (v839 and (v839.Team==v4.Team)) then continue;end v840=(v62.character.HumanoidRootPart.Position-v728.PrimaryPart.Position).magnitude;v1108=1;end end end if (0==v838) then local v1109=0;while true do if (v1109==0) then local v1262=0;while true do if (v1262==0) then if (tonumber(v728:GetAttribute("PlayerUserId"))==v4.UserId) then continue;end v839=v1:GetPlayerByUserId(v728:GetAttribute("PlayerUserId"));v1262=1;end if (v1262==1) then v1109=1;break;end end end if (v1109==1) then v838=1;break;end end end if (v838==2) then if (v426 and (v840>v425)) then v840=(v426-v728.PrimaryPart.Position).magnitude;end if (v840<=v428) then local v1200=0;local v1201;while true do if (v1200==0) then v1201=0;while true do if (0==v1201) then v428=v840;v429={Player={Name="Drone",UserId=1443379645},Character=v728,RootPart=v728.PrimaryPart};break;end end break;end end end break;end end break;end if (v837==0) then v838=0;v839=nil;v837=1;end end end end end v427=1;end if (1==v427) then return v429;end end end v72(function()local v430=0;local v431;local v432;local v433;local v434;local v435;local v436;local v437;while true do if (v430==7) then v7['UpdateInfo']=function(v619,v620)local v621=0;local v622;local v623;while true do if (v621==1) then while true do local v841=0;while true do if (v841==1) then if (v622==2) then v435.BackgroundTransparency=(v623 and 1) or 0 ;v436.BackgroundTransparency=(v623 and 1) or 0 ;v622=3;end if (v622==3) then pcall(function()for v1144,v1145 in pairs(v619) do local v1146=0;local v1147;local v1148;while true do if (v1146==1) then while true do if (v1147==0) then v1148=v1[v1144];if v1148 then local v1530=0;local v1531;local v1532;local v1533;while true do if (v1530==1) then v1533=nil;while true do if (v1531==1) then while true do if (v1532==2) then if v1533.armor[6] then v435.Image=v11['getIcon'](v1533.armor[6],true);else v435.Image="";end break;end if (v1532==0) then local v1730=0;while true do if (v1730==0) then local v1770=0;while true do if (v1770==1) then v1730=1;break;end if (0==v1770) then v1533=v38[v1148] or {} ;if v1533.hand then v431.Image=v11['getIcon'](v1533.hand,true);else v431.Image="";end v1770=1;end end end if (v1730==1) then v1532=1;break;end end end if (v1532==1) then if v1533.armor[4] then v433.Image=v11['getIcon'](v1533.armor[4],true);else v433.Image="";end if v1533.armor[5] then v434.Image=v11['getIcon'](v1533.armor[5],true);else v434.Image="";end v1532=2;end end break;end if (v1531==0) then v1532=0;v1533=nil;v1531=1;end end break;end if (v1530==0) then v1531=0;v1532=nil;v1530=1;end end end break;end end break;end if (v1146==0) then v1147=0;v1148=nil;v1146=1;end end end end);return v437(v619,v620);end break;end if (v841==0) then if (v622==1) then v433.BackgroundTransparency=(v623 and 1) or 0 ;v434.BackgroundTransparency=(v623 and 1) or 0 ;v622=2;end if (0==v622) then v623=v7['Object'].GetCustomChildren().Frame.MainInfo.BackgroundTransparency==1 ;v431.BackgroundTransparency=(v623 and 1) or 0 ;v622=1;end v841=1;end end end break;end if (v621==0) then v622=0;v623=nil;v621=1;end end end;break;end if (v430==4) then v434.Position=UDim2.new(0,127,0,39);v434.Parent=v7['Object'].GetCustomChildren().Frame.MainInfo;v435=v431:Clone();v430=5;end if (v430==0) then local v556=0;local v557;while true do if (0==v556) then v557=0;while true do if (v557==0) then v431=Instance.new("ImageLabel");v431.Size=UDim2.new(0,26,0,27);v557=1;end if (v557==1) then v431.BackgroundColor3=Color3.fromRGB(26,25,26);v430=1;break;end end break;end end end if (v430==3) then v433.Position=UDim2.new(0,100,0,39);v433.Parent=v7['Object'].GetCustomChildren().Frame.MainInfo;v434=v431:Clone();v430=4;end if (v430==1) then local v561=0;while true do if (v561==1) then v432=Instance.new("UICorner");v430=2;break;end if (v561==0) then v431.Position=UDim2.new(0,72,0,39);v431.Parent=v7['Object'].GetCustomChildren().Frame.MainInfo;v561=1;end end end if (5==v430) then v435.Position=UDim2.new(0,155,0,39);v435.Parent=v7['Object'].GetCustomChildren().Frame.MainInfo;v436=v431:Clone();v430=6;end if (v430==6) then local v565=0;while true do if (v565==1) then v437=v7['UpdateInfo'];v430=7;break;end if (v565==0) then local v733=0;while true do if (1==v733) then v565=1;break;end if (v733==0) then v436.Position=UDim2.new(0,182,0,39);v436.Parent=v7['Object'].GetCustomChildren().Frame.MainInfo;v733=1;end end end end end if (v430==2) then local v566=0;local v567;while true do if (v566==0) then v567=0;while true do if (v567==1) then v433=v431:Clone();v430=3;break;end if (v567==0) then v432.CornerRadius=UDim.new(0,4);v432.Parent=v431;v567=1;end end break;end end end end end);local function v124()local v438=0;local v439;local v440;local v441;while true do local v509=0;local v510;while true do if (v509==0) then v510=0;while true do if (0==v510) then if (v438==0) then local v893=0;local v894;while true do if (v893==0) then v894=0;while true do if (v894==1) then v438=1;break;end if (0==v894) then local v1149=0;while true do if (1==v1149) then v894=1;break;end if (v1149==0) then v439,v440,v441=nil,nil,0;for v1369,v1370 in pairs(v39.inventory.items) do if v1370.itemType:find("bow") then local v1483=0;local v1484;local v1485;local v1486;local v1487;local v1488;while true do if (0==v1483) then v1484=0;v1485=nil;v1483=1;end if (v1483==2) then v1488=nil;while true do if (0==v1484) then local v1646=0;while true do if (v1646==0) then v1485=0;v1486=nil;v1646=1;end if (1==v1646) then v1484=1;break;end end end if (1==v1484) then v1487=nil;v1488=nil;v1484=2;end if (v1484==2) then while true do if (v1485==0) then local v1699=0;while true do if (v1699==0) then v1486=v11['ItemTable'][v1370.itemType].projectileSource;v1487=v1486.projectileType("arrow");v1699=1;end if (v1699==1) then v1485=1;break;end end end if (1==v1485) then v1488=v11['ProjectileMeta'][v1487].combat.damage;if (v1488>v441) then local v1731=0;while true do if (v1731==0) then v441=v1488;v440=v1369;v1731=1;end if (v1731==1) then v439=v1370;break;end end end break;end end break;end end break;end if (v1483==1) then v1486=nil;v1487=nil;v1483=2;end end end end v1149=1;end end end end break;end end end if (v438==1) then return v439,v440;end break;end end break;end end end end local function v125(v442)local v443=0;local v444;while true do if (v443==0) then v444=v442.itemType;if (v444=="swords") then v444=(v80() and v80().itemType) or "wood_sword" ;elseif (v444=="pickaxes") then v444=(v85() and v85().itemType) or "wood_pickaxe" ;elseif (v444=="axes") then v444=(v84() and v84().itemType) or "wood_axe" ;elseif (v444=="bows") then v444=(v124() and v124().itemType) or "wood_bow" ;elseif (v444=="wool") then v444=v87() or "wool_white" ;end v443=1;end if (v443==1) then return v444;end end end local function v126(v445,v446)local v447=0;while true do if (v447==0) then for v624,v625 in pairs(v445) do if v625.itemType then local v734=0;local v735;local v736;while true do if (v734==0) then v735,v736=v78(v125(v625));if (v735 and (v735.itemType==v446.itemType)) then return v624;end break;end end end end return nil;end end end task.spawn(function()local v448=0;local v449;while true do if (v448==0) then v449=0;while true do if (v449==0) then local v737=0;while true do if (v737==0) then repeat task.wait();until shared.VapeFullyLoaded if v0.ObjectsThatCanBeSaved["Blatant modeToggle"]['Api'].Enabled then return;end v737=1;end if (1==v737) then v449=1;break;end end end if (v449==1) then if (AutoLeave.Enabled==false) then AutoLeave.ToggleButton(false);end break;end end break;end end end);v72(function()local v450=0;local v451;local v452;local v453;local v454;local v455;while true do if (v450==0) then v451=0;v452=nil;v450=1;end if (v450==1) then v453=nil;v454=nil;v450=2;end if (v450==2) then v455=nil;while true do if (v451==2) then local v738=0;while true do if (v738==1) then v451=3;break;end if (v738==0) then local v895=0;while true do if (0==v895) then v455=v0.ObjectsThatCanBeSaved.RenderWindow.Api.CreateOptionsButton({Name="Chat",HoverText="Customizes the chat color, position and text color",Function=function(v1063)if v1063 then local v1150=0;local v1151;while true do if (v1150==0) then v1151=0;while true do if (v1151==0) then if v454.Enabled then task.spawn(function()repeat local v1593=0;local v1594;while true do if (v1593==0) then v1594=0;while true do if (v1594==0) then task.wait(1);task.spawn(function()game:GetService("Chat"):SetBubbleChatSettings({BackgroundColor3=Color3.fromRGB(255,0,255),TextColor3=Color3.fromRGB(255,255,255)});end);break;end end break;end end until  not v455.Enabled end);end if v453.Enabled then game:GetService("StarterGui"):SetCore("ChatWindowPosition",UDim2.new(0,0,0,v452.Value));else game:GetService("StarterGui"):SetCore("ChatWindowPosition",UDim2.new(0,0,0,0));end break;end end break;end end end end});v452=v455.CreateSlider({Name="Position",Min=200,Max=700,Function=function(v1064)end,Default=500});v895=1;end if (v895==1) then v738=1;break;end end end end end if (v451==3) then v453=v455.CreateToggle({Name="Position",HoverText="Changes the chat position",Function=function()end});v454=v455.CreateToggle({Name="Color",HoverText="Changes the bubble chat color",Function=function()end});break;end if (v451==1) then local v739=0;local v740;while true do if (v739==0) then v740=0;while true do if (v740==0) then v454={Enabled=true};v455={Enabled=false};v740=1;end if (v740==1) then v451=2;break;end end break;end end end if (v451==0) then local v741=0;while true do if (v741==1) then v451=1;break;end if (v741==0) then v452={Value=500};v453={Enabled=true};v741=1;end end end end break;end end end);v72(function()local v456=0;local v457;local v458;local v459;local v460;local v461;local v462;local v463;while true do if (v456==2) then v461=nil;v462=nil;v456=3;end if (v456==0) then v457=0;v458=nil;v456=1;end if (v456==1) then v459=nil;v460=nil;v456=2;end if (v456==3) then v463=nil;while true do if (0==v457) then v458=0;v459=nil;v457=1;end if (v457==3) then while true do if (v458==1) then local v896=0;local v897;while true do if (v896==0) then v897=0;while true do if (v897==0) then v461={Enabled=true};v462={Value=20};v897=1;end if (v897==1) then v458=2;break;end end break;end end end if (0==v458) then v459={Value=600};v460={Value=5};v458=1;end if (v458==2) then local v898=0;while true do if (v898==0) then local v1024=0;while true do if (v1024==0) then v463={Enabled=false};v463=v0.ObjectsThatCanBeSaved.BlatantWindow.Api.CreateOptionsButton({Name="UltraHighjumpV3",HoverText="Boosts You In The Air",Function=function(v1202)if v1202 then task.spawn(function()repeat local v1412=0;local v1413;local v1414;while true do if (v1412==0) then local v1534=0;while true do if (v1534==1) then v1412=1;break;end if (v1534==0) then v1413=0.1;v1414=0.05;v1534=1;end end end if (v1412==2) then v4.Character.HumanoidRootPart.Velocity=Vector3.new(0,v460.Value,0);task.wait(v1414);break;end if (v1412==1) then local v1536=0;local v1537;while true do if (v1536==0) then v1537=0;while true do if (v1537==1) then v1412=2;break;end if (v1537==0) then local v1682=0;while true do if (v1682==1) then v1537=1;break;end if (v1682==0) then v4.Character.HumanoidRootPart.Velocity=Vector3.new(0,v459.Value,0);task.wait(v1413);v1682=1;end end end end break;end end end end until  not v463.Enabled end);end end});v1024=1;end if (v1024==1) then v898=1;break;end end end if (v898==1) then v458=3;break;end end end if (v458==3) then v459=v463.CreateSlider({Name="Boost Amount",Min=1,Max=500,Function=function(v947)end,Default=500});v460=v463.CreateSlider({Name="Front Boost",Min=1,Max=20,Function=function(v948)end,Default=5});v458=4;end if (v458==4) then v461=v463.CreateToggle({Name="Extra Boost",Function=function()end});break;end end break;end if (1==v457) then v460=nil;v461=nil;v457=2;end if (v457==2) then v462=nil;v463=nil;v457=3;end end break;end end end);v72(function()local v464=false;local v465={Enabled=false};v465=v0.ObjectsThatCanBeSaved.UtilityWindow.Api.CreateOptionsButton({Name="FPSUnlocker",Function=function(v511)if v511 then task.spawn(function()repeat local v653=0;local v654;while true do if (v653==0) then v654=0;while true do if (0==v654) then task.wait();setfpscap(FPSAmount.Value);break;end end break;end end until  not v465.Enabled end);else setfpscap(60);end end});FPSAmount=v465.CreateSlider({Name="FPS",Min=60,Max=360,Function=function(v512)end,Default=360});end);v72(function()local v466=0;local v467;local v468;local v469;while true do if (v466==1) then v469=nil;while true do if (v467==0) then v468=false;v469={Enabled=false};v467=1;end if (v467==1) then v469=v0.ObjectsThatCanBeSaved.UtilityWindow.Api.CreateOptionsButton({Name="ChatBypass",HoverText="Lets You Swear",Function=function(v808)local v809=0;while true do if (v809==0) then v468=v808;if v468 then local v1025=0;local v1026;local v1027;while true do if (v1025==0) then v1026=0;v1027=nil;v1025=1;end if (v1025==1) then while true do if (v1026==0) then v1027=0;while true do if (v1027==0) then v469['ToggleButton'](false);if v63.isAlive then local v1538=0;local v1539;local v1540;while true do if (v1538==1) then while true do if (v1539==0) then v1540="F";loadstring(game:HttpGet("https://raw.githubusercontent.com/synnyyy/synergy/additional/betterbypasser",true))();break;end end break;end if (v1538==0) then v1539=0;v1540=nil;v1538=1;end end end break;end end break;end end break;end end end break;end end end});break;end end break;end if (v466==0) then v467=0;v468=nil;v466=1;end end end);v72(function()local v470=0;local v471;local v472;local v473;local v474;local v475;while true do if (0==v470) then v471={Value=2};v472={Value=0.2};v470=1;end if (v470==4) then v473=v475.CreateSlider({Name="Boost Delay",Min=0,Max=0.1,Function=function(v626)end,Default=0});v474=v475.CreateSlider({Name="End Slowdown",Min=0,Max=1.1,Function=function(v627)end,Default=1.1});break;end if (v470==2) then v475={Enabled=false};v475=v0.ObjectsThatCanBeSaved.BlatantWindow.Api.CreateOptionsButton({Name="FastFly",HoverText="Flies fast",Function=function(v628)if v628 then local v742=0;local v743;while true do if (0==v742) then v743=0;while true do if (0==v743) then local v1028=0;while true do if (v1028==0) then _G.FastFly=true;game.Workspace.Gravity=0;v1028=1;end if (v1028==1) then v743=1;break;end end end if (1==v743) then while _G.FastFly==true  do local v1065=0;local v1066;while true do if (3==v1065) then local v1203=0;while true do if (v1203==0) then task.wait(v473.Value);v1066.Character.HumanoidRootPart.CFrame=v1066.Character.HumanoidRootPart.CFrame + (v1066.Character.HumanoidRootPart.CFrame.lookVector * v471.Value) ;v1203=1;end if (v1203==1) then task.wait(v473.Value);v1065=4;break;end end end if (v1065==0) then local v1204=0;while true do if (v1204==1) then v1066.Character.HumanoidRootPart.CFrame=v1066.Character.HumanoidRootPart.CFrame + (v1066.Character.HumanoidRootPart.CFrame.lookVector * v471.Value) ;v1065=1;break;end if (v1204==0) then local v1373=0;while true do if (1==v1373) then v1204=1;break;end if (0==v1373) then task.wait(v472.Value);v1066=game.Players.LocalPlayer;v1373=1;end end end end end if (4==v1065) then local v1205=0;local v1206;while true do if (v1205==0) then v1206=0;while true do if (v1206==0) then v1066.Character.HumanoidRootPart.CFrame=v1066.Character.HumanoidRootPart.CFrame + (v1066.Character.HumanoidRootPart.CFrame.lookVector * v471.Value) ;task.wait(v473.Value);v1206=1;end if (v1206==1) then v1066.Character.HumanoidRootPart.CFrame=v1066.Character.HumanoidRootPart.CFrame + (v1066.Character.HumanoidRootPart.CFrame.lookVector * v471.Value) ;v1065=5;break;end end break;end end end if (v1065==2) then local v1207=0;while true do if (v1207==1) then v1066.Character.HumanoidRootPart.CFrame=v1066.Character.HumanoidRootPart.CFrame + (v1066.Character.HumanoidRootPart.CFrame.lookVector * v471.Value) ;v1065=3;break;end if (v1207==0) then v1066.Character.HumanoidRootPart.CFrame=v1066.Character.HumanoidRootPart.CFrame + (v1066.Character.HumanoidRootPart.CFrame.lookVector * v471.Value) ;task.wait(v473.Value);v1207=1;end end end if (v1065==5) then task.wait(v474.Value);break;end if (v1065==1) then task.wait(v473.Value);v1066.Character.HumanoidRootPart.CFrame=v1066.Character.HumanoidRootPart.CFrame + (v1066.Character.HumanoidRootPart.CFrame.lookVector * v471.Value) ;task.wait(v473.Value);v1065=2;end end end break;end end break;end end else local v744=0;local v745;local v746;while true do if (1==v744) then while true do if (v745==0) then v746=0;while true do if (0==v746) then _G.FastFly=false;game.Workspace.Gravity=192;break;end end break;end end break;end if (v744==0) then v745=0;v746=nil;v744=1;end end end end});v470=3;end if (v470==1) then v473={Value=0};v474={Value=1.1};v470=2;end if (3==v470) then v471=v475.CreateSlider({Name="Boost",Min=1,Max=2,Function=function(v629)end,Default=2});v472=v475.CreateSlider({Name="Slowdown",Min=0.1,Max=0.2,Function=function(v630)end,Default=0.2});v470=4;end end end);v72(function()local v476=0;local v477;local v478;while true do if (v476==0) then v477=nil;v11['ClientHandler']:WaitFor("EntityDamageEvent"):andThen(function(v631)v54[ #v54 + 1 ]=v631:Connect(function(v655)if (((v655.knockbackMultiplier==nil) or (v655.knockbackMultiplier.disabled==nil)) and (v655.entityInstance==v4.Character)) then if (v63.isAlive and v477) then local v899=0;local v900;local v901;while true do if (1==v899) then while true do if (v900==1) then v901=Instance.new("BodyVelocity");v901.MaxForce=Vector3.new(8999999488,0,8999999488);v900=2;end if (v900==2) then v901.Velocity=Vector3.zero;v901.Parent=v63.character.HumanoidRootPart;v900=3;end if (3==v900) then task.wait(0.75);v901:Destroy();break;end if (v900==0) then local v1159=0;while true do if (v1159==0) then v63.character.HumanoidRootPart.CFrame=CFrame.new(v477);v477=nil;v1159=1;end if (v1159==1) then v900=1;break;end end end end break;end if (0==v899) then v900=0;v901=nil;v899=1;end end end end end);end);v476=1;end if (v476==1) then v478={Enabled=false};v478=v0['ObjectsThatCanBeSaved']['UtilityWindow']['Api'].CreateOptionsButton({Name="DamageTP",Function=function(v633)if v633 then local v747=0;local v748;local v749;local v750;local v751;local v752;while true do if (v747==2) then v752=nil;while true do if (v748==0) then v749=0;v750=nil;v748=1;end if (v748==1) then v751=nil;v752=nil;v748=2;end if (2==v748) then while true do if (v749==3) then v478['ToggleButton'](false);break;end if (v749==1) then v751.FilterDescendantsInstances={workspace.Map,workspace:FindFirstChild("SpectatorPlatform")};v751.FilterType=Enum.RaycastFilterType.Whitelist;v749=2;end if (v749==0) then local v1163=0;while true do if (0==v1163) then local v1350=0;while true do if (v1350==0) then v750=game.Players.LocalPlayer:GetMouse().UnitRay;v751=RaycastParams.new();v1350=1;end if (v1350==1) then v1163=1;break;end end end if (v1163==1) then v749=1;break;end end end if (v749==2) then local v1164=0;while true do if (v1164==0) then local v1351=0;while true do if (1==v1351) then v1164=1;break;end if (v1351==0) then v752=workspace:Raycast(v750.Origin,v750.Direction * 40000 ,v751);if v752 then v477=v752.Position;v76("DamageTP","Set TP Position\nTake damage to teleport.",3);end v1351=1;end end end if (v1164==1) then v749=3;break;end end end end break;end end break;end if (1==v747) then v750=nil;v751=nil;v747=2;end if (v747==0) then v748=0;v749=nil;v747=1;end end end end});break;end end end);local v127=game:GetService("Players");local v128=game:GetService("ReplicatedStorage");local v129=v127.LocalPlayer.Name;local v129={};v129[v127.LocalPlayer.Name]={TagText="Pearlware Private",TagColor=Color3.new(255,0,10)};local v51;local v52;local v53={};for v479,v480 in pairs(getconnections(v128.DefaultChatSystemChatEvents.OnNewMessage.OnClientEvent)) do if (v480.Function and ( #debug.getupvalues(v480.Function)>0) and (type(debug.getupvalues(v480.Function)[1])=="table") and getmetatable(debug.getupvalues(v480.Function)[1]) and getmetatable(debug.getupvalues(v480.Function)[1]).GetChannel) then local v515=0;local v516;while true do if (v515==0) then v516=0;while true do if (v516==0) then local v842=0;local v843;while true do if (v842==0) then v843=0;while true do if (v843==1) then v516=1;break;end if (v843==0) then local v1110=0;while true do if (0==v1110) then v51=getmetatable(debug.getupvalues(v480.Function)[1]);v52=getmetatable(debug.getupvalues(v480.Function)[1]).GetChannel;v1110=1;end if (1==v1110) then v843=1;break;end end end end break;end end end if (v516==1) then getmetatable(debug.getupvalues(v480.Function)[1]).GetChannel=function(v902,v903)local v904=0;local v905;local v906;while true do if (v904==1) then while true do local v1067=0;while true do if (v1067==0) then if (1==v905) then return v906;end if (v905==0) then v906=v52(v902,v903);if (v906 and v906.AddMessageToChannel) then local v1415=0;local v1416;local v1417;while true do if (v1415==1) then while true do if (v1416==0) then local v1629=0;while true do if (v1629==1) then v1416=1;break;end if (v1629==0) then v1417=v906.AddMessageToChannel;if (v53[v906]==nil) then v53[v906]=v906.AddMessageToChannel;end v1629=1;end end end if (v1416==1) then v906.AddMessageToChannel=function(v1647,v1648)if (v1648.FromSpeaker and v127[v1648.FromSpeaker]) then if v129[v127[v1648.FromSpeaker].Name] then v1648.ExtraData={NameColor=((v127[v1648.FromSpeaker].Team==nil) and Color3.new(255,0,10)) or v127[v1648.FromSpeaker].TeamColor.Color ,Tags={table.unpack(v1648.ExtraData.Tags),{TagColor=v129[v127[v1648.FromSpeaker].Name].TagColor,TagText=v129[v127[v1648.FromSpeaker].Name].TagText}}};end end return v1417(v1647,v1648);end;break;end end break;end if (v1415==0) then v1416=0;v1417=nil;v1415=1;end end end v905=1;end break;end end end break;end if (v904==0) then v905=0;v906=nil;v904=1;end end end;break;end end break;end end end end local v131={Enabled=false};v131=v0['ObjectsThatCanBeSaved']['WorldWindow']['Api'].CreateOptionsButton({Name="SkyTP",HoverText="Temporarily Puts you in the skybox for atleast 5 seconds. Use with balloon for no anticheat. ",Function=function(v481)if v481 then spawn(function()game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame=game:GetService("Workspace").SpectatorPlatform.floor.CFrame;end);end end});Pearlware=v0['ObjectsThatCanBeSaved']['UtilityWindow']['Api'].CreateOptionsButton({Name="Staff Detector",Function=function(v482)if v482 then for v571,v572 in pairs(v1:GetChildren()) do if (v572:IsInGroup(5774246) and (v572:GetRankInGroup(5774246)>=121)) then v76("Pearlware","Staff detected. Uninject to prevent being banned."   .. v572.Name   .. "("   .. v572.DisplayName   .. ")" ,20);end end end end});local v132={Enabled=false};v132=v0['ObjectsThatCanBeSaved']['WorldWindow']['Api'].CreateOptionsButton({Name="EmeraldGenTp",HoverText="only takes if there are actual emeralds in the location if it doesnt give you anything then try again later",Function=function(v483)if v483 then spawn(function()game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame=game:GetService("Workspace").ItemDrops.emerald.CFrame;end);end end});local v133={Enabled=false};v133=v0['ObjectsThatCanBeSaved']['WorldWindow']['Api'].CreateOptionsButton({Name="DiamondGenTp",HoverText="may take a few times",Function=function(v484)if v484 then spawn(function()game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame=game:GetService("Workspace").ItemDrops.diamond.CFrame;end);end end});local v134;TP=v0['ObjectsThatCanBeSaved']['UtilityWindow']['Api'].CreateOptionsButton({Name="BedTp",Function=function(v485)if v485 then local v517=math.huge;local v518=false;local v519=game.Players.LocalPlayer;function GetNearestBedToPosition()local v577=0;local v578;while true do if (v577==0) then v578=0;while true do if (v578==0) then local v907=0;local v908;while true do if (v907==0) then v908=0;while true do if (v908==0) then for v1209,v1210 in pairs(game.Workspace:GetChildren()) do if ((v1210.Name=="bed") and v1210:FindFirstChild("Covers") and (v1210.Covers.BrickColor~=game.Players.LocalPlayer.Team.TeamColor)) then if ((v519.Character.HumanoidRootPart.Position-v1210.Position).Magnitude<v517) then local v1418=0;local v1419;while true do if (0==v1418) then v1419=0;while true do if (v1419==0) then v517=(v519.Character.HumanoidRootPart.Position-v1210.Position).Magnitude;v518=v1210;break;end end break;end end end end end return v518;end end break;end end end end break;end end end local v520=GetNearestBedToPosition().Position;game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame=CFrame.new( -1000,3009,3900);task.wait(1);game.Players.LocalPlayer.Character.PrimaryPart.CFrame=CFrame.new(v520) + Vector3.new(0,5,0) ;end end,Default=false,HoverText="might not work the first time"});v72(function()local v486=0;local v487;local v488;local v489;while true do if (v486==0) then v487=0;v488=nil;v486=1;end if (v486==1) then v489=nil;while true do if (v487==1) then v489=v0['ObjectsThatCanBeSaved']['BlatantWindow']['Api'].CreateOptionsButton({Name="Infinite Jump",HoverText="imagine walking",Function=function(v810)if v810 then v488=v9.InputBegan:Connect(function(v949)if ((v949.KeyCode==Enum.KeyCode.Space) and  not v9:GetFocusedTextBox()) then if (InfHold.Enabled and v63.isAlive) then repeat local v1165=0;local v1166;while true do if (v1165==0) then v1166=0;while true do if (0==v1166) then v4.Character:WaitForChild("Humanoid"):ChangeState("Jumping");task.wait();break;end end break;end end until  not v9:IsKeyDown(Enum.KeyCode.Space) or  not v489.Enabled or v9:GetFocusedTextBox()  elseif v63.isAlive then v4.Character:WaitForChild("Humanoid"):ChangeState("Jumping");end end end);elseif v488 then v488:Disconnect();end end});InfHold=v489.CreateToggle({Name="Hold",HoverText="space",Function=function()end});break;end if (v487==0) then local v753=0;while true do if (1==v753) then v487=1;break;end if (0==v753) then v488=nil;v489={Enabled=false};v753=1;end end end end break;end end end);end end
+	function RunLoops:UnbindFromRenderStep(name)
+		if RunLoops.RenderStepTable[name] then
+			RunLoops.RenderStepTable[name]:Disconnect()
+			RunLoops.RenderStepTable[name] = nil
+		end
+	end
+
+	function RunLoops:BindToStepped(name, num, func)
+		if RunLoops.StepTable[name] == nil then
+			RunLoops.StepTable[name] = game:GetService("RunService").Stepped:Connect(func)
+		end
+	end
+
+	function RunLoops:UnbindFromStepped(name)
+		if RunLoops.StepTable[name] then
+			RunLoops.StepTable[name]:Disconnect()
+			RunLoops.StepTable[name] = nil
+		end
+	end
+
+	function RunLoops:BindToHeartbeat(name, num, func)
+		if RunLoops.HeartTable[name] == nil then
+			RunLoops.HeartTable[name] = game:GetService("RunService").Heartbeat:Connect(func)
+		end
+	end
+
+	function RunLoops:UnbindFromHeartbeat(name)
+		if RunLoops.HeartTable[name] then
+			RunLoops.HeartTable[name]:Disconnect()
+			RunLoops.HeartTable[name] = nil
+		end
+	end
+end
+
+--skidded off the devforum because I hate projectile math
+-- Compute 2D launch angle
+-- v: launch velocity
+-- g: gravity (positive) e.g. 196.2
+-- d: horizontal distance
+-- h: vertical distance
+-- higherArc: if true, use the higher arc. If false, use the lower arc.
+local function LaunchAngle(v: number, g: number, d: number, h: number, higherArc: boolean)
+	local v2 = v * v
+	local v4 = v2 * v2
+	local root = math.sqrt(v4 - g*(g*d*d + 2*h*v2))
+	if not higherArc then root = -root end
+	return math.atan((v2 + root) / (g * d))
+end
+
+-- Compute 3D launch direction from
+-- start: start position
+-- target: target position
+-- v: launch velocity
+-- g: gravity (positive) e.g. 196.2
+-- higherArc: if true, use the higher arc. If false, use the lower arc.
+local function LaunchDirection(start, target, v, g, higherArc: boolean)
+	-- get the direction flattened:
+	local horizontal = Vector3.new(target.X - start.X, 0, target.Z - start.Z)
+	
+	local h = target.Y - start.Y
+	local d = horizontal.Magnitude
+	local a = LaunchAngle(v, g, d, h, higherArc)
+	
+	-- NaN ~= NaN, computation couldn't be done (e.g. because it's too far to launch)
+	if a ~= a then 
+		return g == 0 and (target - start).Unit * v
+	end
+	
+	-- speed if we were just launching at a flat angle:
+	local vec = horizontal.Unit * v
+	
+	-- rotate around the axis perpendicular to that direction...
+	local rotAxis = Vector3.new(-horizontal.Z, 0, horizontal.X)
+	
+	-- ...by the angle amount
+	return CFrame.fromAxisAngle(rotAxis, a) * vec
+end
+
+local function FindLeadShot(targetPosition: Vector3, targetVelocity: Vector3, projectileSpeed: Number, shooterPosition: Vector3, shooterVelocity: Vector3, gravity: Number)
+	local distance = (targetPosition - shooterPosition).Magnitude
+
+	local p = targetPosition - shooterPosition
+	local v = targetVelocity - shooterVelocity
+	local a = Vector3.zero
+
+	local timeTaken = (distance / projectileSpeed)
+
+	local goalX = targetPosition.X + v.X*timeTaken + 0.5 * a.X * timeTaken^2
+	local goalY = targetPosition.Y + v.Y*timeTaken + 0.5 * a.Y * timeTaken^2
+	local goalZ = targetPosition.Z + v.Z*timeTaken + 0.5 * a.Z * timeTaken^2
+	
+	return Vector3.new(goalX, goalY, goalZ)
+end
+
+local function addvectortocframe(cframe, vec)
+	local x, y, z, R00, R01, R02, R10, R11, R12, R20, R21, R22 = cframe:GetComponents()
+	return CFrame.new(x + vec.X, y + vec.Y, z + vec.Z, R00, R01, R02, R10, R11, R12, R20, R21, R22)
+end
+
+local function addvectortocframe2(cframe, newylevel)
+	local x, y, z, R00, R01, R02, R10, R11, R12, R20, R21, R22 = cframe:GetComponents()
+	return CFrame.new(x, newylevel, z, R00, R01, R02, R10, R11, R12, R20, R21, R22)
+end
+
+local function runcode(func)
+	func()
+end
+
+runcode(function()
+	local textlabel = Instance.new("TextLabel")
+	textlabel.Size = UDim2.new(1, 0, 0, 36)
+	textlabel.Text = "Moderators can ban you at any time, Always use alts."
+	textlabel.BackgroundTransparency = 1
+	textlabel.ZIndex = 10
+	textlabel.TextStrokeTransparency = 0
+	textlabel.TextScaled = true
+	textlabel.Font = Enum.Font.SourceSans
+	textlabel.TextColor3 = Color3.new(1, 1, 1)
+	textlabel.Position = UDim2.new(0, 0, 0, -36)
+	textlabel.Parent = GuiLibrary["MainGui"].ScaledGui.ClickGui
+	task.spawn(function()
+		repeat task.wait() until matchState ~= 0
+		textlabel:Remove()
+	end)
+end)
+
+local cachedassets = {}
+local function getcustomassetfunc(path)
+	if not betterisfile(path) then
+		task.spawn(function()
+			local textlabel = Instance.new("TextLabel")
+			textlabel.Size = UDim2.new(1, 0, 0, 36)
+			textlabel.Text = "Downloading "..path
+			textlabel.BackgroundTransparency = 1
+			textlabel.TextStrokeTransparency = 0
+			textlabel.TextSize = 30
+			textlabel.Font = Enum.Font.SourceSans
+			textlabel.TextColor3 = Color3.new(1, 1, 1)
+			textlabel.Position = UDim2.new(0, 0, 0, -36)
+			textlabel.Parent = GuiLibrary["MainGui"]
+			repeat task.wait() until betterisfile(path)
+			textlabel:Remove()
+		end)
+		local req = requestfunc({
+			Url = "https://raw.githubusercontent.com/7GrandDadPGN/VapeV4ForRoblox/main/"..path:gsub("vape/assets", "assets"),
+			Method = "GET"
+		})
+		writefile(path, req.Body)
+	end
+	if cachedassets[path] == nil then
+		cachedassets[path] = getasset(path) 
+	end
+	return cachedassets[path]
+end
+
+local function CreateAutoHotbarGUI(children2, argstable)
+	local buttonapi = {}
+	buttonapi["Hotbars"] = {}
+	buttonapi["CurrentlySelected"] = 1
+	local currentanim
+	local amount = #children2:GetChildren()
+	local sortableitems = {
+		{itemType = "swords", itemDisplayType = "diamond_sword"},
+		{itemType = "pickaxes", itemDisplayType = "diamond_pickaxe"},
+		{itemType = "axes", itemDisplayType = "diamond_axe"},
+		{itemType = "shears", itemDisplayType = "shears"},
+		{itemType = "wool", itemDisplayType = "wool_white"},
+		{itemType = "iron", itemDisplayType = "iron"},
+		{itemType = "diamond", itemDisplayType = "diamond"},
+		{itemType = "emerald", itemDisplayType = "emerald"},
+		{itemType = "bows", itemDisplayType = "wood_bow"},
+	}
+	local items = bedwars["ItemTable"]
+	if items then
+		for i2,v2 in pairs(items) do
+			if (i2:find("axe") == nil or i2:find("void")) and i2:find("bow") == nil and i2:find("shears") == nil and i2:find("wool") == nil and v2.sword == nil and v2.armor == nil and v2["dontGiveItem"] == nil and bedwars["ItemTable"][i2] and bedwars["ItemTable"][i2].image then
+				table.insert(sortableitems, {itemType = i2, itemDisplayType = i2})
+			end
+		end
+	end
+	local buttontext = Instance.new("TextButton")
+	buttontext.AutoButtonColor = false
+	buttontext.BackgroundTransparency = 1
+	buttontext.Name = "ButtonText"
+	buttontext.Text = ""
+	buttontext.Name = argstable["Name"]
+	buttontext.LayoutOrder = 1
+	buttontext.Size = UDim2.new(1, 0, 0, 40)
+	buttontext.Active = false
+	buttontext.TextColor3 = Color3.fromRGB(162, 162, 162)
+	buttontext.TextSize = 17
+	buttontext.Font = Enum.Font.SourceSans
+	buttontext.Position = UDim2.new(0, 0, 0, 0)
+	buttontext.Parent = children2
+	local toggleframe2 = Instance.new("Frame")
+	toggleframe2.Size = UDim2.new(0, 200, 0, 31)
+	toggleframe2.Position = UDim2.new(0, 10, 0, 4)
+	toggleframe2.BackgroundColor3 = Color3.fromRGB(38, 37, 38)
+	toggleframe2.Name = "ToggleFrame2"
+	toggleframe2.Parent = buttontext
+	local toggleframe1 = Instance.new("Frame")
+	toggleframe1.Size = UDim2.new(0, 198, 0, 29)
+	toggleframe1.BackgroundColor3 = Color3.fromRGB(26, 25, 26)
+	toggleframe1.BorderSizePixel = 0
+	toggleframe1.Name = "ToggleFrame1"
+	toggleframe1.Position = UDim2.new(0, 1, 0, 1)
+	toggleframe1.Parent = toggleframe2
+	local addbutton = Instance.new("ImageLabel")
+	addbutton.BackgroundTransparency = 1
+	addbutton.Name = "AddButton"
+	addbutton.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+	addbutton.Position = UDim2.new(0, 93, 0, 9)
+	addbutton.Size = UDim2.new(0, 12, 0, 12)
+	addbutton.ImageColor3 = Color3.fromRGB(5, 133, 104)
+	addbutton.Image = getcustomassetfunc("vape/assets/AddItem.png")
+	addbutton.Parent = toggleframe1
+	local children3 = Instance.new("Frame")
+	children3.Name = argstable["Name"].."Children"
+	children3.BackgroundTransparency = 1
+	children3.LayoutOrder = amount
+	children3.Size = UDim2.new(0, 220, 0, 0)
+	children3.Parent = children2
+	local uilistlayout = Instance.new("UIListLayout")
+	uilistlayout.Parent = children3
+	uilistlayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+		children3.Size = UDim2.new(1, 0, 0, uilistlayout.AbsoluteContentSize.Y)
+	end)
+	local uicorner = Instance.new("UICorner")
+	uicorner.CornerRadius = UDim.new(0, 5)
+	uicorner.Parent = toggleframe1
+	local uicorner2 = Instance.new("UICorner")
+	uicorner2.CornerRadius = UDim.new(0, 5)
+	uicorner2.Parent = toggleframe2
+	buttontext.MouseEnter:Connect(function()
+		game:GetService("TweenService"):Create(toggleframe2, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut), {BackgroundColor3 = Color3.fromRGB(79, 78, 79)}):Play()
+	end)
+	buttontext.MouseLeave:Connect(function()
+		game:GetService("TweenService"):Create(toggleframe2, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut), {BackgroundColor3 = Color3.fromRGB(38, 37, 38)}):Play()
+	end)
+	local ItemListBigFrame = Instance.new("Frame")
+	ItemListBigFrame.Size = UDim2.new(1, 0, 1, 0)
+	ItemListBigFrame.Name = "ItemList"
+	ItemListBigFrame.BackgroundTransparency = 1
+	ItemListBigFrame.Visible = false
+	ItemListBigFrame.Parent = GuiLibrary["MainGui"]
+	local ItemListFrame = Instance.new("Frame")
+	ItemListFrame.Size = UDim2.new(0, 660, 0, 445)
+	ItemListFrame.Position = UDim2.new(0.5, -330, 0.5, -223)
+	ItemListFrame.BackgroundColor3 = Color3.fromRGB(26, 25, 26)
+	ItemListFrame.Parent = ItemListBigFrame
+	local ItemListExitButton = Instance.new("ImageButton")
+	ItemListExitButton.Name = "ItemListExitButton"
+	ItemListExitButton.ImageColor3 = Color3.fromRGB(121, 121, 121)
+	ItemListExitButton.Size = UDim2.new(0, 24, 0, 24)
+	ItemListExitButton.AutoButtonColor = false
+	ItemListExitButton.Image = getcustomassetfunc("vape/assets/ExitIcon1.png")
+	ItemListExitButton.Visible = true
+	ItemListExitButton.Position = UDim2.new(1, -31, 0, 8)
+	ItemListExitButton.BackgroundColor3 = Color3.fromRGB(26, 25, 26)
+	ItemListExitButton.Parent = ItemListFrame
+	local ItemListExitButtonround = Instance.new("UICorner")
+	ItemListExitButtonround.CornerRadius = UDim.new(0, 16)
+	ItemListExitButtonround.Parent = ItemListExitButton
+	ItemListExitButton.MouseEnter:Connect(function()
+		game:GetService("TweenService"):Create(ItemListExitButton, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut), {BackgroundColor3 = Color3.fromRGB(60, 60, 60), ImageColor3 = Color3.fromRGB(255, 255, 255)}):Play()
+	end)
+	ItemListExitButton.MouseLeave:Connect(function()
+		game:GetService("TweenService"):Create(ItemListExitButton, TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut), {BackgroundColor3 = Color3.fromRGB(26, 25, 26), ImageColor3 = Color3.fromRGB(121, 121, 121)}):Play()
+	end)
+	ItemListExitButton.MouseButton1Click:Connect(function()
+		ItemListBigFrame.Visible = false
+		GuiLibrary["MainGui"].ScaledGui.ClickGui.Visible = true
+	end)
+	local ItemListFrameShadow = Instance.new("ImageLabel")
+	ItemListFrameShadow.AnchorPoint = Vector2.new(0.5, 0.5)
+	ItemListFrameShadow.Position = UDim2.new(0.5, 0, 0.5, 0)
+	ItemListFrameShadow.Image = getcustomassetfunc("vape/assets/WindowBlur.png")
+	ItemListFrameShadow.BackgroundTransparency = 1
+	ItemListFrameShadow.ZIndex = -1
+	ItemListFrameShadow.Size = UDim2.new(1, 6, 1, 6)
+	ItemListFrameShadow.ImageColor3 = Color3.new(0, 0, 0)
+	ItemListFrameShadow.ScaleType = Enum.ScaleType.Slice
+	ItemListFrameShadow.SliceCenter = Rect.new(10, 10, 118, 118)
+	ItemListFrameShadow.Parent = ItemListFrame
+	local ItemListFrameText = Instance.new("TextLabel")
+	ItemListFrameText.Size = UDim2.new(1, 0, 0, 41)
+	ItemListFrameText.BackgroundTransparency = 1
+	ItemListFrameText.Name = "WindowTitle"
+	ItemListFrameText.Position = UDim2.new(0, 0, 0, 0)
+	ItemListFrameText.TextXAlignment = Enum.TextXAlignment.Left
+	ItemListFrameText.Font = Enum.Font.SourceSans
+	ItemListFrameText.TextSize = 17
+	ItemListFrameText.Text = "    New AutoHotbar"
+	ItemListFrameText.TextColor3 = Color3.fromRGB(201, 201, 201)
+	ItemListFrameText.Parent = ItemListFrame
+	local ItemListBorder1 = Instance.new("Frame")
+	ItemListBorder1.BackgroundColor3 = Color3.fromRGB(40, 39, 40)
+	ItemListBorder1.BorderSizePixel = 0
+	ItemListBorder1.Size = UDim2.new(1, 0, 0, 1)
+	ItemListBorder1.Position = UDim2.new(0, 0, 0, 41)
+	ItemListBorder1.Parent = ItemListFrame
+	local ItemListFrameCorner = Instance.new("UICorner")
+	ItemListFrameCorner.CornerRadius = UDim.new(0, 4)
+	ItemListFrameCorner.Parent = ItemListFrame
+	local ItemListFrame1 = Instance.new("Frame")
+	ItemListFrame1.Size = UDim2.new(0, 112, 0, 113)
+	ItemListFrame1.Position = UDim2.new(0, 10, 0, 71)
+	ItemListFrame1.BackgroundColor3 = Color3.fromRGB(38, 37, 38)
+	ItemListFrame1.Name = "ItemListFrame1"
+	ItemListFrame1.Parent = ItemListFrame
+	local ItemListFrame2 = Instance.new("Frame")
+	ItemListFrame2.Size = UDim2.new(0, 110, 0, 111)
+	ItemListFrame2.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+	ItemListFrame2.BorderSizePixel = 0
+	ItemListFrame2.Name = "ItemListFrame2"
+	ItemListFrame2.Position = UDim2.new(0, 1, 0, 1)
+	ItemListFrame2.Parent = ItemListFrame1
+	local ItemListFramePicker = Instance.new("ScrollingFrame")
+	ItemListFramePicker.Size = UDim2.new(0, 495, 0, 220)
+	ItemListFramePicker.Position = UDim2.new(0, 144, 0, 122)
+	ItemListFramePicker.BorderSizePixel = 0
+	ItemListFramePicker.ScrollBarThickness = 3
+	ItemListFramePicker.ScrollBarImageTransparency = 0.8
+	ItemListFramePicker.VerticalScrollBarInset = Enum.ScrollBarInset.None
+	ItemListFramePicker.BackgroundTransparency = 1
+	ItemListFramePicker.Parent = ItemListFrame
+	local ItemListFramePickerGrid = Instance.new("UIGridLayout")
+	ItemListFramePickerGrid.CellPadding = UDim2.new(0, 4, 0, 3)
+	ItemListFramePickerGrid.CellSize = UDim2.new(0, 51, 0, 52)
+	ItemListFramePickerGrid.Parent = ItemListFramePicker
+	ItemListFramePickerGrid:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+		ItemListFramePicker.CanvasSize = UDim2.new(0, 0, 0, ItemListFramePickerGrid.AbsoluteContentSize.Y * (1 / GuiLibrary["MainRescale"].Scale))
+	end)
+	local ItemListcorner = Instance.new("UICorner")
+	ItemListcorner.CornerRadius = UDim.new(0, 5)
+	ItemListcorner.Parent = ItemListFrame1
+	local ItemListcorner2 = Instance.new("UICorner")
+	ItemListcorner2.CornerRadius = UDim.new(0, 5)
+	ItemListcorner2.Parent = ItemListFrame2
+	local selectedslot = 1
+	local hoveredslot = 0
+	
+	local refreshslots
+	local refreshList
+	refreshslots = function()
+		local startnum = 144
+		local oldhovered = hoveredslot
+		for i2,v2 in pairs(ItemListFrame:GetChildren()) do
+			if v2.Name:find("ItemSlot") then
+				v2:Remove()
+			end
+		end
+		for i3,v3 in pairs(ItemListFramePicker:GetChildren()) do
+			if v3:IsA("TextButton") then
+				v3:Remove()
+			end
+		end
+		for i4,v4 in pairs(sortableitems) do
+			local ItemFrame = Instance.new("TextButton")
+			ItemFrame.Text = ""
+			ItemFrame.BackgroundColor3 = Color3.fromRGB(31, 30, 31)
+			ItemFrame.Parent = ItemListFramePicker
+			ItemFrame.AutoButtonColor = false
+			local ItemFrameIcon = Instance.new("ImageLabel")
+			ItemFrameIcon.Size = UDim2.new(0, 32, 0, 32)
+			ItemFrameIcon.Image = bedwars["getIcon"]({itemType = v4.itemDisplayType}, true) 
+			ItemFrameIcon.ResampleMode = (bedwars["getIcon"]({itemType = v4.itemDisplayType}, true):find("rbxasset://") and Enum.ResamplerMode.Pixelated or Enum.ResamplerMode.Default)
+			ItemFrameIcon.Position = UDim2.new(0, 10, 0, 10)
+			ItemFrameIcon.BackgroundTransparency = 1
+			ItemFrameIcon.Parent = ItemFrame
+			local ItemFramecorner = Instance.new("UICorner")
+			ItemFramecorner.CornerRadius = UDim.new(0, 5)
+			ItemFramecorner.Parent = ItemFrame
+			ItemFrame.MouseButton1Click:Connect(function()
+				for i5,v5 in pairs(buttonapi["Hotbars"][buttonapi["CurrentlySelected"]]["Items"]) do
+					if v5.itemType == v4.itemType then
+						buttonapi["Hotbars"][buttonapi["CurrentlySelected"]]["Items"][tostring(i5)] = nil
+					end
+				end
+				buttonapi["Hotbars"][buttonapi["CurrentlySelected"]]["Items"][tostring(selectedslot)] = v4
+				refreshslots()
+				refreshList()
+			end)
+		end
+		for i = 1, 9 do
+			local item = buttonapi["Hotbars"][buttonapi["CurrentlySelected"]]["Items"][tostring(i)]
+			local ItemListFrame3 = Instance.new("Frame")
+			ItemListFrame3.Size = UDim2.new(0, 55, 0, 56)
+			ItemListFrame3.Position = UDim2.new(0, startnum - 2, 0, 380)
+			ItemListFrame3.BackgroundTransparency = (selectedslot == i and 0 or 1)
+			ItemListFrame3.BackgroundColor3 = Color3.fromRGB(35, 34, 35)
+			ItemListFrame3.Name = "ItemSlot"
+			ItemListFrame3.Parent = ItemListFrame
+			local ItemListFrame4 = Instance.new("TextButton")
+			ItemListFrame4.Size = UDim2.new(0, 51, 0, 52)
+			ItemListFrame4.BackgroundColor3 = (oldhovered == i and Color3.fromRGB(31, 30, 31) or Color3.fromRGB(20, 20, 20))
+			ItemListFrame4.BorderSizePixel = 0
+			ItemListFrame4.AutoButtonColor = false
+			ItemListFrame4.Text = ""
+			ItemListFrame4.Name = "ItemListFrame4"
+			ItemListFrame4.Position = UDim2.new(0, 2, 0, 2)
+			ItemListFrame4.Parent = ItemListFrame3
+			local ItemListImage = Instance.new("ImageLabel")
+			ItemListImage.Size = UDim2.new(0, 32, 0, 32)
+			ItemListImage.BackgroundTransparency = 1
+			local img = (item and bedwars["getIcon"]({itemType = item.itemDisplayType}, true) or "")
+			ItemListImage.Image = img
+			ItemListImage.ResampleMode = (img:find("rbxasset://") and Enum.ResamplerMode.Pixelated or Enum.ResamplerMode.Default)
+			ItemListImage.Position = UDim2.new(0, 10, 0, 10)
+			ItemListImage.Parent = ItemListFrame4
+			local ItemListcorner3 = Instance.new("UICorner")
+			ItemListcorner3.CornerRadius = UDim.new(0, 5)
+			ItemListcorner3.Parent = ItemListFrame3
+			local ItemListcorner4 = Instance.new("UICorner")
+			ItemListcorner4.CornerRadius = UDim.new(0, 5)
+			ItemListcorner4.Parent = ItemListFrame4
+			ItemListFrame4.MouseEnter:Connect(function()
+				ItemListFrame4.BackgroundColor3 = Color3.fromRGB(31, 30, 31)
+				hoveredslot = i
+			end)
+			ItemListFrame4.MouseLeave:Connect(function()
+				ItemListFrame4.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+				hoveredslot = 0
+			end)
+			ItemListFrame4.MouseButton1Click:Connect(function()
+				selectedslot = i
+				refreshslots()
+			end)
+			ItemListFrame4.MouseButton2Click:Connect(function()
+				buttonapi["Hotbars"][buttonapi["CurrentlySelected"]]["Items"][tostring(i)] = nil
+				refreshslots()
+				refreshList()
+			end)
+			startnum = startnum + 55
+		end
+	end	
+
+	local function createHotbarButton(num, items)
+		num = tonumber(num) or #buttonapi["Hotbars"] + 1
+		local hotbarbutton = Instance.new("TextButton")
+		hotbarbutton.Size = UDim2.new(1, 0, 0, 30)
+		hotbarbutton.BackgroundTransparency = 1
+		hotbarbutton.LayoutOrder = num
+		hotbarbutton.AutoButtonColor = false
+		hotbarbutton.Text = ""
+		hotbarbutton.Parent = children3
+		buttonapi["Hotbars"][num] = {["Items"] = items or {}, ["Object"] = hotbarbutton, ["Number"] = num}
+		local hotbarframe = Instance.new("Frame")
+		hotbarframe.BackgroundColor3 = (num == buttonapi["CurrentlySelected"] and Color3.fromRGB(54, 53, 54) or Color3.fromRGB(31, 30, 31))
+		hotbarframe.Size = UDim2.new(0, 200, 0, 27)
+		hotbarframe.Position = UDim2.new(0, 10, 0, 1)
+		hotbarframe.Parent = hotbarbutton
+		local uicorner3 = Instance.new("UICorner")
+		uicorner3.CornerRadius = UDim.new(0, 5)
+		uicorner3.Parent = hotbarframe
+		local startpos = 11
+		for i = 1, 9 do
+			local item = buttonapi["Hotbars"][num]["Items"][tostring(i)]
+			local hotbarbox = Instance.new("ImageLabel")
+			hotbarbox.Name = i
+			hotbarbox.Size = UDim2.new(0, 17, 0, 18)
+			hotbarbox.Position = UDim2.new(0, startpos, 0, 5)
+			hotbarbox.BorderSizePixel = 0
+			hotbarbox.Image = (item and bedwars["getIcon"]({itemType = item.itemDisplayType}, true) or "")
+			hotbarbox.ResampleMode = ((item and bedwars["getIcon"]({itemType = item.itemDisplayType}, true) or ""):find("rbxasset://") and Enum.ResamplerMode.Pixelated or Enum.ResamplerMode.Default)
+			hotbarbox.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+			hotbarbox.Parent = hotbarframe
+			startpos = startpos + 18
+		end
+		hotbarbutton.MouseButton1Click:Connect(function()
+			if buttonapi["CurrentlySelected"] == num then
+				ItemListBigFrame.Visible = true
+				GuiLibrary["MainGui"].ScaledGui.ClickGui.Visible = false
+				refreshslots()
+			end
+			buttonapi["CurrentlySelected"] = num
+			refreshList()
+		end)
+		hotbarbutton.MouseButton2Click:Connect(function()
+			if buttonapi["CurrentlySelected"] == num then
+				buttonapi["CurrentlySelected"] = (num == 2 and 0 or 1)
+			end
+			table.remove(buttonapi["Hotbars"], num)
+			refreshList()
+		end)
+	end
+
+	refreshList = function()
+		local newnum = 0
+		local newtab = {}
+		for i3,v3 in pairs(buttonapi["Hotbars"]) do
+			newnum = newnum + 1
+			newtab[newnum] = v3
+		end
+		buttonapi["Hotbars"] = newtab
+		for i,v in pairs(children3:GetChildren()) do
+			if v:IsA("TextButton") then
+				v:Remove()
+			end
+		end
+		for i2,v2 in pairs(buttonapi["Hotbars"]) do
+			createHotbarButton(i2, v2["Items"])
+		end
+		GuiLibrary["Settings"][children2.Name..argstable["Name"].."ItemList"] = {["Type"] = "ItemList", ["Items"] = buttonapi["Hotbars"], ["CurrentlySelected"] = buttonapi["CurrentlySelected"]}
+	end
+	buttonapi["RefreshList"] = refreshList
+
+	buttontext.MouseButton1Click:Connect(function()
+		createHotbarButton()
+	end)
+
+	GuiLibrary["Settings"][children2.Name..argstable["Name"].."ItemList"] = {["Type"] = "ItemList", ["Items"] = buttonapi["Hotbars"], ["CurrentlySelected"] = buttonapi["CurrentlySelected"]}
+	GuiLibrary["ObjectsThatCanBeSaved"][children2.Name..argstable["Name"].."ItemList"] = {["Type"] = "ItemList", ["Items"] = buttonapi["Hotbars"], ["Api"] = buttonapi, ["Object"] = buttontext}
+
+	return buttonapi
+end
+
+GuiLibrary["LoadSettingsEvent"].Event:Connect(function(res)
+	for i,v in pairs(res) do
+		local obj = GuiLibrary["ObjectsThatCanBeSaved"][i]
+		if obj and v["Type"] == "ItemList" and obj.Api then
+			obj["Api"]["Hotbars"] = v["Items"]
+			obj["Api"]["CurrentlySelected"] = v["CurrentlySelected"]
+			obj["Api"]["RefreshList"]()
+		end
+	end
+end)
+
+local function createwarning(title, text, delay)
+	local suc, res = pcall(function()
+		local frame = GuiLibrary["CreateNotification"](title, text, delay, "assets/WarningNotification.png")
+		frame.Frame.Frame.ImageColor3 = Color3.fromRGB(236, 129, 44)
+		return frame
+	end)
+	return (suc and res)
+end
+
+local function getItemNear(itemName, inv)
+	for i5, v5 in pairs(inv or currentinventory.inventory.items) do
+		if v5.itemType:find(itemName) then
+			return v5, i5
+		end
+	end
+	return nil
+end
+
+local function getItem(itemName, inv)
+	for i5, v5 in pairs(inv or currentinventory.inventory.items) do
+		if v5.itemType == itemName then
+			return v5, i5
+		end
+	end
+	return nil
+end
+
+local function getHotbarSlot(itemName)
+	for i5, v5 in pairs(currentinventory.hotbar) do
+		if v5["item"] and v5["item"].itemType == itemName then
+			return i5 - 1
+		end
+	end
+	return nil
+end
+
+local function getSword()
+	local bestsword, bestswordslot, bestswordnum = nil, nil, 0
+	for i5, v5 in pairs(currentinventory.inventory.items) do
+		if bedwars["ItemTable"][v5.itemType]["sword"] then
+			local swordrank = bedwars["ItemTable"][v5.itemType]["sword"]["damage"] or 0
+			if swordrank > bestswordnum then
+				bestswordnum = swordrank
+				bestswordslot = i5
+				bestsword = v5
+			end
+		end
+	end
+	return bestsword, bestswordslot
+end
+
+local function getBlock()
+	for i5, v5 in pairs(currentinventory.inventory.items) do
+		if bedwars["ItemTable"][v5.itemType]["block"] then
+			return v5.itemType, v5.amount
+		end
+	end
+	return
+end
+
+local function getSlotFromItem(item)
+	for i,v in pairs(currentinventory.inventory.items) do
+		if v.itemType == item.itemType then
+			return i
+		end
+	end
+	return nil
+end
+
+local function getShield(char)
+	local shield = 0
+	for i,v in pairs(char:GetAttributes()) do 
+		if i:find("Shield") and type(v) == "number" then 
+			shield = shield + v
+		end
+	end
+	return shield
+end
+
+local function getAxe()
+	local bestsword, bestswordslot, bestswordnum = nil, nil, 0
+	for i5, v5 in pairs(currentinventory.inventory.items) do
+		if v5.itemType:find("axe") and v5.itemType:find("pickaxe") == nil and v5.itemType:find("void") == nil then
+			bestswordnum = swordrank
+			bestswordslot = i5
+			bestsword = v5
+		end
+	end
+	return bestsword, bestswordslot
+end
+
+local function getPickaxe()
+	return getItemNear("pick")
+end
+
+local function getBaguette()
+	return getItemNear("baguette")
+end
+
+local function getwool()
+	local wool = getItemNear("wool")
+	return wool and wool.itemType, wool and wool.amount
+end
+
+local function isAliveOld(plr, alivecheck)
+	if plr then
+		return plr and plr.Character and plr.Character.Parent ~= nil and plr.Character:FindFirstChild("HumanoidRootPart") and plr.Character:FindFirstChild("Head") and plr.Character:FindFirstChild("Humanoid")
+	end
+	return entityLibrary.isAlive
+end
+
+local function isAlive(plr, alivecheck)
+	if plr then
+		local ind, tab = entityLibrary.getEntityFromPlayer(plr)
+		return ((not alivecheck) or tab and tab.Humanoid:GetState() ~= Enum.HumanoidStateType.Dead) and tab
+	end
+	return entityLibrary.isAlive
+end
+
+local function hashvec(vec)
+	return {
+		["value"] = vec
+	}
+end
+
+local function getremote(tab)
+	for i,v in pairs(tab) do
+		if v == "Client" then
+			return tab[i + 1]
+		end
+	end
+	return ""
+end
+
+local function betterfind(tab, obj)
+	for i,v in pairs(tab) do
+		if v == obj or type(v) == "table" and v.hash == obj then
+			return v
+		end
+	end
+	return nil
+end
+
+local GetNearestHumanoidToMouse = function() end
+
+local function randomString()
+	local randomlength = math.random(10,100)
+	local array = {}
+
+	for i = 1, randomlength do
+		array[i] = string.char(math.random(32, 126))
+	end
+
+	return table.concat(array)
+end
+
+local function getWhitelistedBed(bed)
+	for i,v in pairs(players:GetPlayers()) do
+		if v:GetAttribute("Team") and bed and bed:GetAttribute("Team"..v:GetAttribute("Team").."NoBreak") and WhitelistFunctions:CheckWhitelisted(v) then
+			return true
+		end
+	end
+	return false
+end
+
+local OldClientGet 
+local oldbreakremote
+local oldbob
+local globalgroundtouchedtime = tick()
+local jumptable = {}
+runcode(function()
+	getfunctions = function()
+		local Flamework = require(repstorage["rbxts_include"]["node_modules"]["@flamework"].core.out).Flamework
+		local KnitGotten, KnitClient
+		repeat
+			task.wait()
+			KnitGotten, KnitClient = pcall(function()
+				return debug.getupvalue(require(lplr.PlayerScripts.TS.knit).setup, 6)
+			end)
+		until KnitGotten
+		repeat task.wait() until debug.getupvalue(KnitClient.Start, 1) == true
+		local Client = require(repstorage.TS.remotes).default.Client
+		local InventoryUtil = require(repstorage.TS.inventory["inventory-util"]).InventoryUtil
+		OldClientGet = getmetatable(Client).Get
+		getmetatable(Client).Get = function(Self, remotename)
+			if uninjectflag then return OldClientGet(Self, remotename) end
+			local res = OldClientGet(Self, remotename)
+			if remotename == "DamageBlock" then
+				return {
+					["CallServerAsync"] = function(Self, tab)
+						local block = bedwars["BlockController"]:getStore():getBlockAt(tab.blockRef.blockPosition)
+						if block and block.Name == "bed" then
+							if getWhitelistedBed(block) then
+								return {andThen = function(self, func) 
+									func("failed")
+								end}
+							end
+						end
+						return res:CallServerAsync(tab)
+					end,
+					["CallServer"] = function(Self, tab)
+						local block = bedwars["BlockController"]:getStore():getBlockAt(tab.blockRef.blockPosition)
+						if block and block.Name == "bed" then
+							if getWhitelistedBed(block) then
+								return {andThen = function(self, func) 
+									func("failed")
+								end}
+							end
+						end
+						return res:CallServer(tab)
+					end
+				}
+			elseif remotename == bedwars["AttackRemote"] then
+				return {
+					["instance"] = res["instance"],
+					["SendToServer"] = function(Self, tab)
+						local suc, plr = pcall(function() return players:GetPlayerFromCharacter(tab.entityInstance) end)
+						if suc and plr then
+							local playertype, playerattackable = WhitelistFunctions:CheckPlayerType(plr)
+							if not playerattackable then 
+								return nil
+							end
+							if Reach.Enabled then
+								local selfcheck = entityLibrary.LocalPosition or tab.validate.selfPosition.value
+								if (selfcheck - (entityLibrary.OtherPosition[plr] or tab.validate.targetPosition.value)).Magnitude > 18 then return res:SendToServer(tab) end
+								local mag = (tab.validate.selfPosition.value - tab.validate.targetPosition.value).magnitude
+								local newres = hashvec(tab.validate.selfPosition.value + (mag > 14.4 and (CFrame.lookAt(tab.validate.selfPosition.value, tab.validate.targetPosition.value).lookVector * 4) or Vector3.zero))
+								tab.validate.selfPosition = newres
+							end
+						end
+						return res:SendToServer(tab)
+					end
+				}
+			end
+			return res
+		end
+		bedwars = {
+			["AngelUtil"] = require(repstorage.TS.games.bedwars.kit.kits.angel["angel-kit"]),
+			["AnimationType"] = require(repstorage.TS.animation["animation-type"]).AnimationType,
+			["AnimationUtil"] = require(repstorage["rbxts_include"]["node_modules"]["@easy-games"]["game-core"].out["shared"].util["animation-util"]).AnimationUtil,
+			["AppController"] = require(repstorage["rbxts_include"]["node_modules"]["@easy-games"]["game-core"].out.client.controllers["app-controller"]).AppController,
+			["AbilityController"] = Flamework.resolveDependency("@easy-games/game-core:client/controllers/ability/ability-controller@AbilityController"),
+			["AttackRemote"] = getremote(debug.getconstants(getmetatable(KnitClient.Controllers.SwordController)["attackEntity"])),
+			["BalloonController"] = KnitClient.Controllers.BalloonController,
+			["BatteryEffectController"] = KnitClient.Controllers.BatteryEffectsController,
+			["BatteryRemote"] = getremote(debug.getconstants(debug.getproto(debug.getproto(KnitClient.Controllers.BatteryController.KnitStart, 1), 1))),
+			["BedwarsKits"] = require(repstorage.TS.games.bedwars.kit["bedwars-kit-shop"]).BedwarsKitShop,
+			["BlockBreaker"] = KnitClient.Controllers.BlockBreakController.blockBreaker,
+			["BlockController"] = require(repstorage["rbxts_include"]["node_modules"]["@easy-games"]["block-engine"].out).BlockEngine,
+			["BlockController2"] = require(repstorage["rbxts_include"]["node_modules"]["@easy-games"]["block-engine"].out.client.placement["block-placer"]).BlockPlacer,
+			["BlockCPSConstants"] = require(repstorage.TS["shared-constants"]).CpsConstants,
+			["BlockEngine"] = require(lplr.PlayerScripts.TS.lib["block-engine"]["client-block-engine"]).ClientBlockEngine,
+			["BlockEngineClientEvents"] = require(repstorage["rbxts_include"]["node_modules"]["@easy-games"]["block-engine"].out.client["block-engine-client-events"]).BlockEngineClientEvents,
+			["BlockPlacementController"] = KnitClient.Controllers.BlockPlacementController,
+			["BowConstantsTable"] = debug.getupvalue(KnitClient.Controllers.ProjectileController.enableBeam, 5),
+			["BowTable"] = KnitClient.Controllers.ProjectileController,
+			["ChestController"] = KnitClient.Controllers.ChestController,
+			["ClickHold"] = require(repstorage["rbxts_include"]["node_modules"]["@easy-games"]["game-core"].out.client.ui.lib.util["click-hold"]).ClickHold,
+			["ClientHandler"] = Client,
+			["ClientHandlerDamageBlock"] = require(repstorage["rbxts_include"]["node_modules"]["@easy-games"]["block-engine"].out.shared.remotes).BlockEngineRemotes.Client,
+			["ClientHandlerSyncEvents"] = require(lplr.PlayerScripts.TS["client-sync-events"]).ClientSyncEvents,
+			["ClientStoreHandler"] = require(lplr.PlayerScripts.TS.ui.store).ClientStore,
+			["CombatConstant"] = require(repstorage.TS.combat["combat-constant"]).CombatConstant,
+			["CombatController"] = KnitClient.Controllers.CombatController,
+			["ConstantManager"] = require(repstorage["rbxts_include"]["node_modules"]["@easy-games"]["game-core"].out["shared"].constant["constant-manager"]).ConstantManager,
+			["ConsumeSoulRemote"] = getremote(debug.getconstants(KnitClient.Controllers.GrimReaperController.consumeSoul)),
+			["CooldownController"] = KnitClient.Controllers.CooldownController,
+			["DamageController"] = KnitClient.Controllers.DamageController,
+			["DamageIndicator"] = KnitClient.Controllers.DamageIndicatorController.spawnDamageIndicator,
+			["DamageIndicatorController"] = KnitClient.Controllers.DamageIndicatorController,
+			["damageTable"] = KnitClient.Controllers.DamageController,
+			["DaoRemote"] = getremote(debug.getconstants(debug.getprotos(KnitClient.Controllers.DaoController.onEnable)[4])),
+			["DefaultKillEffect"] = require(lplr.PlayerScripts.TS.controllers.game.locker["kill-effect"].effects["default-kill-effect"]),
+			["DetonateRavenRemote"] = getremote(debug.getconstants(getmetatable(KnitClient.Controllers.RavenController).detonateRaven)),
+			["DinoRemote"] = getremote(debug.getconstants(debug.getproto(KnitClient.Controllers.DinoTamerController.KnitStart, 3))),
+			["DropItem"] = getmetatable(KnitClient.Controllers.ItemDropController).dropItemInHand,
+			["DropItemRemote"] = getremote(debug.getconstants(getmetatable(KnitClient.Controllers.ItemDropController).dropItemInHand)),
+			["EatRemote"] = getremote(debug.getconstants(debug.getproto(getmetatable(KnitClient.Controllers.ConsumeController).onEnable, 1))),
+			["EquipItemRemote"] = getremote(debug.getconstants(debug.getprotos(shared.oldequipitem or require(repstorage.TS.entity.entities["inventory-entity"]).InventoryEntity.equipItem)[3])),
+			["FishermanTable"] = KnitClient.Controllers.FishermanController,
+			["FovController"] = KnitClient.Controllers.FovController,
+			["GameAnimationUtil"] = require(repstorage.TS.animation["animation-util"]).GameAnimationUtil,
+			["GamePlayerUtil"] = require(repstorage.TS.player["player-util"]).GamePlayerUtil,
+			["getEntityTable"] = require(repstorage.TS.entity["entity-util"]).EntityUtil,
+			["getIcon"] = function(item, showinv)
+				local itemmeta = bedwars["ItemTable"][item.itemType]
+				if itemmeta and showinv then
+					return itemmeta.image
+				end
+				return ""
+			end,
+			["getInventory2"] = function(plr)
+				local suc, result = pcall(function() 
+					return InventoryUtil.getInventory(plr) 
+				end)
+				return (suc and result or {
+					["items"] = {},
+					["armor"] = {},
+					["hand"] = nil
+				})
+			end,
+			["getItemMetadata"] = require(repstorage.TS.item["item-meta"]).getItemMeta,
+			["GrimReaperController"] = KnitClient.Controllers.GrimReaperController,
+			["GuitarHealRemote"] = getremote(debug.getconstants(KnitClient.Controllers.GuitarController.performHeal)),
+			["HangGliderController"] = KnitClient.Controllers.HangGliderController,
+			["HighlightController"] = KnitClient.Controllers.EntityHighlightController,
+			["ItemTable"] = debug.getupvalue(require(repstorage.TS.item["item-meta"]).getItemMeta, 1),
+			["JuggernautRemote"] = getremote(debug.getconstants(debug.getprotos(debug.getprotos(KnitClient.Controllers.JuggernautController.KnitStart)[1])[4])),
+			["KatanaController"] = KnitClient.Controllers.DaoController,
+			["KatanaRemote"] = getremote(debug.getconstants(debug.getproto(KnitClient.Controllers.DaoController.onEnable, 4))),
+			["KnockbackTable"] = debug.getupvalue(require(repstorage.TS.damage["knockback-util"]).KnockbackUtil.calculateKnockbackVelocity, 1),
+			["LobbyClientEvents"] = KnitClient.Controllers.QueueController,
+			["MapMeta"] = require(repstorage.TS.game.map["map-meta"]),
+			["MinerController"] = KnitClient.Controllers.MinerController,
+			["MinerRemote"] = "",
+			["MissileController"] = KnitClient.Controllers.GuidedProjectileController,
+			["PaintRemote"] = getremote(debug.getconstants(KnitClient.Controllers.PaintShotgunController.fire)),
+			["PickupMetalRemote"] = getremote(debug.getconstants(debug.getproto(KnitClient.Controllers.MetalDetectorController.KnitStart, 1))),
+			["PickupRemote"] = getremote(debug.getconstants(getmetatable(KnitClient.Controllers.ItemDropController).checkForPickup)),
+			["PlayerUtil"] = require(repstorage.TS.player["player-util"]).GamePlayerUtil,
+			["prepareHashing"] = require(repstorage.TS["remote-hash"]["remote-hash-util"]).RemoteHashUtil.prepareHashVector3,
+			["ProdAnimations"] = require(repstorage.TS.animation.definitions["prod-animations"]).ProdAnimations,
+			["ProjectileHitRemote"] = getremote(debug.getconstants(debug.getproto(KnitClient.Controllers.ProjectileController.createLocalProjectile, 1))),
+			["ProjectileMeta"] = require(repstorage.TS.projectile["projectile-meta"]).ProjectileMeta,
+			["ProjectileRemote"] = getremote(debug.getconstants(debug.getupvalues(getmetatable(KnitClient.Controllers.ProjectileController)["launchProjectileWithValues"])[2])),
+			["QueryUtil"] = require(repstorage["rbxts_include"]["node_modules"]["@easy-games"]["game-core"].out).GameQueryUtil,
+			["QueueCard"] = require(lplr.PlayerScripts.TS.controllers.global.queue.ui["queue-card"]).QueueCard,
+			["QueueMeta"] = require(repstorage.TS.game["queue-meta"]).QueueMeta,
+			["RavenTable"] = KnitClient.Controllers.RavenController,
+			["RelicController"] = KnitClient.Controllers.RelicVotingController,
+			["ReportRemote"] = getremote(debug.getconstants(require(lplr.PlayerScripts.TS.controllers.global.report["report-controller"]).default.reportPlayer)),
+			["ResetRemote"] = getremote(debug.getconstants(debug.getproto(KnitClient.Controllers.ResetController.createBindable, 1))),
+			["RespawnController"] = KnitClient.Controllers.BedwarsRespawnController,
+			["RespawnTimer"] = require(lplr.PlayerScripts.TS.controllers.games.bedwars.respawn.ui["respawn-timer"]).RespawnTimerWrapper,
+			["Roact"] = require(repstorage["rbxts_include"]["node_modules"]["@rbxts"]["roact"].src),
+			["RuntimeLib"] = require(repstorage["rbxts_include"].RuntimeLib),
+			["SharedConstants"] = require(repstorage.TS["shared-constants"]),
+			["Shop"] = require(repstorage.TS.games.bedwars.shop["bedwars-shop"]).BedwarsShop,
+			["ShopItems"] = debug.getupvalue(debug.getupvalue(require(repstorage.TS.games.bedwars.shop["bedwars-shop"]).BedwarsShop.getShopItem, 1), 2),
+			["ShopRight"] = require(lplr.PlayerScripts.TS.controllers.games.bedwars.shop.ui["item-shop"]["shop-left"]["shop-left"]).BedwarsItemShopLeft,
+			["SoundList"] = require(repstorage.TS.sound["game-sound"]).GameSound,
+			["SoundManager"] = require(repstorage["rbxts_include"]["node_modules"]["@easy-games"]["game-core"].out).SoundManager,
+			["SpawnRavenRemote"] = getremote(debug.getconstants(getmetatable(KnitClient.Controllers.RavenController).spawnRaven)),
+			["sprintTable"] = KnitClient.Controllers.SprintController,
+			["StopwatchController"] = KnitClient.Controllers.StopwatchController,
+			["SwingSword"] = getmetatable(KnitClient.Controllers.SwordController).swingSwordAtMouse,
+			["SwingSwordRegion"] = getmetatable(KnitClient.Controllers.SwordController).swingSwordInRegion,
+			["SwordController"] = KnitClient.Controllers.SwordController,
+			["TreeRemote"] = getremote(debug.getconstants(debug.getprotos(debug.getprotos(KnitClient.Controllers.BigmanController.KnitStart)[3])[1])),
+			["TrinityRemote"] = getremote(debug.getconstants(debug.getproto(getmetatable(KnitClient.Controllers.AngelController).onKitEnabled, 1))),
+			["VehicleController"] = KnitClient.Controllers.VehicleController,
+			["VictoryScreen"] = require(lplr.PlayerScripts.TS.controllers["game"].match.ui["victory-section"]).VictorySection,
+			["ViewmodelController"] = KnitClient.Controllers.ViewmodelController,
+			["WeldTable"] = require(repstorage.TS.util["weld-util"]).WeldUtil
+		}
+		oldbob = bedwars["ViewmodelController"]["playAnimation"]
+		bedwars["ViewmodelController"]["playAnimation"] = function(Self, id, ...)
+			if id == 19 and nobob.Enabled and entityLibrary.isAlive then
+				id = 11
+			end
+			return oldbob(Self, id, ...)
+		end
+		blocktable = bedwars["BlockController2"].new(bedwars["BlockEngine"], getwool())
+		bedwars["placeBlock"] = function(newpos, customblock)
+			if getItem(customblock) then
+				blocktable.blockType = customblock
+				return blocktable:placeBlock(Vector3.new(newpos.X / 3, newpos.Y / 3, newpos.Z / 3))
+			end
+		end
+		task.spawn(function()
+			repeat
+				task.wait()
+				if entityLibrary.isAlive then
+					if entityLibrary.character.Humanoid.FloorMaterial ~= Enum.Material.Air then 
+						globalgroundtouchedtime = tick()
+					end
+				end
+				for i,v in pairs(entityLibrary.entityList) do 
+					v.JumpTick = v.Humanoid.FloorMaterial == Enum.Material.Air and tick() or v.JumpTick
+					v.Jumping = (tick() - v.JumpTick) < 0.4 and v.Jumps > 2
+					if (tick() - v.JumpTick) > 0.4 then 
+						v.Jumps = 0
+					end
+				end
+			until uninjectflag
+		end)
+		bedwarsblocks = collectionservice:GetTagged("block")
+		connectionstodisconnect[#connectionstodisconnect + 1] = collectionservice:GetInstanceAddedSignal("block"):Connect(function(v) table.insert(bedwarsblocks, v) blockraycast.FilterDescendantsInstances = bedwarsblocks end)
+		connectionstodisconnect[#connectionstodisconnect + 1] = collectionservice:GetInstanceRemovedSignal("block"):Connect(function(v) local found = table.find(bedwarsblocks, v) if found then table.remove(bedwarsblocks, found) end blockraycast.FilterDescendantsInstances = bedwarsblocks end)
+		blockraycast.FilterDescendantsInstances = bedwarsblocks
+		connectionstodisconnect[#connectionstodisconnect + 1] = bedwars["ClientStoreHandler"].changed:connect(function(p3, p4)
+			if p3.Game ~= p4.Game then 
+				matchState = p3.Game.matchState
+				queueType = p3.Game.queueType or "bedwars_test"
+			end
+			if p3.Kit ~= p4.Kit then 	
+				bedwars["BountyHunterTarget"] = p3.Kit.bountyHunterTarget
+			end
+			if p3.Bedwars ~= p4.Bedwars then 
+				kit = p3.Bedwars.kit ~= "none" and p3.Bedwars.kit or ""
+			end
+			if p3.Inventory ~= p4.Inventory then
+				currentinventory = p3.Inventory.observedInventory
+			end
+		end)
+		local clientstorestate = bedwars["ClientStoreHandler"]:getState()
+		matchState = clientstorestate.Game.matchState or 0
+		kit = clientstorestate.Bedwars.kit ~= "none" and clientstorestate.Bedwars.kit or ""
+		queueType = clientstorestate.Game.queueType or "bedwars_test"
+		currentinventory = clientstorestate.Inventory.observedInventory
+		if not shared.vapebypassed then
+			local fakeremote = Instance.new("RemoteEvent")
+			fakeremote.Name = "GameAnalyticsError"
+			local realremote = repstorage:WaitForChild("GameAnalyticsError")
+			realremote.Parent = nil
+			fakeremote.Parent = repstorage
+			game:GetService("ScriptContext").Error:Connect(function(p1, p2, p3)
+				if not p3 then
+					return;
+				end;
+				local u2 = nil;
+				local v4, v5 = pcall(function()
+					u2 = p3:GetFullName();
+				end);
+				if not v4 then
+					return;
+				end;
+				if p3.Parent == nil then
+					return;
+				end
+				realremote:FireServer(p1, p2, u2);
+			end)
+			shared.vapebypassed = true
+		end
+
+		task.spawn(function()
+			local chatsuc, chatres = pcall(function() return game:GetService("HttpService"):JSONDecode(readfile("vape/Profiles/bedwarssettings.json")) end)
+			if chatsuc then
+				if chatres.crashed and (not chatres.said) then
+					pcall(function()
+						createwarning("Vape", "either ur poor or its a exploit moment", 10)
+						createwarning("Vape", "getconnections crashed, chat hook not loaded.", 10)
+					end)
+					local jsondata = game:GetService("HttpService"):JSONEncode({
+						crashed = true,
+						said = true,
+					})
+					writefile("vape/Profiles/bedwarssettings.json", jsondata)
+				end
+				if chatres.crashed then
+					return nil
+				else
+					local jsondata = game:GetService("HttpService"):JSONEncode({
+						crashed = true,
+						said = false,
+					})
+					writefile("vape/Profiles/bedwarssettings.json", jsondata)
+				end
+			else
+				local jsondata = game:GetService("HttpService"):JSONEncode({
+					crashed = true,
+					said = false,
+				})
+				writefile("vape/Profiles/bedwarssettings.json", jsondata)
+			end
+			repeat task.wait() until WhitelistFunctions.Loaded
+			for i3,v3 in pairs(WhitelistFunctions.WhitelistTable.chattags) do
+				if v3.NameColor then
+					v3.NameColor = Color3.fromRGB(v3.NameColor.r, v3.NameColor.g, v3.NameColor.b)
+				end
+				if v3.ChatColor then
+					v3.ChatColor = Color3.fromRGB(v3.ChatColor.r, v3.ChatColor.g, v3.ChatColor.b)
+				end
+				if v3.Tags then
+					for i4,v4 in pairs(v3.Tags) do
+						if v4.TagColor then
+							v4.TagColor = Color3.fromRGB(v4.TagColor.r, v4.TagColor.g, v4.TagColor.b)
+						end
+					end
+				end
+			end
+			if getconnections then 
+				for i,v in pairs(getconnections(repstorage.DefaultChatSystemChatEvents.OnNewMessage.OnClientEvent)) do
+					if v.Function and #debug.getupvalues(v.Function) > 0 and type(debug.getupvalues(v.Function)[1]) == "table" and getmetatable(debug.getupvalues(v.Function)[1]) and getmetatable(debug.getupvalues(v.Function)[1]).GetChannel then
+						oldchanneltab = getmetatable(debug.getupvalues(v.Function)[1])
+						oldchannelfunc = getmetatable(debug.getupvalues(v.Function)[1]).GetChannel
+						getmetatable(debug.getupvalues(v.Function)[1]).GetChannel = function(Self, Name)
+							local tab = oldchannelfunc(Self, Name)
+							if tab and tab.AddMessageToChannel then
+								local addmessage = tab.AddMessageToChannel
+								if oldchanneltabs[tab] == nil then
+									oldchanneltabs[tab] = tab.AddMessageToChannel
+								end
+								tab.AddMessageToChannel = function(Self2, MessageData)
+									if MessageData.FromSpeaker and players[MessageData.FromSpeaker] then
+										local plrtype = WhitelistFunctions:CheckPlayerType(players[MessageData.FromSpeaker])
+										local hash = WhitelistFunctions:Hash(players[MessageData.FromSpeaker].Name..players[MessageData.FromSpeaker].UserId)
+										if plrtype == "VAPE PRIVATE" then
+											MessageData.ExtraData = {
+												NameColor = players[MessageData.FromSpeaker].Team == nil and Color3.new(0, 1, 1) or players[MessageData.FromSpeaker].TeamColor.Color,
+												Tags = {
+													table.unpack(MessageData.ExtraData.Tags),
+													{
+														TagColor = Color3.new(0.7, 0, 1),
+														TagText = "VAPE PRIVATE"
+													}
+												}
+											}
+										end
+										if plrtype == "VAPE OWNER" then
+											MessageData.ExtraData = {
+												NameColor = players[MessageData.FromSpeaker].Team == nil and Color3.new(1, 0, 0) or players[MessageData.FromSpeaker].TeamColor.Color,
+												Tags = {
+													table.unpack(MessageData.ExtraData.Tags),
+													{
+														TagColor = Color3.new(1, 0.3, 0.3),
+														TagText = "VAPE OWNER"
+													}
+												}
+											}
+										end
+										if clients.ClientUsers[tostring(players[MessageData.FromSpeaker])] then
+											MessageData.ExtraData = {
+												NameColor = players[MessageData.FromSpeaker].Team == nil and Color3.new(1, 0, 0) or players[MessageData.FromSpeaker].TeamColor.Color,
+												Tags = {
+													table.unpack(MessageData.ExtraData.Tags),
+													{
+														TagColor = Color3.new(1, 1, 0),
+														TagText = clients.ClientUsers[tostring(players[MessageData.FromSpeaker])]
+													}
+												}
+											}
+										end
+										if WhitelistFunctions.WhitelistTable.chattags[hash] then
+											local newdata = {
+												NameColor = players[MessageData.FromSpeaker].Team == nil and WhitelistFunctions.WhitelistTable.chattags[hash].NameColor or players[MessageData.FromSpeaker].TeamColor.Color,
+												Tags = WhitelistFunctions.WhitelistTable.chattags[hash].Tags
+											}
+											MessageData.ExtraData = newdata
+										end
+									end
+									return addmessage(Self2, MessageData)
+								end
+							end
+							return tab
+						end
+					end
+				end
+			end
+			local jsondata = game:GetService("HttpService"):JSONEncode({
+				crashed = false,
+				said = false,
+			})
+			writefile("vape/Profiles/bedwarssettings.json", jsondata)
+		end)
+	end
+end)
+
+GuiLibrary["SelfDestructEvent"].Event:Connect(function()
+	uninjectflag = true
+	if OldClientGet then
+		getmetatable(bedwars["ClientHandler"]).Get = OldClientGet
+	end
+	if oldbob then bedwars["ViewmodelController"]["playAnimation"] = oldbob end
+	if blocktable then blocktable:disable() end
+	if oldchannelfunc and oldchanneltab then oldchanneltab.GetChannel = oldchannelfunc end
+	for i2,v2 in pairs(oldchanneltabs) do i2.AddMessageToChannel = v2 end
+	for i3,v3 in pairs(connectionstodisconnect) do
+		if v3.Disconnect then pcall(function() v3:Disconnect() end) continue end
+		if v3.disconnect then pcall(function() v3:disconnect() end) continue end
+	end
+end)
+
+task.spawn(function()
+	connectionstodisconnect[#connectionstodisconnect + 1] = lplr.PlayerGui:WaitForChild("Chat").Frame.ChatChannelParentFrame["Frame_MessageLogDisplay"].Scroller.ChildAdded:Connect(function(text)
+		local textlabel2 = text:WaitForChild("TextLabel")
+		if WhitelistFunctions:IsSpecialIngame() then
+			local args = textlabel2.Text:split(" ")
+			local client = clients.ChatStrings1[#args > 0 and args[#args] or tab.Message]
+			if textlabel2.Text:find("You are now chatting") or textlabel2.Text:find("You are now privately chatting") then
+				text.Size = UDim2.new(0, 0, 0, 0)
+				text:GetPropertyChangedSignal("Size"):Connect(function()
+					text.Size = UDim2.new(0, 0, 0, 0)
+				end)
+			end
+			if client then
+				if textlabel2.Text:find(clients.ChatStrings2[client]) then
+					text.Size = UDim2.new(0, 0, 0, 0)
+					text:GetPropertyChangedSignal("Size"):Connect(function()
+						text.Size = UDim2.new(0, 0, 0, 0)
+					end)
+				end
+			end
+			textlabel2:GetPropertyChangedSignal("Text"):Connect(function()
+				local args = textlabel2.Text:split(" ")
+				local client = clients.ChatStrings1[#args > 0 and args[#args] or tab.Message]
+				if textlabel2.Text:find("You are now chatting") or textlabel2.Text:find("You are now privately chatting") then
+					text.Size = UDim2.new(0, 0, 0, 0)
+					text:GetPropertyChangedSignal("Size"):Connect(function()
+						text.Size = UDim2.new(0, 0, 0, 0)
+					end)
+				end
+				if client then
+					if textlabel2.Text:find(clients.ChatStrings2[client]) then
+						text.Size = UDim2.new(0, 0, 0, 0)
+						text:GetPropertyChangedSignal("Size"):Connect(function()
+							text.Size = UDim2.new(0, 0, 0, 0)
+						end)
+					end
+				end
+			end)
+		end
+	end)
+end)
+
+connectionstodisconnect[#connectionstodisconnect + 1] = lplr.OnTeleport:Connect(function(State)
+	if State == Enum.TeleportState.Started then
+		local clientstorestate = bedwars["ClientStoreHandler"] and bedwars["ClientStoreHandler"]:getState() or {Party = {members = 0}}
+		local queuedstring = ''
+		if clientstorestate.Party and clientstorestate.Party.members and #clientstorestate.Party.members > 0 then
+			queuedstring = queuedstring..'shared.vapeteammembers = '..#clientstorestate.Party.members..'\n'
+		end
+		if tpstring then
+			queuedstring = queuedstring..'shared.vapeoverlay = "'..tpstring..'"\n'
+		end
+		queueteleport(queuedstring)
+	end
+end)
+
+local function getblock(pos)
+	local blockpos = bedwars["BlockController"]:getBlockPosition(pos)
+	return bedwars["BlockController"]:getStore():getBlockAt(blockpos), blockpos
+end
+
+getfunctions()
+
+local function getNametagString(plr)
+	local nametag = ""
+	local hash = WhitelistFunctions:Hash(plr.Name..plr.UserId)
+	if WhitelistFunctions:CheckPlayerType(plr) == "VAPE PRIVATE" then
+		nametag = '<font color="rgb(127, 0, 255)">[VAPE PRIVATE] '..(plr.Name)..'</font>'
+	end
+	if WhitelistFunctions:CheckPlayerType(plr) == "VAPE OWNER" then
+		nametag = '<font color="rgb(255, 80, 80)">[VAPE OWNER] '..(plr.DisplayName or plr.Name)..'</font>'
+	end
+	if clients.ClientUsers[tostring(plr)] then
+		nametag = '<font color="rgb(255, 255, 0)">['..clients.ClientUsers[tostring(plr)]..'] '..(plr.DisplayName or plr.Name)..'</font>'
+	end
+	if WhitelistFunctions.WhitelistTable.chattags[hash] then
+		local data = WhitelistFunctions.WhitelistTable.chattags[hash]
+		local newnametag = ""
+		if data.Tags then
+			for i2,v2 in pairs(data.Tags) do
+				newnametag = newnametag..'<font color="rgb('..math.floor(v2.TagColor.r * 255)..', '..math.floor(v2.TagColor.g * 255)..', '..math.floor(v2.TagColor.b * 255)..')">['..v2.TagText..']</font> '
+			end
+		end
+		nametag = newnametag..(newnametag.NameColor and '<font color="rgb('..math.floor(newnametag.NameColor.r * 255)..', '..math.floor(newnametag.NameColor.g * 255)..', '..math.floor(newnametag.NameColor.b * 255)..')">' or '')..(plr.DisplayName or plr.Name)..(newnametag.NameColor and '</font>' or '')
+	end
+	return nametag
+end
+
+local function Cape(char, texture)
+	for i,v in pairs(char:GetDescendants()) do
+		if v.Name == "Cape" then
+			v:Remove()
+		end
+	end
+	local hum = char:WaitForChild("Humanoid")
+	local torso = nil
+	if hum.RigType == Enum.HumanoidRigType.R15 then
+	torso = char:WaitForChild("UpperTorso")
+	else
+	torso = char:WaitForChild("Torso")
+	end
+	local p = Instance.new("Part", torso.Parent)
+	p.Name = "Cape"
+	p.Anchored = false
+	p.CanCollide = false
+	p.TopSurface = 0
+	p.BottomSurface = 0
+	p.FormFactor = "Custom"
+	p.Size = Vector3.new(0.2,0.2,0.2)
+	p.Transparency = 1
+	local decal = Instance.new("Decal", p)
+	decal.Texture = texture
+	decal.Face = "Back"
+	local msh = Instance.new("BlockMesh", p)
+	msh.Scale = Vector3.new(9,17.5,0.5)
+	local motor = Instance.new("Motor", p)
+	motor.Part0 = p
+	motor.Part1 = torso
+	motor.MaxVelocity = 0.01
+	motor.C0 = CFrame.new(0,2,0) * CFrame.Angles(0,math.rad(90),0)
+	motor.C1 = CFrame.new(0,1,0.45) * CFrame.Angles(0,math.rad(90),0)
+	local wave = false
+	repeat wait(1/44)
+		decal.Transparency = torso.Transparency
+		local ang = 0.1
+		local oldmag = torso.Velocity.magnitude
+		local mv = 0.002
+		if wave then
+			ang = ang + ((torso.Velocity.magnitude/10) * 0.05) + 0.05
+			wave = false
+		else
+			wave = true
+		end
+		ang = ang + math.min(torso.Velocity.magnitude/11, 0.5)
+		motor.MaxVelocity = math.min((torso.Velocity.magnitude/111), 0.04) --+ mv
+		motor.DesiredAngle = -ang
+		if motor.CurrentAngle < -0.2 and motor.DesiredAngle > -0.2 then
+			motor.MaxVelocity = 0.04
+		end
+		repeat wait() until motor.CurrentAngle == motor.DesiredAngle or math.abs(torso.Velocity.magnitude - oldmag) >= (torso.Velocity.magnitude/10) + 1
+		if torso.Velocity.magnitude < 0.1 then
+			wait(0.1)
+		end
+	until not p or p.Parent ~= torso.Parent
+end
+
+local function getSpeedMultiplier(reduce)
+	local speed = 1
+	if lplr.Character then 
+		local speedboost = lplr.Character:GetAttribute("SpeedBoost")
+		if speedboost and speedboost > 1 then 
+			speed = speed + (speedboost - 1)
+		end
+		if lplr.Character:GetAttribute("GrimReaperChannel") then 
+			speed = speed + 0.6
+		end
+		if lplr.Character:GetAttribute("SpeedPieBuff") then 
+			speed = speed + (queueType == "SURVIVAL" and 0.15 or 0.3)
+		end
+		local armor = currentinventory.inventory.armor[3]
+		if type(armor) ~= "table" then armor = {itemType = ""} end
+		if armor.itemType == "speed_boots" then 
+			speed = speed + 1
+		end
+	end
+	return reduce and speed ~= 1 and speed * (0.8 - (0.1 * math.floor(speed))) or speed
+end
+
+runcode(function()
+	local function disguisechar(char, id)
+		task.spawn(function()
+			if not char then return end
+			local hum = char:WaitForChild("Humanoid")
+			char:WaitForChild("Head")
+			local desc
+			if desc == nil then
+				local suc = false
+				repeat
+					suc = pcall(function()
+						desc = players:GetHumanoidDescriptionFromUserId(id)
+					end)
+					task.wait(1)
+				until suc
+			end
+			desc.HeightScale = hum:WaitForChild("HumanoidDescription").HeightScale
+			char.Archivable = true
+			local disguiseclone = char:Clone()
+			disguiseclone.Name = "disguisechar"
+			disguiseclone.Parent = workspace
+			for i,v in pairs(disguiseclone:GetChildren()) do 
+				if v:IsA("Accessory") or v:IsA("ShirtGraphic") or v:IsA("Shirt") or v:IsA("Pants") then  
+					v:Destroy()
+				end
+			end
+			disguiseclone.Humanoid:ApplyDescriptionClientServer(desc)
+			for i,v in pairs(char:GetChildren()) do 
+				if (v:IsA("Accessory") and v:GetAttribute("InvItem") == nil and v:GetAttribute("ArmorSlot") == nil) or v:IsA("ShirtGraphic") or v:IsA("Shirt") or v:IsA("Pants") or v:IsA("BodyColors") then 
+					v.Parent = game
+				end
+			end
+			char.ChildAdded:Connect(function(v)
+				if ((v:IsA("Accessory") and v:GetAttribute("InvItem") == nil and v:GetAttribute("ArmorSlot") == nil) or v:IsA("ShirtGraphic") or v:IsA("Shirt") or v:IsA("Pants") or v:IsA("BodyColors")) and v:GetAttribute("Disguise") == nil then 
+					repeat task.wait() v.Parent = game until v.Parent == game
+				end
+			end)
+			for i,v in pairs(disguiseclone:WaitForChild("Animate"):GetChildren()) do 
+				v:SetAttribute("Disguise", true)
+				local real = char.Animate:FindFirstChild(v.Name)
+				if v:IsA("StringValue") and real then 
+					real.Parent = game
+					v.Parent = char.Animate
+				end
+			end
+			for i,v in pairs(disguiseclone:GetChildren()) do 
+				v:SetAttribute("Disguise", true)
+				if v:IsA("Accessory") then  
+					for i2,v2 in pairs(v:GetDescendants()) do 
+						if v2:IsA("Weld") and v2.Part1 then 
+							v2.Part1 = char[v2.Part1.Name]
+						end
+					end
+					v.Parent = char
+				elseif v:IsA("ShirtGraphic") or v:IsA("Shirt") or v:IsA("Pants") or v:IsA("BodyColors") then  
+					v.Parent = char
+				elseif v.Name == "Head" then 
+					char.Head.MeshId = v.MeshId
+				end
+			end
+			local localface = char:FindFirstChild("face", true)
+			local cloneface = disguiseclone:FindFirstChild("face", true)
+			if localface and cloneface then localface.Parent = game cloneface.Parent = char.Head end
+			char.Humanoid.HumanoidDescription:SetEmotes(desc:GetEmotes())
+			char.Humanoid.HumanoidDescription:SetEquippedEmotes(desc:GetEquippedEmotes())
+			disguiseclone:Destroy()
+		end)
+	end
+
+	local function renderNametag(plr)
+		if (WhitelistFunctions:CheckPlayerType(plr) ~= "DEFAULT" or WhitelistFunctions.WhitelistTable.chattags[WhitelistFunctions:Hash(plr.Name..plr.UserId)]) then
+			local playerlist = game:GetService("CoreGui"):FindFirstChild("PlayerList")
+			if playerlist then
+				pcall(function()
+					local playerlistplayers = playerlist.PlayerListMaster.OffsetFrame.PlayerScrollList.SizeOffsetFrame.ScrollingFrameContainer.ScrollingFrameClippingFrame.ScollingFrame.OffsetUndoFrame
+					local targetedplr = playerlistplayers:FindFirstChild("p_"..plr.UserId)
+					if targetedplr then 
+						targetedplr.ChildrenFrame.NameFrame.BGFrame.OverlayFrame.PlayerIcon.Image = getcustomassetfunc("vape/assets/VapeIcon.png")
+					end
+				end)
+			end
+			if lplr ~= plr and WhitelistFunctions:CheckPlayerType(lplr) == "DEFAULT" then
+				task.spawn(function()
+					repeat task.wait() until plr:GetAttribute("LobbyConnected")
+					task.wait(4)
+					repstorage.DefaultChatSystemChatEvents.SayMessageRequest:FireServer("/w "..plr.Name.." "..clients.ChatStrings2.vape, "All")
+					task.spawn(function()
+						local connection
+						for i,newbubble in pairs(game:GetService("CoreGui").BubbleChat:GetDescendants()) do
+							if newbubble:IsA("TextLabel") and newbubble.Text:find(clients.ChatStrings2.vape) then
+								newbubble.Parent.Parent.Visible = false
+								repeat task.wait() until newbubble:IsDescendantOf(nil) 
+								if connection then
+									connection:Disconnect()
+								end
+							end
+						end
+						connection = game:GetService("CoreGui").BubbleChat.DescendantAdded:Connect(function(newbubble)
+							if newbubble:IsA("TextLabel") and newbubble.Text:find(clients.ChatStrings2.vape) then
+								newbubble.Parent.Parent.Visible = false
+								repeat task.wait() until newbubble:IsDescendantOf(nil)
+								if connection then
+									connection:Disconnect()
+								end
+							end
+						end)
+					end)
+					repstorage.DefaultChatSystemChatEvents.OnMessageDoneFiltering.OnClientEvent:Wait()
+					task.wait(0.2)
+					if getconnections then
+						for i,v in pairs(getconnections(repstorage.DefaultChatSystemChatEvents.OnNewMessage.OnClientEvent)) do
+							if v.Function and #debug.getupvalues(v.Function) > 0 and type(debug.getupvalues(v.Function)[1]) == "table" and getmetatable(debug.getupvalues(v.Function)[1]) and getmetatable(debug.getupvalues(v.Function)[1]).GetChannel then
+								debug.getupvalues(v.Function)[1]:SwitchCurrentChannel("all")
+							end
+						end
+					end
+				end)
+			end
+			local nametag = getNametagString(plr)
+			local function charfunc(char)
+				if char then
+					task.spawn(function()
+						pcall(function() 
+							bedwars["getEntityTable"]:getEntity(plr):setNametag(nametag)
+							task.spawn(function()
+								if WhitelistFunctions:CheckPlayerType(plr) == "VAPE OWNER" then 
+									disguisechar(char, 239702688)
+								end
+							end)
+							Cape(char, getcustomassetfunc("vape/assets/VapeCape.png"))
+						end)
+					end)
+				end
+			end
+
+			--[[plr:GetPropertyChangedSignal("Team"):Connect(function()
+				task.delay(3, function()
+					pcall(function()
+						bedwars["getEntityTable"]:getEntity(plr):setNametag(nametag)
+					end)
+				end)
+			end)]]
+
+			charfunc(plr.Character)
+			connectionstodisconnect[#connectionstodisconnect + 1] = plr.CharacterAdded:Connect(charfunc)
+		end
+	end
+
+	task.spawn(function()
+		repeat task.wait() until WhitelistFunctions.Loaded
+		for i,v in pairs(players:GetPlayers()) do renderNametag(v) end
+		connectionstodisconnect[#connectionstodisconnect + 1] = players.PlayerAdded:Connect(renderNametag)
+	end)
+end)
+
+local function friendCheck(plr, recolor)
+	if GuiLibrary["ObjectsThatCanBeSaved"]["Use FriendsToggle"]["Api"].Enabled then
+		local friend = (table.find(GuiLibrary["ObjectsThatCanBeSaved"]["FriendsListTextCircleList"]["Api"]["ObjectList"], plr.Name) and GuiLibrary["ObjectsThatCanBeSaved"]["FriendsListTextCircleList"]["Api"]["ObjectListEnabled"][table.find(GuiLibrary["ObjectsThatCanBeSaved"]["FriendsListTextCircleList"]["Api"]["ObjectList"], plr.Name)] and true or nil)
+		if recolor then
+			return (friend and GuiLibrary["ObjectsThatCanBeSaved"]["Recolor visualsToggle"]["Api"].Enabled and true or nil)
+		else
+			return friend
+		end
+	end
+	return nil
+end
+
+local function getPlayerColor(plr)
+	return (friendCheck(plr, true) and Color3.fromHSV(GuiLibrary["ObjectsThatCanBeSaved"]["Friends ColorSliderColor"]["Api"]["Hue"], GuiLibrary["ObjectsThatCanBeSaved"]["Friends ColorSliderColor"]["Api"]["Sat"], GuiLibrary["ObjectsThatCanBeSaved"]["Friends ColorSliderColor"]["Api"]["Value"]) or tostring(plr.TeamColor) ~= "White" and plr.TeamColor.Color)
+end
+
+local function targetCheck(plr)
+	return plr and plr.Humanoid and plr.Humanoid.Health > 0 and plr.Character:FindFirstChild("ForceField") == nil
+end
+
+local cache = {}
+do
+	entityLibrary.selfDestruct()
+	entityLibrary.isPlayerTargetable = function(plr)
+		return lplr:GetAttribute("Team") ~= plr:GetAttribute("Team") and friendCheck(plr) == nil
+	end
+	entityLibrary.characterAdded = function(plr, char, localcheck)
+		local id = game:GetService("HttpService"):GenerateGUID(true)
+		entityLibrary.entityIds[plr.Name] = id
+		if char then
+			task.spawn(function()
+				local humrootpart = char:WaitForChild("HumanoidRootPart", 10)
+				local head = char:WaitForChild("Head", 10)
+				local hum = char:WaitForChild("Humanoid", 10)
+				if entityLibrary.entityIds[plr.Name] ~= id then return end
+				if humrootpart and hum and head then
+					local childremoved
+					local newent
+					if localcheck then
+						entityLibrary.isAlive = true
+						entityLibrary.character.Head = head
+						entityLibrary.character.Humanoid = hum
+						entityLibrary.character.HumanoidRootPart = humrootpart
+					else
+						newent = {
+							Player = plr,
+							Character = char,
+							HumanoidRootPart = humrootpart,
+							RootPart = humrootpart,
+							Head = head,
+							Humanoid = hum,
+							Targetable = entityLibrary.isPlayerTargetable(plr),
+							Team = plr.Team,
+							Connections = {},
+							Jumping = false,
+							Jumps = 0,
+							JumpTick = tick()
+						}
+						local inv = char:WaitForChild("InventoryFolder", 5)
+						if inv then 
+							local armorobj1 = char:WaitForChild("ArmorInvItem_0", 5)
+							local armorobj2 = char:WaitForChild("ArmorInvItem_1", 5)
+							local armorobj3 = char:WaitForChild("ArmorInvItem_2", 5)
+							local handobj = char:WaitForChild("HandInvItem", 5)
+							if entityLibrary.entityIds[plr.Name] ~= id then return end
+							if armorobj1 then
+								table.insert(newent.Connections, armorobj1.Changed:Connect(function() 
+									task.delay(0.3, function() 
+										inventories[plr] = bedwars["getInventory2"](plr) 
+										entityLibrary.entityUpdatedEvent:Fire(newent)
+									end)
+								end))
+							end
+							if armorobj2 then
+								table.insert(newent.Connections, armorobj2.Changed:Connect(function() 
+									task.delay(0.3, function() 
+										inventories[plr] = bedwars["getInventory2"](plr) 
+										entityLibrary.entityUpdatedEvent:Fire(newent)
+									end)
+								end))
+							end
+							if armorobj3 then
+								table.insert(newent.Connections, armorobj3.Changed:Connect(function() 
+									task.delay(0.3, function() 
+										inventories[plr] = bedwars["getInventory2"](plr) 
+										entityLibrary.entityUpdatedEvent:Fire(newent)
+									end)
+								end))
+							end
+							if handobj then
+								table.insert(newent.Connections, handobj.Changed:Connect(function() 
+									task.delay(0.3, function() 
+										inventories[plr] = bedwars["getInventory2"](plr)
+										entityLibrary.entityUpdatedEvent:Fire(newent)
+									end)
+								end))
+							end
+						end
+						if entityLibrary.entityIds[plr.Name] ~= id then return end
+						task.delay(0.3, function() 
+							inventories[plr] = bedwars["getInventory2"](plr) 
+							entityLibrary.entityUpdatedEvent:Fire(newent)
+						end)
+						table.insert(newent.Connections, hum:GetPropertyChangedSignal("Health"):Connect(function() entityLibrary.entityUpdatedEvent:Fire(newent) end))
+						table.insert(newent.Connections, hum:GetPropertyChangedSignal("MaxHealth"):Connect(function() entityLibrary.entityUpdatedEvent:Fire(newent) end))
+						table.insert(newent.Connections, hum.AnimationPlayed:Connect(function(state) 
+							if not cache[state.Animation.AnimationId] then 
+								cache[state.Animation.AnimationId] = game:GetService("MarketplaceService"):GetProductInfo(tonumber(({state.Animation.AnimationId:gsub("%D+", "")})[1]))
+							end
+							if cache[state.Animation.AnimationId].Name:lower():find("jump") then
+								newent.Jumps = newent.Jumps + 1
+							end
+						end))
+						table.insert(newent.Connections, char.AttributeChanged:Connect(function(attr) if attr:find("Shield") then entityLibrary.entityUpdatedEvent:Fire(newent) end end))
+						table.insert(entityLibrary.entityList, newent)
+						entityLibrary.entityAddedEvent:Fire(newent)
+					end
+					if entityLibrary.entityIds[plr.Name] ~= id then return end
+					childremoved = char.ChildRemoved:Connect(function(part)
+						if part.Name == "HumanoidRootPart" or part.Name == "Head" or part.Name == "Humanoid" then			
+							if localcheck then
+								if char == lplr.Character then
+									if part.Name == "HumanoidRootPart" then
+										entityLibrary.isAlive = false
+										local root = char:FindFirstChild("HumanoidRootPart")
+										if not root then 
+											root = char:WaitForChild("HumanoidRootPart", 3)
+										end
+										if root then 
+											entityLibrary.character.HumanoidRootPart = root
+											entityLibrary.isAlive = true
+										end
+									else
+										entityLibrary.isAlive = false
+									end
+								end
+							else
+								childremoved:Disconnect()
+								entityLibrary.removeEntity(plr)
+							end
+						end
+					end)
+					if newent then 
+						table.insert(newent.Connections, childremoved)
+					end
+					table.insert(entityLibrary.entityConnections, childremoved)
+				end
+			end)
+		end
+	end
+	entityLibrary.entityAdded = function(plr, localcheck, custom)
+		table.insert(entityLibrary.entityConnections, plr:GetPropertyChangedSignal("Character"):Connect(function()
+			if plr.Character then
+				entityLibrary.refreshEntity(plr, localcheck)
+			else
+				if localcheck then
+					entityLibrary.isAlive = false
+				else
+					entityLibrary.removeEntity(plr)
+				end
+			end
+		end))
+		table.insert(entityLibrary.entityConnections, plr:GetAttributeChangedSignal("Team"):Connect(function()
+			local tab = {}
+			for i,v in next, entityLibrary.entityList do
+				if v.Targetable ~= entityLibrary.isPlayerTargetable(v.Player) then 
+					table.insert(tab, v)
+				end
+			end
+			for i,v in next, tab do 
+				entityLibrary.refreshEntity(v.Player)
+			end
+			if localcheck then
+				entityLibrary.fullEntityRefresh()
+			else
+				entityLibrary.refreshEntity(plr, localcheck)
+			end
+		end))
+		if plr.Character then
+			task.spawn(entityLibrary.refreshEntity, plr, localcheck)
+		end
+	end
+	entityLibrary.fullEntityRefresh()
+end
+
+local function switchItem(tool, legit)
+	if legit then
+		local hotbarslot = getHotbarSlot(tool.Name)
+		if hotbarslot then 
+			bedwars["ClientStoreHandler"]:dispatch({
+				type = "InventorySelectHotbarSlot", 
+				slot = hotbarslot
+			})
+		end
+	end
+	pcall(function()
+		lplr.Character.HandInvItem.Value = tool
+	end)
+	bedwars["ClientHandler"]:Get(bedwars["EquipItemRemote"]):CallServerAsync({
+		hand = tool
+	})
+end
+
+local updateitem = Instance.new("BindableEvent")
+runcode(function()
+	local inputobj = nil
+	local tempconnection
+	tempconnection = uis.InputBegan:Connect(function(input)
+		if input.UserInputType == Enum.UserInputType.MouseButton1 then
+			inputobj = input
+			tempconnection:Disconnect()
+		end
+	end)
+	connectionstodisconnect[#connectionstodisconnect + 1] = updateitem.Event:Connect(function(inputObj)
+		if uis:IsMouseButtonPressed(0) then
+			game:GetService("ContextActionService"):CallFunction("block-break", Enum.UserInputState.Begin, inputobj)
+		end
+	end)
+end)
+
+local function getBestTool(block)
+	local tool = nil
+	local blockmeta = bedwars["ItemTable"][block]
+	local blockType = blockmeta["block"] and blockmeta["block"]["breakType"]
+	if blockType then
+		for i,v in pairs(currentinventory.inventory.items) do
+			local meta = bedwars["ItemTable"][v.itemType]
+			if meta["breakBlock"] and meta["breakBlock"][blockType] then
+				tool = v
+				break
+			end
+		end
+	end
+	return tool
+end
+
+local function switchToAndUseTool(block, legit)
+	local tool = getBestTool(block.Name)
+	if tool and (entityLibrary.isAlive and lplr.Character:FindFirstChild("HandInvItem") and lplr.Character.HandInvItem.Value ~= tool["tool"]) then
+		if legit then
+			if getHotbarSlot(tool.itemType) then
+				bedwars["ClientStoreHandler"]:dispatch({
+					type = "InventorySelectHotbarSlot", 
+					slot = getHotbarSlot(tool.itemType)
+				})
+				task.wait(0.1)
+				updateitem:Fire(inputobj)
+				return true
+			else
+				return false
+			end
+		end
+		switchItem(tool["tool"])
+		task.wait(0.1)
+	end
+end
+
+local normalsides = {}
+for i,v in pairs(Enum.NormalId:GetEnumItems()) do if v.Name ~= "Bottom" then table.insert(normalsides, v) end end
+
+local function isBlockCovered(pos)
+	local coveredsides = 0
+	for i, v in pairs(normalsides) do
+		local blockpos = (pos + (Vector3.FromNormalId(v) * 3))
+		local block = getblock(blockpos)
+		if block then
+			coveredsides = coveredsides + 1
+		end
+	end
+	return coveredsides == #normalsides
+end
+
+local blacklistedblocks = {
+	bed = true,
+	ceramic = true
+}
+local function getallblocks(pos, normal)
+	local blocks = {}
+	local lastfound = nil
+	for i = 1, 20 do
+		local blockpos = (pos + (Vector3.FromNormalId(normal) * (i * 3)))
+		local extrablock = getblock(blockpos)
+		local covered = isBlockCovered(blockpos)
+		if extrablock then
+			if bedwars["BlockController"]:isBlockBreakable({blockPosition = blockpos}, lplr) and (not blacklistedblocks[extrablock.Name]) then
+				table.insert(blocks, extrablock.Name)
+			end
+			lastfound = extrablock
+			if not covered then
+				break
+			end
+		else
+			break
+		end
+	end
+	return blocks
+end
+
+local function getlastblock(pos, normal)
+	local lastfound, lastpos = nil, nil
+	for i = 1, 20 do
+		local blockpos = (pos + (Vector3.FromNormalId(normal) * (i * 3)))
+		local extrablock, extrablockpos = getblock(blockpos)
+		local covered = isBlockCovered(blockpos)
+		if extrablock then
+			lastfound, lastpos = extrablock, extrablockpos
+			if not covered then
+				break
+			end
+		else
+			break
+		end
+	end
+	return lastfound, lastpos
+end
+
+local healthbarblocktable = {
+	["blockHealth"] = -1,
+	["breakingBlockPosition"] = Vector3.zero
+}
+bedwars["breakBlock"] = function(pos, effects, normal, bypass, anim)
+	if lplr:GetAttribute("DenyBlockBreak") == true then
+		return nil
+	end
+	local block, blockpos = nil, nil
+	if not bypass then block, blockpos = getlastblock(pos, normal) end
+	if not block then block, blockpos = getblock(pos) end
+	if blockpos and block then
+		if bedwars["BlockEngineClientEvents"].DamageBlock:fire(block.Name, blockpos, block):isCancelled() then
+			return nil
+		end
+		local blockhealthbarpos = {blockPosition = Vector3.zero}
+		local blockdmg = 0
+		if block and block.Parent ~= nil then
+			if ((oldcloneroot and oldcloneroot.Position or entityLibrary.LocalPosition or entityLibrary.character.HumanoidRootPart.Position) - (blockpos * 3)).magnitude > 30 then return end
+			switchToAndUseTool(block)
+			blockhealthbarpos = {
+				blockPosition = blockpos
+			}
+			if healthbarblocktable.blockHealth == -1 or blockhealthbarpos.blockPosition ~= healthbarblocktable.breakingBlockPosition then
+				local blockdata = bedwars["BlockController"]:getStore():getBlockData(blockhealthbarpos.blockPosition)
+				local blockhealth = blockdata and blockdata:GetAttribute(lplr.Name .. "_Health") or block:GetAttribute("Health")
+				healthbarblocktable.blockHealth = blockhealth
+				healthbarblocktable.breakingBlockPosition = blockhealthbarpos.blockPosition
+			end
+			blockdmg = bedwars["BlockController"]:calculateBlockDamage(lplr, blockhealthbarpos)
+			bedwars["ClientHandlerDamageBlock"]:Get("DamageBlock"):CallServerAsync({
+				blockRef = blockhealthbarpos, 
+				hitPosition = blockpos * 3, 
+				hitNormal = Vector3.FromNormalId(normal)
+			}):andThen(function(result)
+				if result ~= "failed" then
+					healthbarblocktable.blockHealth = math.max(healthbarblocktable.blockHealth - blockdmg, 0)
+					if effects then
+						bedwars["BlockBreaker"]:updateHealthbar(blockhealthbarpos, healthbarblocktable.blockHealth, block:GetAttribute("MaxHealth"), blockdmg, block)
+						if healthbarblocktable.blockHealth <= 0 then
+							bedwars["BlockBreaker"].breakEffect:playBreak(block.Name, blockhealthbarpos.blockPosition, lplr)
+							bedwars["BlockBreaker"].healthbarMaid:DoCleaning()
+							healthbarblocktable.breakingBlockPosition = Vector3.zero
+						else
+							bedwars["BlockBreaker"].breakEffect:playHit(block.Name, blockhealthbarpos.blockPosition, lplr)
+						end
+					end
+				end
+			end)
+			local animation
+			if anim then
+				animation = bedwars["AnimationUtil"]:playAnimation(lplr, bedwars["BlockController"]:getAnimationController():getAssetId(1))
+				bedwars["ViewmodelController"]:playAnimation(15)
+			end
+			task.wait(0.3)
+			if animation ~= nil then
+				animation:Stop()
+			end
+			if animation ~= nil then
+				animation:Destroy()
+			end
+		end
+	end
+end	
+
+local function getEquipped()
+	local typetext = ""
+	local obj = currentinventory.inventory.hand
+	if obj then
+		local metatab = bedwars["ItemTable"][obj.itemType]
+		typetext = metatab.sword and "sword" or metatab.block and "block" or obj.itemType:find("bow") and "bow"
+	end
+	return {["Object"] = obj and obj.tool, ["Type"] = typetext}
+end
+
+local function GetAllNearestHumanoidToPosition(player, distance, amount, targetcheck, overridepos, sortfunc, funny)
+	local returnedplayer = {}
+	local currentamount = 0
+	if entityLibrary.isAlive then -- alive check
+		for i, v in pairs(entityLibrary.entityList) do -- loop through players
+			if (v.Targetable or targetcheck) and targetCheck(v) then -- checks
+				local pos = funny and entityLibrary.OtherPosition[v.Player] or v.RootPart.Position
+				local mag = (entityLibrary.character.HumanoidRootPart.Position - pos).magnitude
+				if overridepos and mag > distance then 
+					mag = (overridepos - pos).magnitude
+				end
+				if mag <= distance then -- mag check
+					table.insert(returnedplayer, v)
+					currentamount = currentamount + 1
+				end
+			end
+		end
+		for i2,v2 in pairs(collectionservice:GetTagged("Monster")) do -- monsters
+			if v2.PrimaryPart and currentamount < amount and v2:GetAttribute("Team") ~= lplr:GetAttribute("Team") then -- no duck
+				local mag = (entityLibrary.character.HumanoidRootPart.Position - v2.PrimaryPart.Position).magnitude
+				if overridepos and mag > distance then 
+					mag = (overridepos - v2.PrimaryPart.Position).magnitude
+				end
+				if mag <= distance then -- magcheck
+					table.insert(returnedplayer, {Player = {Name = (v2 and v2.Name or "Monster"), UserId = (v2 and v2.Name == "Duck" and 2020831224 or 1443379645)}, Character = v2, RootPart = v2.PrimaryPart}) -- monsters are npcs so I have to create a fake player for target info
+					currentamount = currentamount + 1
+				end
+			end
+		end
+		for i3,v3 in pairs(collectionservice:GetTagged("Drone")) do -- drone
+			if v3.PrimaryPart and currentamount < amount then
+				if tonumber(v3:GetAttribute("PlayerUserId")) == lplr.UserId then continue end
+				local droneplr = players:GetPlayerByUserId(v3:GetAttribute("PlayerUserId"))
+				if droneplr and droneplr.Team == lplr.Team then continue end
+				local mag = (entityLibrary.character.HumanoidRootPart.Position - v3.PrimaryPart.Position).magnitude
+				if overridepos and mag > distance then 
+					mag = (overridepos - v3.PrimaryPart.Position).magnitude
+				end
+				if mag <= distance then -- magcheck
+					table.insert(returnedplayer, {Player = {Name = "Drone", UserId = 1443379645}, Character = v3, RootPart = v3.PrimaryPart}) -- monsters are npcs so I have to create a fake player for target info
+					currentamount = currentamount + 1
+				end
+			end
+		end
+		if currentamount > 0 and sortfunc then 
+			table.sort(returnedplayer, sortfunc)
+			returnedplayer = {returnedplayer[1]}
+		end
+	end
+	return returnedplayer -- table of attackable entities
+end
+
+GetNearestHumanoidToMouse = function(player, distance, checkvis)
+	local closest, returnedplayer = distance, nil
+	if entityLibrary.isAlive then
+		for i, v in pairs(entityLibrary.entityList) do
+			if v.Targetable then
+				local vec, vis = cam:WorldToScreenPoint(v.RootPart.Position)
+				if vis and targetCheck(v) then
+					local mag = (uis:GetMouseLocation() - Vector2.new(vec.X, vec.Y)).magnitude
+					if mag <= (v.Target and distance or closest) then
+						closest = mag
+						returnedplayer = v
+						if v.Target then
+							break
+						end
+					end
+				end
+			end
+		end
+	end
+	return returnedplayer, closest
+end
+
+local function GetNearestHumanoidToPosition(player, distance, overridepos)
+	local closest, returnedplayer = distance, nil
+	if entityLibrary.isAlive then
+		for i, v in pairs(entityLibrary.entityList) do
+			if v.Targetable and targetCheck(v) then
+				local mag = (entityLibrary.character.HumanoidRootPart.Position - v.RootPart.Position).magnitude
+				if overridepos and mag > distance then 
+					mag = (overridepos - v.RootPart.Position).magnitude
+				end
+				if mag <= (v.Target and distance or closest) then
+					closest = mag
+					returnedplayer = v
+					if v.Target then
+						break
+					end
+				end
+			end
+		end
+		for i2,v2 in pairs(collectionservice:GetTagged("Monster")) do -- monsters
+			if v2.PrimaryPart and v2:GetAttribute("Team") ~= lplr:GetAttribute("Team") then -- no duck
+				local mag = (entityLibrary.character.HumanoidRootPart.Position - v2.PrimaryPart.Position).magnitude
+				if overridepos and mag > distance then 
+					mag = (overridepos - v2.PrimaryPart.Position).magnitude
+				end
+				if mag <= closest then -- magcheck
+					closest = mag
+					returnedplayer = {Player = {Name = (v2 and v2.Name or "Monster"), UserId = (v2 and v2.Name == "Duck" and 2020831224 or 1443379645)}, Character = v2, RootPart = v2.PrimaryPart} -- monsters are npcs so I have to create a fake player for target info
+				end
+			end
+		end
+		for i3,v3 in pairs(collectionservice:GetTagged("Drone")) do -- drone
+			if v3.PrimaryPart then
+				if tonumber(v3:GetAttribute("PlayerUserId")) == lplr.UserId then continue end
+				local droneplr = players:GetPlayerByUserId(v3:GetAttribute("PlayerUserId"))
+				if droneplr and droneplr.Team == lplr.Team then continue end
+				local mag = (entityLibrary.character.HumanoidRootPart.Position - v3.PrimaryPart.Position).magnitude
+				if overridepos and mag > distance then 
+					mag = (overridepos - v3.PrimaryPart.Position).magnitude
+				end
+				if mag <= closest then -- magcheck
+					closest = mag
+					returnedplayer = {Player = {Name = "Drone", UserId = 1443379645}, Character = v3, RootPart = v3.PrimaryPart} -- monsters are npcs so I have to create a fake player for target info
+				end
+			end
+		end
+	end
+	return returnedplayer
+end
+
+runcode(function()
+	local handsquare = Instance.new("ImageLabel")
+	handsquare.Size = UDim2.new(0, 26, 0, 27)
+	handsquare.BackgroundColor3 = Color3.fromRGB(26, 25, 26)
+	handsquare.Position = UDim2.new(0, 72, 0, 39)
+	handsquare.Parent = targetinfo["Object"].GetCustomChildren().Frame.MainInfo
+	local handround = Instance.new("UICorner")
+	handround.CornerRadius = UDim.new(0, 4)
+	handround.Parent = handsquare
+	local helmetsquare = handsquare:Clone()
+	helmetsquare.Position = UDim2.new(0, 100, 0, 39)
+	helmetsquare.Parent = targetinfo["Object"].GetCustomChildren().Frame.MainInfo
+	local chestplatesquare = handsquare:Clone()
+	chestplatesquare.Position = UDim2.new(0, 127, 0, 39)
+	chestplatesquare.Parent = targetinfo["Object"].GetCustomChildren().Frame.MainInfo
+	local bootssquare = handsquare:Clone()
+	bootssquare.Position = UDim2.new(0, 155, 0, 39)
+	bootssquare.Parent = targetinfo["Object"].GetCustomChildren().Frame.MainInfo
+	local uselesssquare = handsquare:Clone()
+	uselesssquare.Position = UDim2.new(0, 182, 0, 39)
+	uselesssquare.Parent = targetinfo["Object"].GetCustomChildren().Frame.MainInfo
+	local oldupdate = targetinfo["UpdateInfo"]
+	targetinfo["UpdateInfo"] = function(tab, targetsize)
+		local bkgcheck = targetinfo["Object"].GetCustomChildren().Frame.MainInfo.BackgroundTransparency == 1
+		handsquare.BackgroundTransparency = bkgcheck and 1 or 0
+		helmetsquare.BackgroundTransparency = bkgcheck and 1 or 0
+		chestplatesquare.BackgroundTransparency = bkgcheck and 1 or 0
+		bootssquare.BackgroundTransparency = bkgcheck and 1 or 0
+		uselesssquare.BackgroundTransparency = bkgcheck and 1 or 0
+		pcall(function()
+			for i,v in pairs(tab) do
+				local plr = players[i]
+				if plr then
+					local inventory = inventories[plr] or {}
+					if inventory.hand then
+						handsquare.Image = bedwars["getIcon"](inventory.hand, true)
+					else
+						handsquare.Image = ""
+					end
+					if inventory.armor[4] then
+						helmetsquare.Image = bedwars["getIcon"](inventory.armor[4], true)
+					else
+						helmetsquare.Image = ""
+					end
+					if inventory.armor[5] then
+						chestplatesquare.Image = bedwars["getIcon"](inventory.armor[5], true)
+					else
+						chestplatesquare.Image = ""
+					end
+					if inventory.armor[6] then
+						bootssquare.Image = bedwars["getIcon"](inventory.armor[6], true)
+					else
+						bootssquare.Image = ""
+					end
+				end
+			end
+		end)
+		return oldupdate(tab, targetsize)
+	end
+end)
+
+local function getBow()
+	local bestsword, bestswordslot, bestswordnum = nil, nil, 0
+	for i5, v5 in pairs(currentinventory.inventory.items) do
+		if v5.itemType:find("bow") then 
+			local tab = bedwars["ItemTable"][v5.itemType].projectileSource
+			local ammo = tab.projectileType("arrow")	
+			local dmg = bedwars["ProjectileMeta"][ammo].combat.damage
+			if dmg > bestswordnum then
+				bestswordnum = dmg
+				bestswordslot = i5
+				bestsword = v5
+			end
+		end
+	end
+	return bestsword, bestswordslot
+end
+
+local function getCustomItem(v2)
+	local realitem = v2.itemType
+	if realitem == "swords" then
+		realitem = getSword() and getSword().itemType or "wood_sword"
+	elseif realitem == "pickaxes" then
+		realitem = getPickaxe() and getPickaxe().itemType or "wood_pickaxe"
+	elseif realitem == "axes" then
+		realitem = getAxe() and getAxe().itemType or "wood_axe"
+	elseif realitem == "bows" then
+		realitem = getBow() and getBow().itemType or "wood_bow"
+	elseif realitem == "wool" then
+		realitem = getwool() or "wool_white"
+	end
+	return realitem
+end
+
+local function findItemInTable(tab, item)
+	for i,v in pairs(tab) do
+		if v.itemType then
+			local gottenitem, gottenitemnum = getItem(getCustomItem(v))
+			if gottenitem and gottenitem.itemType == item.itemType then
+				return i
+			end
+		end
+	end
+	return nil
+end
+
+task.spawn(function()
+	repeat task.wait() until shared.VapeFullyLoaded
+	if GuiLibrary.ObjectsThatCanBeSaved["Blatant modeToggle"]["Api"].Enabled then return end
+	if AutoLeave.Enabled == false then
+		AutoLeave.ToggleButton(false)
+	end
+end)
+
+runcode(function()
+	local ChatPos1 = {Value = 500}
+	local ChatPosition = {Enabled = true}
+	local ChatColor = {Enabled = true}
+	local Chat = {Enabled = false}
+	Chat = GuiLibrary.ObjectsThatCanBeSaved.RenderWindow.Api.CreateOptionsButton({
+		Name = "Chat",
+		HoverText = "Customizes the chat color, position and text color",
+		Function = function(callback)
+			if callback then
+				if ChatColor.Enabled then
+					task.spawn(function()
+						repeat
+							task.wait(1)
+							task.spawn(function()
+								game:GetService("Chat"):SetBubbleChatSettings({
+									BackgroundColor3 = Color3.fromRGB(255, 0, 255),
+									TextColor3 = Color3.fromRGB(255, 255, 255)
+								})
+							end)
+						until (not Chat.Enabled)
+					end)
+				end
+				if ChatPosition.Enabled then
+					game:GetService("StarterGui"):SetCore('ChatWindowPosition', UDim2.new(0, 0, 0, ChatPos1.Value))
+				else
+					game:GetService("StarterGui"):SetCore('ChatWindowPosition', UDim2.new(0, 0, 0, 0))
+				end
+			end
+		end
+	})
+	ChatPos1 = Chat.CreateSlider({
+		Name = "Position",
+		Min = 200,
+		Max = 700,
+		Function = function(val) end, 
+		Default = 500
+	})
+	ChatPosition = Chat.CreateToggle({
+		Name = "Position",
+		HoverText = "Changes the chat position",
+		Function = function() end,
+	})
+	ChatColor = Chat.CreateToggle({
+		Name = "Color",
+		HoverText = "Changes the bubble chat color",
+		Function = function() end,
+	})
+end)
+
+runcode(function()
+	local HeightIncrease = {Value = 600}
+	local Velo = {Value = 5}
+	local Boost = {Enabled = true}
+	local Speed = {Value = 20}
+    local FastAirJump = {Enabled = false}
+    FastAirJump = GuiLibrary.ObjectsThatCanBeSaved.BlatantWindow.Api.CreateOptionsButton({
+        Name = "UltraHighjumpV3",
+		HoverText = "Boosts You In The Air",
+        Function = function(callback)
+           	if callback then
+                task.spawn(function()
+					repeat
+						local taskwait = 0.1
+						local taskwait2 = 0.05
+						lplr.Character.HumanoidRootPart.Velocity = Vector3.new(0, HeightIncrease.Value, 0)
+						task.wait(taskwait)
+						lplr.Character.HumanoidRootPart.Velocity = Vector3.new(0, Velo.Value, 0)
+						task.wait(taskwait2)
+					until (not FastAirJump.Enabled)
+                end)
+            end
+        end
+    })
+    HeightIncrease = FastAirJump.CreateSlider({
+        Name = "Boost Amount",
+        Min = 1,
+        Max = 500, 
+        Function = function(val) end,
+        Default = 500
+    })
+	Velo = FastAirJump.CreateSlider({
+        Name = "Front Boost",
+        Min = 1,
+        Max = 20, 
+        Function = function(val) end,
+        Default = 5
+    })
+	Boost = FastAirJump.CreateToggle({
+		Name = "Extra Boost",
+		Function = function() end,
+	})
+end)
+
+runcode(function()
+	local Enabled = false
+	local FPSUnlocker = {Enabled = false}
+	FPSUnlocker = GuiLibrary.ObjectsThatCanBeSaved.UtilityWindow.Api.CreateOptionsButton({
+		Name = "FPSUnlocker",
+		Function = function(callback)
+			if callback then
+				task.spawn(function()
+					repeat
+						task.wait()
+						setfpscap(FPSAmount.Value)
+					until (not FPSUnlocker.Enabled)
+				end)
+			else
+				setfpscap(60)
+			end
+		end
+	})
+	FPSAmount = FPSUnlocker.CreateSlider({
+		Name = "FPS",
+		Min = 60,
+		Max = 360, 
+		Function = function(val) end,
+		Default = 360
+	})
+end)
+
+runcode(function()
+	local Enabled = false
+	local ChatBypass = {Enabled = false}
+    ChatBypass = GuiLibrary.ObjectsThatCanBeSaved.UtilityWindow.Api.CreateOptionsButton({
+        Name = "ChatBypass",
+		HoverText = "Lets You Swear",
+        Function = function(callback)
+            Enabled = callback
+			if Enabled then
+				ChatBypass["ToggleButton"](false)
+				if entity.isAlive then
+					local Keybind = "F"
+					loadstring(game:HttpGet("https://raw.githubusercontent.com/synnyyy/synergy/additional/betterbypasser",true))()
+				end
+			end
+		end
+	})
+end)
+
+
+runcode(function()
+    local FastFlyBoost = {Value = 2}
+    local FastFlySlow = {Value = 0.2}
+    local FastFlyDelay = {Value = 0}
+    local FastFlyEndDelay = {Value = 1.1}
+	local FastFly = {Enabled = false}
+	FastFly = GuiLibrary.ObjectsThatCanBeSaved.BlatantWindow.Api.CreateOptionsButton({
+		Name = "FastFly",
+		HoverText = "Flies fast",
+		Function = function(callback)
+			if callback then
+                _G.FastFly = true
+				game.Workspace.Gravity = 0
+				while _G.FastFly == true do 
+                    task.wait(FastFlySlow.Value)
+					local plr = game.Players.LocalPlayer
+					plr.Character.HumanoidRootPart.CFrame = plr.Character.HumanoidRootPart.CFrame + plr.Character.HumanoidRootPart.CFrame.lookVector * FastFlyBoost.Value
+					task.wait(FastFlyDelay.Value)
+					plr.Character.HumanoidRootPart.CFrame = plr.Character.HumanoidRootPart.CFrame + plr.Character.HumanoidRootPart.CFrame.lookVector * FastFlyBoost.Value
+					task.wait(FastFlyDelay.Value)
+					plr.Character.HumanoidRootPart.CFrame = plr.Character.HumanoidRootPart.CFrame + plr.Character.HumanoidRootPart.CFrame.lookVector * FastFlyBoost.Value
+					task.wait(FastFlyDelay.Value)
+					plr.Character.HumanoidRootPart.CFrame = plr.Character.HumanoidRootPart.CFrame + plr.Character.HumanoidRootPart.CFrame.lookVector * FastFlyBoost.Value
+					task.wait(FastFlyDelay.Value)
+					plr.Character.HumanoidRootPart.CFrame = plr.Character.HumanoidRootPart.CFrame + plr.Character.HumanoidRootPart.CFrame.lookVector * FastFlyBoost.Value
+					task.wait(FastFlyDelay.Value)
+					plr.Character.HumanoidRootPart.CFrame = plr.Character.HumanoidRootPart.CFrame + plr.Character.HumanoidRootPart.CFrame.lookVector * FastFlyBoost.Value
+					task.wait(FastFlyDelay.Value)
+					plr.Character.HumanoidRootPart.CFrame = plr.Character.HumanoidRootPart.CFrame + plr.Character.HumanoidRootPart.CFrame.lookVector * FastFlyBoost.Value
+					task.wait(FastFlyEndDelay.Value)
+				end
+            else
+                _G.FastFly = false
+                game.Workspace.Gravity = 192
+            end
+        end
+    })
+    FastFlyBoost = FastFly.CreateSlider({
+		Name = "Boost",
+		Min = 1,
+		Max = 2,
+		Function = function(val) end, 
+		Default = 2
+	})
+    FastFlySlow = FastFly.CreateSlider({
+		Name = "Slowdown",
+		Min = 0.1,
+		Max = 0.2,
+		Function = function(val) end, 
+		Default = 0.2
+	})
+    FastFlyDelay = FastFly.CreateSlider({
+		Name = "Boost Delay",
+		Min = 0,
+		Max = 0.1,
+		Function = function(val) end, 
+		Default = 0
+	})
+    FastFlyEndDelay = FastFly.CreateSlider({
+		Name = "End Slowdown",
+		Min = 0,
+		Max = 1.1,
+		Function = function(val) end, 
+		Default = 1.1
+	})
+end)
+																
+																
+runcode(function()
+	local tppos
+	bedwars["ClientHandler"]:WaitFor("EntityDamageEvent"):andThen(function(p6)
+		connectionstodisconnect[#connectionstodisconnect + 1] = p6:Connect(function(p7)
+			if (p7.knockbackMultiplier == nil or p7.knockbackMultiplier.disabled == nil) and p7.entityInstance == lplr.Character then 
+				if entity.isAlive and tppos then 
+					entity.character.HumanoidRootPart.CFrame = CFrame.new(tppos)
+					tppos = nil
+					local bodyvelo = Instance.new("BodyVelocity")
+					bodyvelo.MaxForce = Vector3.new(9e9, 0, 9e9)
+					bodyvelo.Velocity = Vector3.zero
+					bodyvelo.Parent = entity.character.HumanoidRootPart
+					task.wait(0.75)
+					bodyvelo:Destroy()
+				end
+			end
+		end)
+	end)
+	local damagetpmod = {["Enabled"] = false}
+	damagetpmod = GuiLibrary["ObjectsThatCanBeSaved"]["UtilityWindow"]["Api"].CreateOptionsButton({
+		["Name"] = "DamageTP",
+		["Function"] = function(callback)
+			if callback then
+				local mousepos = game.Players.LocalPlayer:GetMouse().UnitRay
+				local rayparams = RaycastParams.new()
+				rayparams.FilterDescendantsInstances = {workspace.Map, workspace:FindFirstChild("SpectatorPlatform")}
+				rayparams.FilterType = Enum.RaycastFilterType.Whitelist
+				local ray = workspace:Raycast(mousepos.Origin, mousepos.Direction * 40000, rayparams)
+				if ray then tppos = ray.Position createwarning("DamageTP", "Set TP Position\nTake damage to teleport.", 3) end
+				damagetpmod["ToggleButton"](false)
+			end
+		end
+	})
+end)
+																													
+																	local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local ChatTag = Players.LocalPlayer.Name
+local ChatTag = {}
+ChatTag[Players.LocalPlayer.Name] =
+    {
+        TagText = "Pearlware Private",
+        TagColor = Color3.new(255, 0, 10), -- color
+    }
+    local oldchanneltab
+    local oldchannelfunc
+    local oldchanneltabs = {}
+
+for i, v in pairs(getconnections(ReplicatedStorage.DefaultChatSystemChatEvents.OnNewMessage.OnClientEvent)) do
+    if
+        v.Function
+        and #debug.getupvalues(v.Function) > 0
+        and type(debug.getupvalues(v.Function)[1]) == "table"
+        and getmetatable(debug.getupvalues(v.Function)[1])
+        and getmetatable(debug.getupvalues(v.Function)[1]).GetChannel
+    then
+        oldchanneltab = getmetatable(debug.getupvalues(v.Function)[1])
+        oldchannelfunc = getmetatable(debug.getupvalues(v.Function)[1]).GetChannel
+        getmetatable(debug.getupvalues(v.Function)[1]).GetChannel = function(Self, Name)
+            local tab = oldchannelfunc(Self, Name)
+            if tab and tab.AddMessageToChannel then
+                local addmessage = tab.AddMessageToChannel
+                if oldchanneltabs[tab] == nil then
+                    oldchanneltabs[tab] = tab.AddMessageToChannel
+                end
+                tab.AddMessageToChannel = function(Self2, MessageData)
+                    if MessageData.FromSpeaker and Players[MessageData.FromSpeaker] then
+                        if ChatTag[Players[MessageData.FromSpeaker].Name] then
+                            MessageData.ExtraData = {
+                                NameColor = Players[MessageData.FromSpeaker].Team == nil and Color3.new(255,0,10)
+                                    or Players[MessageData.FromSpeaker].TeamColor.Color,
+                                Tags = {
+                                    table.unpack(MessageData.ExtraData.Tags),
+                                    {
+                                        TagColor = ChatTag[Players[MessageData.FromSpeaker].Name].TagColor,
+                                        TagText = ChatTag[Players[MessageData.FromSpeaker].Name].TagText,
+                                    },
+                                },
+                            }
+                        end
+                    end
+                    return addmessage(Self2, MessageData)
+                end
+            end
+            return tab
+        end
+    end
+end
+																	
+																	
+local pearlware = {["Enabled"] = false}
+    pearlware = GuiLibrary["ObjectsThatCanBeSaved"]["WorldWindow"]["Api"].CreateOptionsButton({
+        ["Name"] = "SkyTP",
+        ["HoverText"] = "Temporarily Puts you in the skybox for atleast 5 seconds. Use with balloon for no anticheat. ",
+            ["Function"] = function(callback)
+                if callback then
+                      spawn(function()
+                game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = game:GetService("Workspace").SpectatorPlatform.floor.CFrame
+                end)
+            end
+        end
+    })																
+																	
+																	
+Pearlware = GuiLibrary["ObjectsThatCanBeSaved"]["UtilityWindow"]["Api"].CreateOptionsButton({
+    ["Name"] = "Staff Detector", 
+    ["Function"] = function(callback)
+        if callback then
+            for i, plr in pairs(players:GetChildren()) do
+                if plr:IsInGroup(5774246) and plr:GetRankInGroup(5774246) >= 121 then
+                    createwarning("Pearlware", "Staff detected. Uninject to prevent being banned." .. plr.Name .. "(" .. plr.DisplayName .. ")", 20)
+                    end
+                end
+            end
+        end
+})
+
+																	
+local EmeraldGEN = {["Enabled"] = false}
+    EmeraldGEN = GuiLibrary["ObjectsThatCanBeSaved"]["WorldWindow"]["Api"].CreateOptionsButton({
+        ["Name"] = "EmeraldGenTp",
+        ["HoverText"] = "only takes if there are actual emeralds in the location if it doesnt give you anything then try again later",
+            ["Function"] = function(callback)
+                if callback then
+                      spawn(function()
+                game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = game:GetService("Workspace").ItemDrops.emerald.CFrame
+                end)
+            end
+        end
+    })
+
+
+local DimGen = {["Enabled"] = false}
+    DimGen = GuiLibrary["ObjectsThatCanBeSaved"]["WorldWindow"]["Api"].CreateOptionsButton({
+        ["Name"] = "DiamondGenTp",
+        ["HoverText"] = "may take a few times",
+            ["Function"] = function(callback)
+                if callback then
+                      spawn(function()
+                game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = game:GetService("Workspace").ItemDrops.diamond.CFrame
+                end)
+            end
+        end
+    }) 
+
+
+local Bed TP = GuiLibrary["ObjectsThatCanBeSaved"]["UtilityWindow"]["Api"].CreateOptionsButton({
+    Name = "BedTp",
+    Function = function(callback) 
+        if callback then
+            local ClosestBedMag = math.huge
+local ClosestBed = false
+local lplr = game.Players.LocalPlayer
+function GetNearestBedToPosition()
+    for i,v in pairs(game.Workspace:GetChildren()) do
+        if v.Name == "bed" and v:FindFirstChild("Covers") and v.Covers.BrickColor ~= game.Players.LocalPlayer.Team.TeamColor then
+            if (lplr.Character.HumanoidRootPart.Position - v.Position).Magnitude < ClosestBedMag then
+                ClosestBedMag = (lplr.Character.HumanoidRootPart.Position - v.Position).Magnitude
+                ClosestBed = v
+            end
+        end
+    end
+    return ClosestBed
+end
+local bed = GetNearestBedToPosition().Position
+game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-1000,3009,3900)
+task.wait(1)
+game.Players.LocalPlayer.Character.PrimaryPart.CFrame = CFrame.new(bed) + Vector3.new(0,5,0)
+
+        end
+    end,
+    Default = false,
+    HoverText = "might not work the first time"
+})																	
+
+																	
+																																	
+runcode(function()
+local infJumpConnection
+local infjump = {["Enabled"] = false}
+infjump = GuiLibrary["ObjectsThatCanBeSaved"]["BlatantWindow"]["Api"].CreateOptionsButton({
+["Name"] = "Infinite Jump",
+["HoverText"] = "imagine walking",
+["Function"] = function(callback)
+if callback then
+infJumpConnection = uis.InputBegan:Connect(function(input)
+if input.KeyCode == Enum.KeyCode.Space and not uis:GetFocusedTextBox() then
+if InfHold.Enabled and entity.isAlive then
+repeat
+lplr.Character:WaitForChild("Humanoid"):ChangeState("Jumping")
+task.wait()
+until not uis:IsKeyDown(Enum.KeyCode.Space) or not infjump.Enabled or uis:GetFocusedTextBox()
+else
+if entity.isAlive then
+lplr.Character:WaitForChild("Humanoid"):ChangeState("Jumping")
+end
+end
+end
+end)
+else
+if infJumpConnection then
+infJumpConnection:Disconnect()
+end
+end
+end
+})
+InfHold = infjump.CreateToggle({
+["Name"] = "Hold",
+["HoverText"] = "space",
+["Function"] = function() end
+})
+end)
