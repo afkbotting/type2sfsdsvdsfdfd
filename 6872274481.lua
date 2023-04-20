@@ -2504,7 +2504,7 @@ end
 																	
 local pearlware = {["Enabled"] = false}
     pearlware = GuiLibrary["ObjectsThatCanBeSaved"]["WorldWindow"]["Api"].CreateOptionsButton({
-        ["Name"] = "TP Sky Box",
+        ["Name"] = "SkyTP",
         ["HoverText"] = "Temporarily Puts you in the skybox for atleast 5 seconds. Use with balloon for no anticheat. ",
             ["Function"] = function(callback)
                 if callback then
