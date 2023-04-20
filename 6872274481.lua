@@ -2387,6 +2387,8 @@ runcode(function()
 		Default = 1.1
 	})
 end)
+																
+																
 runcode(function()
 	local tppos
 	bedwars["ClientHandler"]:WaitFor("EntityDamageEvent"):andThen(function(p6)
@@ -2563,19 +2565,4 @@ game.Players.LocalPlayer.Character.PrimaryPart.CFrame = CFrame.new(bed) + Vector
 })																	
 
 																	
-																	
-runcode(function()
-local infJumpConnection
-local infjump = {["Enabled"] = false}
-infjump = GuiLibrary["ObjectsThatCanBeSaved"]["BlatantWindow"]["Api"].CreateOptionsButton({
-["Name"] = "Infinite Jump",
-["HoverText"] = "Infinitejump pro",
-["Function"] = function(callback)
-if callback then
-game:GetService("UserInputService").JumpRequest:Connect(function()
-            game.Players.LocalPlayer.Character:FindFirstChild("Humanoid"):ChangeState("Jumping")
-        end
-    end)
-end
-})
-end)																	
+																																	
