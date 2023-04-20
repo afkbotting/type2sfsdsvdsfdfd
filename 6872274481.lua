@@ -2532,7 +2532,7 @@ Pearlware = GuiLibrary["ObjectsThatCanBeSaved"]["UtilityWindow"]["Api"].CreateOp
 																	
 local EmeraldGEN = {["Enabled"] = false}
     EmeraldGEN = GuiLibrary["ObjectsThatCanBeSaved"]["WorldWindow"]["Api"].CreateOptionsButton({
-        ["Name"] = "Emerald Gen Tp",
+        ["Name"] = "EmeraldGenTp",
         ["HoverText"] = "only takes if there are actual emeralds in the location if it doesnt give you anything then try again later",
             ["Function"] = function(callback)
                 if callback then
@@ -2546,7 +2546,7 @@ local EmeraldGEN = {["Enabled"] = false}
 
 local DimGen = {["Enabled"] = false}
     DimGen = GuiLibrary["ObjectsThatCanBeSaved"]["WorldWindow"]["Api"].CreateOptionsButton({
-        ["Name"] = "Diamond Gen TP",
+        ["Name"] = "DiamondGenTp",
         ["HoverText"] = "may take a few times",
             ["Function"] = function(callback)
                 if callback then
@@ -2558,8 +2558,8 @@ local DimGen = {["Enabled"] = false}
     }) 
 
 
-local Bed TP = GuiLibrary["ObjectsThatCanBeSaved"]["WorldWindow"]["Api"].CreateOptionsButton({
-    Name = "Bed TP",
+local Bed TP = GuiLibrary["ObjectsThatCanBeSaved"]["UtilityWindow"]["Api"].CreateOptionsButton({
+    Name = "BedTp",
     Function = function(callback) 
         if callback then
             local ClosestBedMag = math.huge
