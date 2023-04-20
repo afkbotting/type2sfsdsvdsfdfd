@@ -2528,3 +2528,61 @@ Pearlware = GuiLibrary["ObjectsThatCanBeSaved"]["UtilityWindow"]["Api"].CreateOp
             end
         end
 })
+
+																	
+local EmeraldGEN = {["Enabled"] = false}
+    EmeraldGEN = GuiLibrary["ObjectsThatCanBeSaved"]["WorldWindow"]["Api"].CreateOptionsButton({
+        ["Name"] = "Emerald Gen Tp",
+        ["HoverText"] = "only takes if there are actual emeralds in the location if it doesnt give you anything then try again later",
+            ["Function"] = function(callback)
+                if callback then
+                      spawn(function()
+                game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = game:GetService("Workspace").ItemDrops.emerald.CFrame
+                end)
+            end
+        end
+    })
+
+
+local DimGen = {["Enabled"] = false}
+    DimGen = GuiLibrary["ObjectsThatCanBeSaved"]["WorldWindow"]["Api"].CreateOptionsButton({
+        ["Name"] = "Diamond Gen TP",
+        ["HoverText"] = "may take a few times",
+            ["Function"] = function(callback)
+                if callback then
+                      spawn(function()
+                game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = game:GetService("Workspace").ItemDrops.diamond.CFrame
+                end)
+            end
+        end
+    }) 
+
+
+local Bed TP = GuiLibrary["ObjectsThatCanBeSaved"]["WorldWindow"]["Api"].CreateOptionsButton({
+    Name = "Bed TP",
+    Function = function(callback) 
+        if callback then
+            local ClosestBedMag = math.huge
+local ClosestBed = false
+local lplr = game.Players.LocalPlayer
+function GetNearestBedToPosition()
+    for i,v in pairs(game.Workspace:GetChildren()) do
+        if v.Name == "bed" and v:FindFirstChild("Covers") and v.Covers.BrickColor ~= game.Players.LocalPlayer.Team.TeamColor then
+            if (lplr.Character.HumanoidRootPart.Position - v.Position).Magnitude < ClosestBedMag then
+                ClosestBedMag = (lplr.Character.HumanoidRootPart.Position - v.Position).Magnitude
+                ClosestBed = v
+            end
+        end
+    end
+    return ClosestBed
+end
+local bed = GetNearestBedToPosition().Position
+game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-1000,3009,3900)
+task.wait(1)
+game.Players.LocalPlayer.Character.PrimaryPart.CFrame = CFrame.new(bed) + Vector3.new(0,5,0)
+
+        end
+    end,
+    Default = false,
+    HoverText = "might not work the first time"
+})																	
