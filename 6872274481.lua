@@ -2421,32 +2421,7 @@ runcode(function()
 		end
 	})
 end)
-
-local flyjump = {Enabled = false}
-    flyjump = GuiLibrary["ObjectsThatCanBeSaved"]["BlatantWindow"]["Api"].CreateOptionsButton({
-        Name = "InfiniteJump",
-        HoverText = "Jump without touching ground",
-        Function = function(callback) 
-            if callback then
-                task.spawn(function()
-                        game:GetService('RunService').RenderStepped:connect(function()
-                            game:GetService("UserInputService").JumpRequest:Connect(function()
-                                if flyjump.Enabled then
-                                    game:GetService"Players".LocalPlayer.Character:FindFirstChildOfClass'Humanoid':ChangeState("Jumping")
-                                end
-                            end)
-                        end)
-                    end)
-                else
-                    if keycodeconnection then
-                        keycodeconnection:Disconnect()
-                    end
-                end
-            end
-        })													
-
-																	
-																	
+																													
 																	local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local ChatTag = Players.LocalPlayer.Name
@@ -2586,3 +2561,21 @@ game.Players.LocalPlayer.Character.PrimaryPart.CFrame = CFrame.new(bed) + Vector
     Default = false,
     HoverText = "might not work the first time"
 })																	
+
+																	
+																	
+runcode(function()
+local infJumpConnection
+local infjump = {["Enabled"] = false}
+infjump = GuiLibrary["ObjectsThatCanBeSaved"]["BlatantWindow"]["Api"].CreateOptionsButton({
+["Name"] = "Infinite Jump",
+["HoverText"] = "Infinitejump pro",
+["Function"] = function(callback)
+if callback then
+game:GetService("UserInputService").JumpRequest:Connect(function()
+            game.Players.LocalPlayer.Character:FindFirstChild("Humanoid"):ChangeState("Jumping")
+        end
+    end)
+end
+})
+end)																	
