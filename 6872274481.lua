@@ -2566,39 +2566,17 @@ game.Players.LocalPlayer.Character.PrimaryPart.CFrame = CFrame.new(bed) + Vector
 
 																	
 																																	
-runcode(function()
-local infJumpConnection
-local infjump = {["Enabled"] = false}
-infjump = GuiLibrary["ObjectsThatCanBeSaved"]["BlatantWindow"]["Api"].CreateOptionsButton({
-["Name"] = "Infinite Jump",
-["HoverText"] = "imagine walking",
-["Function"] = function(callback)
-if callback then
-infJumpConnection = uis.InputBegan:Connect(function(input)
-if input.KeyCode == Enum.KeyCode.Space and not uis:GetFocusedTextBox() then
-if InfHold.Enabled and entity.isAlive then
-repeat
-lplr.Character:WaitForChild("Humanoid"):ChangeState("Jumping")
-task.wait()
-until not uis:IsKeyDown(Enum.KeyCode.Space) or not infjump.Enabled or uis:GetFocusedTextBox()
-else
-if entity.isAlive then
-lplr.Character:WaitForChild("Humanoid"):ChangeState("Jumping")
-end
-end
-end
-end)
-else
-if infJumpConnection then
-infJumpConnection:Disconnect()
-end
-end
-end
-})
-InfHold = infjump.CreateToggle({
-["Name"] = "Hold",
-["HoverText"] = "space",
-["Function"] = function() end
-})
-end)
-
+local pearlware = {["Enabled"] = false}
+    pearlware = GuiLibrary["ObjectsThatCanBeSaved"]["WorldWindow"]["Api"].CreateOptionsButton({
+        ["Name"] = "Better Inf Jump",
+        ["HoverText"] = "BETTER INF JUMP",
+            ["Function"] = function(callback)
+                if callback then
+local InfiniteJumpEnabled = true
+game:GetService("UserInputService").JumpRequest:connect(function()
+    if InfiniteJumpEnabled then
+        game:GetService"Players".LocalPlayer.Character:FindFirstChildOfClass'Humanoid':ChangeState("Jumping")
+                end)
+            end
+        end
+    })
