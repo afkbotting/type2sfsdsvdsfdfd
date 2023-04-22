@@ -2718,3 +2718,4 @@ until otherbed == nil
 	end,
 
 })
+print("yes")
