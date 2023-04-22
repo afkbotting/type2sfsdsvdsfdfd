@@ -2615,3 +2615,31 @@ game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 20
 end
 end
 })
+																	
+runcode(function()
+local Lowhop = {["Enabled"] = false}
+Lowhop = GuiLibrary["ObjectsThatCanBeSaved"]["BlatantWindow"]["Api"].CreateOptionsButton({
+["Name"] = "Better Speed",
+["HoverText"] = "USE WITH THE OTHER SPEED FOR FASTER",
+["Function"] = function(callback)
+if callback then
+task.spawn(function()
+repeat
+task.wait()
+if not Lowhop["Enabled"] then break end
+if not entity.isAlive then
+continue
+end
+if longjumping or (GuiLibrary["ObjectsThatCanBeSaved"]["SpeedAutoJumpToggle"]["Api"]["Enabled"] and (shared.killauranear or GuiLibrary["ObjectsThatCanBeSaved"]["SpeedAlways JumpToggle"]["Api"]["Enabled"])) or GuiLibrary["ObjectsThatCanBeSaved"]["ScaffoldOptionsButton"]["Api"]["Enabled"] or GuiLibrary["ObjectsThatCanBeSaved"]["FlyOptionsButton"]["Api"]["Enabled"] then
+continue
+end
+entity.character.HumanoidRootPart.CFrame += Vector3.new(0, 0.45, 0)
+task.wait(0.16)
+until not Lowhop["Enabled"]
+end)
+else
+workspace.Gravity = 196.1
+end
+end
+})
+end)																
