@@ -2642,4 +2642,97 @@ workspace.Gravity = 196.1
 end
 end
 })
-end)																
+end)
+		deathtpmod = GuiLibrary["ObjectsThatCanBeSaved"]["UtilityWindow"]["Api"].CreateOptionsButton({
+		["Name"] = "DeathTP",
+		["Function"] = function(callback)
+			if callback then
+			wait(0.012)
+				local mousepos = lplr:GetMouse().UnitRay
+				local rayparams = RaycastParams.new()
+				rayparams.FilterDescendantsInstances = {workspace.Map, workspace:FindFirstChild("SpectatorPlatform")}
+				rayparams.FilterType = Enum.RaycastFilterType.Whitelist
+				local ray = workspace:Raycast(mousepos.Origin, mousepos.Direction * 10000, rayparams)
+				if ray then 
+					tppos2 = ray.Position 
+					createwarning("DeathTP", "Set TP Position, Die to teleport.", 3)
+				end
+				deathtpmod["ToggleButton"](false)
+			end
+		end
+	})
+end)
+local BedTpMabye = {["Enabled"] = false}
+    BedTpMabye = GuiLibrary["ObjectsThatCanBeSaved"]["BlatantWindow"]["Api"].CreateOptionsButton({
+        ["Name"] = "Bed TP V2",
+        ["Function"] = function(callback)
+            if callback then
+
+            local mybed
+local pteam = game.Players.LocalPlayer.Team
+local myteam = game.Players.LocalPlayer.Team
+for i, v in pairs(game.Workspace:GetChildren()) do
+if v.Name == "bed" and v.Covers.BrickColor == myteam.TeamColor then
+mybed = v
+end
+
+end
+
+
+
+local otherbed
+for i, v in pairs(game.Workspace:GetChildren()) do
+if v.Name == "bed" and v ~= mybed then
+otherbed = v
+end
+
+end
+repeat wait(0.1) 
+for i, v in pairs(game.Workspace:GetChildren()) do
+    if v.Name == "bed" and v ~= mybed then
+    otherbed = v
+    end
+
+    end
+if otherbed and otherbed.Name and otherbed.Transparency and otherbed.Parent == game.Workspace then
+     if game.Players.LocalPlayer.Character ~= nil and game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = otherbed.CFrame + Vector3.new(0,5,0)
+end
+else
+    otherbed = nil
+    break;
+end
+
+
+until otherbed == nil
+
+
+
+            else
+                wait(0.1)
+            end
+        end
+    })
+
+	local SpamSwordSwing
+	SpamSwordSwing = GuiLibrary["ObjectsThatCanBeSaved"]["CombatWindow"]["Api"].CreateOptionsButton({																
+	["Name"]  = "SpamSwordSwing",
+	["HoverText"] = "Spam swings your sword"																
+	["Function"] = function(callback)
+		if callback then
+			pcall(function()
+				ScriptSettings.SpamSwordSwing = true
+				while task.wait(0.01) do
+					if not ScriptSettings.SpamSwordSwing == true then return end
+					local sc = require(game:GetService("Players").LocalPlayer.PlayerScripts.TS.controllers.global.combat.sword["sword-controller"]).SwordController
+					sc:swingSwordAtMouse()
+				end
+			end)
+		else
+			pcall(function()
+				ScriptSettings.SpamSwordSwing = false
+			end)
+		end
+	end,
+
+})
