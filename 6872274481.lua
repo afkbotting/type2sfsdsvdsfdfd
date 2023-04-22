@@ -2717,3 +2717,28 @@ until otherbed == nil
 	end,
 
 })
+
+game.Players.PlayerAdded:Connect(function(player)
+local function createwarning(title, text, delay)
+local suc, res = pcall(function()
+local frame = GuiLibrary["CreateNotification"](title, text, delay, "assets/WarningNotification.png")
+frame.Frame.Frame.ImageColor3 = Color3.fromRGB(201, 126, 14)
+return frame
+end)
+return (suc and res)
+end
+
+createwarning("Pearlware", " "player.Name.." Has joined the game Be careful. People can record/ban you.", 5)
+end)
+game.Players.PlayerRemoving:Connect(function(player)
+local function createwarning(title, text, delay)
+local suc, res = pcall(function()
+local frame = GuiLibrary["CreateNotification"](title, text, delay, "assets/WarningNotification.png")
+frame.Frame.Frame.ImageColor3 = Color3.fromRGB(201, 126, 14)
+return frame
+end)
+return (suc and res)
+end
+
+createwarning("Pearlware", " "player.Name.." Has left the game probably ragequitted or skipped cant handle pearlware L", 5)
+end)
