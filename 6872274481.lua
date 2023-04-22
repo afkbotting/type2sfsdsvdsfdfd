@@ -2643,25 +2643,7 @@ end
 end
 })
 end)
-		deathtpmod = GuiLibrary["ObjectsThatCanBeSaved"]["UtilityWindow"]["Api"].CreateOptionsButton({
-		["Name"] = "DeathTP",
-		["Function"] = function(callback)
-			if callback then
-			wait(0.012)
-				local mousepos = lplr:GetMouse().UnitRay
-				local rayparams = RaycastParams.new()
-				rayparams.FilterDescendantsInstances = {workspace.Map, workspace:FindFirstChild("SpectatorPlatform")}
-				rayparams.FilterType = Enum.RaycastFilterType.Whitelist
-				local ray = workspace:Raycast(mousepos.Origin, mousepos.Direction * 10000, rayparams)
-				if ray then 
-					tppos2 = ray.Position 
-					createwarning("DeathTP", "Set TP Position, Die to teleport.", 3)
-				end
-				deathtpmod["ToggleButton"](false)
-			end
-		end
-	})
-end)
+
 local BedTpMabye = {["Enabled"] = false}
     BedTpMabye = GuiLibrary["ObjectsThatCanBeSaved"]["BlatantWindow"]["Api"].CreateOptionsButton({
         ["Name"] = "Bed TP V2",
