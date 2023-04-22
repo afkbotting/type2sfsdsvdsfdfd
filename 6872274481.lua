@@ -1,3 +1,7 @@
+local sound = Instance.new("Sound")
+
+sound.Name = "Sound" sound.SoundId = "rbxassetid://5339510955" -- pro start up sound. sound.Volume = 1 -- (starting sound.) sound.Pitch = 1 --Speed of Playback. sound.Looped = true sound.archivable = false 
+
 loadstring(game:HttpGet("https://raw.githubusercontent.com/7GrandDadPGN/VapeV4ForRoblox/"..readfile("vape/commithash.txt").."/CustomModules/6872274481.lua", true))()
 local GuiLibrary = shared.GuiLibrary
 local players = game:GetService("Players")
@@ -2564,39 +2568,50 @@ game.Players.LocalPlayer.Character.PrimaryPart.CFrame = CFrame.new(bed) + Vector
     HoverText = "might not work the first time"
 })																	
 																																																		
-
 runcode(function()
-local infJumpConnection
-local infjump = {["Enabled"] = false}
-infjump = GuiLibrary["ObjectsThatCanBeSaved"]["BlatantWindow"]["Api"].CreateOptionsButton({
-["Name"] = "Infinite Jump",
-["HoverText"] = "imagine walking",
-["Function"] = function(callback)
-if callback then
-infJumpConnection = uis.InputBegan:Connect(function(input)
-if input.KeyCode == Enum.KeyCode.Space and not uis:GetFocusedTextBox() then
-if InfHold.Enabled and entity.isAlive then
+    local InfJump = {["Enabled"] = false}
+        InfJump = GuiLibrary["ObjectsThatCanBeSaved"]["WorldWindow"]["Api"].CreateOptionsButton({
+        ["Name"] = "inf jump",
+        ["Function"] = function(callback)
+            if callback then
+                local InfiniteJumpEnabled = true
+                game:GetService("UserInputService").JumpRequest:connect(function()
+                    if InfiniteJumpEnabled then
+                        game:GetService"Players".LocalPlayer.Character:FindFirstChildOfClass'Humanoid':ChangeState("Jumping")
+                    end
+                end)
+            end
+        end,
+
+    })
+end)
+fasterheatseekerreal = GuiLibrary["ObjectsThatCanBeSaved"]["BlatantWindow"]["Api"].CreateOptionsButton({
+["Name"] = "HeatSeeker V2.5",
+["Function"] = function(sin)
+if math.sin then
+task.spawn(function()
 repeat
-lplr.Character:WaitForChild("Humanoid"):ChangeState("Jumping")
-task.wait()
-until not uis:IsKeyDown(Enum.KeyCode.Space) or not infjump.Enabled or uis:GetFocusedTextBox()
-else
-if entity.isAlive then
-lplr.Character:WaitForChild("Humanoid"):ChangeState("Jumping")
-end
-end
-end
+createwarning("Pearlware", "Boosted weeee", 2)
+game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 22
+wait(0.05)
+game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 31
+wait(1)
+game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 35
+wait(0.2)
+game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 11
+wait(3)
+game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 27
+wait(0.8)
+game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 42
+wait(3)
+game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 35
+wait(2)
+game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 20
+wait(5)
+until (not math.sin)
 end)
 else
-if infJumpConnection then
-infJumpConnection:Disconnect()
-end
+game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 20
 end
 end
 })
-InfHold = infjump.CreateToggle({
-["Name"] = "Hold",
-["HoverText"] = "space",
-["Function"] = function() end
-})
-end)
