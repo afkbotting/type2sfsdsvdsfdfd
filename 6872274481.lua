@@ -2324,7 +2324,33 @@ runcode(function()
 	})
 end)
 
-
+runcode(function()
+    local betterspeed = {Enabled = false}
+    betterspeed = GuiLibrary.ObjectsThatCanBeSaved.UtilityWindow.Api.CreateOptionsButton({
+        Name = "betterspeed",
+        Function = function(callback)
+            if callback then 
+                task.spawn(function()
+					repeat
+						wait(0.16)
+						entity.character.HumanoidRootPart.CFrame += Vector3.new(0, 0.45, 0)
+					until (not betterspeed.Enabled)
+                    repeat  
+						game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 23
+						wait(3)
+						game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 45
+						wait(0.05)
+						game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 23
+						wait(3)
+						game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 32
+						wait(0.1)
+                    until (not betterspeed.Enabled)
+                end)
+            end
+        end,
+HoverText = "Dragon exploit"
+    })
+end)
 runcode(function()
     local FastFlyBoost = {Value = 2}
     local FastFlySlow = {Value = 0.2}
@@ -2616,33 +2642,7 @@ end
 end
 })
 																	
-runcode(function()
-local Lowhop = {["Enabled"] = false}
-Lowhop = GuiLibrary["ObjectsThatCanBeSaved"]["BlatantWindow"]["Api"].CreateOptionsButton({
-["Name"] = "Better Speed",
-["HoverText"] = "USE WITH THE OTHER SPEED FOR FASTER",
-["Function"] = function(callback)
-if callback then
-task.spawn(function()
-repeat
-task.wait()
-if not Lowhop["Enabled"] then break end
-if not entity.isAlive then
-continue
-end
-if longjumping or (GuiLibrary["ObjectsThatCanBeSaved"]["SpeedAutoJumpToggle"]["Api"]["Enabled"] and (shared.killauranear or GuiLibrary["ObjectsThatCanBeSaved"]["SpeedAlways JumpToggle"]["Api"]["Enabled"])) or GuiLibrary["ObjectsThatCanBeSaved"]["ScaffoldOptionsButton"]["Api"]["Enabled"] or GuiLibrary["ObjectsThatCanBeSaved"]["FlyOptionsButton"]["Api"]["Enabled"] then
-continue
-end
-entity.character.HumanoidRootPart.CFrame += Vector3.new(0, 0.45, 0)
-task.wait(0.16)
-until not Lowhop["Enabled"]
-end)
-else
-workspace.Gravity = 196.1
-end
-end
-})
-end)
+
 
 local BedTpMabye = {["Enabled"] = false}
     BedTpMabye = GuiLibrary["ObjectsThatCanBeSaved"]["BlatantWindow"]["Api"].CreateOptionsButton({
@@ -2696,26 +2696,28 @@ until otherbed == nil
         end
     })
 
-	local SpamSwordSwing
-	SpamSwordSwing = GuiLibrary["ObjectsThatCanBeSaved"]["CombatWindow"]["Api"].CreateOptionsButton({																
-	["Name"]  = "SpamSwordSwing",
-	["HoverText"] = "Spam swings your sword"																
-	["Function"] = function(callback)
-		if callback then
-			pcall(function()
-				ScriptSettings.SpamSwordSwing = true
-				while task.wait(0.01) do
-					if not ScriptSettings.SpamSwordSwing == true then return end
-					local sc = require(game:GetService("Players").LocalPlayer.PlayerScripts.TS.controllers.global.combat.sword["sword-controller"]).SwordController
-					sc:swingSwordAtMouse()
-				end
-			end)
-		else
-			pcall(function()
-				ScriptSettings.SpamSwordSwing = false
-			end)
-		end
-	end,
 
-})
-print("yes")
+game.Players.PlayerAdded:Connect(function(player)
+local function createwarning(title, text, delay)
+local suc, res = pcall(function()
+local frame = GuiLibrary["CreateNotification"](title, text, delay, "assets/WarningNotification.png")
+frame.Frame.Frame.ImageColor3 = Color3.fromRGB(201, 126, 14)
+return frame
+end)
+return (suc and res)
+end
+
+createwarning("Pearlware", " "player.Name.." Has joined the game Be careful. People can record/ban you.", 5)
+end)
+game.Players.PlayerRemoving:Connect(function(player)
+local function createwarning(title, text, delay)
+local suc, res = pcall(function()
+local frame = GuiLibrary["CreateNotification"](title, text, delay, "assets/WarningNotification.png")
+frame.Frame.Frame.ImageColor3 = Color3.fromRGB(201, 126, 14)
+return frame
+end)
+return (suc and res)
+end
+
+createwarning("Pearlware", " "player.Name.." Has left the game probably ragequitted or skipped cant handle pearlware L", 5)
+end)
