@@ -2352,6 +2352,65 @@ HoverText = "Dragon exploit"
     })
 end)
 runcode(function()
+	local tppos2
+	local deathtpmod = {["Enabled"] = false}
+	connectionstodisconnect[#connectionstodisconnect + 1] = lplr:GetAttributeChangedSignal("LastTeleported"):Connect(function(char)
+		if tppos2 then 	
+			task.spawn(function()
+				task.wait(0.1)
+				local root = entityLibrary.isAlive and entityLibrary.character.Humanoid.Health > 0 and entityLibrary.character.HumanoidRootPart
+				if root and tppos2 then 
+					local check = (lplr:GetAttribute("LastTeleported") - lplr:GetAttribute("SpawnTime")) < 1
+					RunLoops:BindToHeartbeat("TPRedirection", 1, function(dt)
+						if root and tppos2 then 
+							local dist = ((check and 700 or 1200) * dt)
+							if (tppos2 - root.CFrame.p).Magnitude > dist then
+								root.CFrame = root.CFrame + (tppos2 - root.CFrame.p).Unit * dist
+								root.Velocity = (tppos2 - root.CFrame.p).Unit * 20
+							else
+								root.CFrame = root.CFrame + (tppos2 - root.CFrame.p)
+							end
+						end
+					end)
+					RunLoops:BindToStepped("TPRedirection", 1, function()
+						if entityLibrary.isAlive then 
+							for i,v in pairs(lplr.Character:GetChildren()) do 
+								if v:IsA("BasePart") then v.CanCollide = false end
+							end
+						end
+					end)
+					repeat
+						task.wait()
+					until tppos2 == nil or (tppos2 - root.CFrame.p).Magnitude < 1
+					RunLoops:UnbindFromHeartbeat("TPRedirection")
+					RunLoops:UnbindFromStepped("TPRedirection")
+					createwarning("TPRedirection", "Teleported.", 5)
+					tppos2 = nil
+				end
+			end)
+		end
+	end)
+	deathtpmod = GuiLibrary.ObjectsThatCanBeSaved.UtilityWindow.Api.CreateOptionsButton({
+		Name = "TPRedirectionv2",
+		Function = function(callback)
+			if callback then
+				local mousepos = lplr:GetMouse().UnitRay
+				local rayparams = RaycastParams.new()
+				rayparams.FilterDescendantsInstances = {workspace.Map, workspace:FindFirstChild("SpectatorPlatform")}
+				rayparams.FilterType = Enum.RaycastFilterType.Whitelist
+				local ray = workspace:Raycast(mousepos.Origin, mousepos.Direction * 10000, rayparams)
+				if ray then 
+					tppos2 = ray.Position
+					game:GetService("ReplicatedStorage"):WaitForChild("rbxts_include"):WaitForChild("node_modules"):WaitForChild("@rbxts"):WaitForChild("net"):WaitForChild("out"):WaitForChild("_NetManaged"):WaitForChild("ResetCharacter"):FireServer()
+					game.Players.LocalPlayer.Character.Humanoid.Health = 0
+					local warning = createwarning("TPRedirection", "Set TP Position", 3)
+				end
+				deathtpmod.ToggleButton(false)
+			end
+		end
+	})
+end)
+runcode(function()
 	local Semi = {["Enabled"] = false}
 	Semi = GuiLibrary["ObjectsThatCanBeSaved"]["UtilityWindow"]["Api"].CreateOptionsButton({
 	["Name"] = "Semi AC disabler",
