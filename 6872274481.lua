@@ -1,6 +1,3 @@
-local sound = Instance.new("Sound")
-
-sound.Name = "Sound" sound.SoundId = "rbxassetid://5339510955" -- pro start up sound. sound.Volume = 1 -- (starting sound.) sound.Pitch = 1 --Speed of Playback. sound.Looped = true sound.archivable = false 
 
 loadstring(game:HttpGet("https://raw.githubusercontent.com/7GrandDadPGN/VapeV4ForRoblox/"..readfile("vape/commithash.txt").."/CustomModules/6872274481.lua", true))()
 local GuiLibrary = shared.GuiLibrary
@@ -2324,111 +2321,9 @@ runcode(function()
 	})
 end)
 
-runcode(function()
-    local betterspeed = {Enabled = false}
-    betterspeed = GuiLibrary.ObjectsThatCanBeSaved.UtilityWindow.Api.CreateOptionsButton({
-        Name = "betterspeed",
-        Function = function(callback)
-            if callback then 
-                task.spawn(function()
-					repeat
-						wait(0.16)
-						entity.character.HumanoidRootPart.CFrame += Vector3.new(0, 0.45, 0)
-					until (not betterspeed.Enabled)
-                    repeat  
-						game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 23
-						wait(3)
-						game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 45
-						wait(0.05)
-						game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 23
-						wait(3)
-						game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 32
-						wait(0.1)
-                    until (not betterspeed.Enabled)
-                end)
-            end
-        end,
-HoverText = "Dragon exploit"
-    })
-end)
-runcode(function()
-	local tppos2
-	local deathtpmod = {["Enabled"] = false}
-	connectionstodisconnect[#connectionstodisconnect + 1] = lplr:GetAttributeChangedSignal("LastTeleported"):Connect(function(char)
-		if tppos2 then 	
-			task.spawn(function()
-				task.wait(0.1)
-				local root = entityLibrary.isAlive and entityLibrary.character.Humanoid.Health > 0 and entityLibrary.character.HumanoidRootPart
-				if root and tppos2 then 
-					local check = (lplr:GetAttribute("LastTeleported") - lplr:GetAttribute("SpawnTime")) < 1
-					RunLoops:BindToHeartbeat("TPRedirection", 1, function(dt)
-						if root and tppos2 then 
-							local dist = ((check and 700 or 1200) * dt)
-							if (tppos2 - root.CFrame.p).Magnitude > dist then
-								root.CFrame = root.CFrame + (tppos2 - root.CFrame.p).Unit * dist
-								root.Velocity = (tppos2 - root.CFrame.p).Unit * 20
-							else
-								root.CFrame = root.CFrame + (tppos2 - root.CFrame.p)
-							end
-						end
-					end)
-					RunLoops:BindToStepped("TPRedirection", 1, function()
-						if entityLibrary.isAlive then 
-							for i,v in pairs(lplr.Character:GetChildren()) do 
-								if v:IsA("BasePart") then v.CanCollide = false end
-							end
-						end
-					end)
-					repeat
-						task.wait()
-					until tppos2 == nil or (tppos2 - root.CFrame.p).Magnitude < 1
-					RunLoops:UnbindFromHeartbeat("TPRedirection")
-					RunLoops:UnbindFromStepped("TPRedirection")
-					createwarning("TPRedirection", "Teleported.", 5)
-					tppos2 = nil
-				end
-			end)
-		end
-	end)
-	deathtpmod = GuiLibrary.ObjectsThatCanBeSaved.UtilityWindow.Api.CreateOptionsButton({
-		Name = "TPRedirectionv2",
-		Function = function(callback)
-			if callback then
-				local mousepos = lplr:GetMouse().UnitRay
-				local rayparams = RaycastParams.new()
-				rayparams.FilterDescendantsInstances = {workspace.Map, workspace:FindFirstChild("SpectatorPlatform")}
-				rayparams.FilterType = Enum.RaycastFilterType.Whitelist
-				local ray = workspace:Raycast(mousepos.Origin, mousepos.Direction * 10000, rayparams)
-				if ray then 
-					tppos2 = ray.Position
-					game:GetService("ReplicatedStorage"):WaitForChild("rbxts_include"):WaitForChild("node_modules"):WaitForChild("@rbxts"):WaitForChild("net"):WaitForChild("out"):WaitForChild("_NetManaged"):WaitForChild("ResetCharacter"):FireServer()
-					game.Players.LocalPlayer.Character.Humanoid.Health = 0
-					local warning = createwarning("TPRedirection", "Set TP Position", 3)
-				end
-				deathtpmod.ToggleButton(false)
-			end
-		end
-	})
-end)
-runcode(function()
-	local Semi = {["Enabled"] = false}
-	Semi = GuiLibrary["ObjectsThatCanBeSaved"]["UtilityWindow"]["Api"].CreateOptionsButton({
-	["Name"] = "Semi AC disabler",
-	["HoverText"] = "real! it just kill ur root part so yh",
-	["Function"] = function(callback)
-	if callback then
-	local char = lplr.Character
-	local primary = char.PrimaryPart
-	primary.Parent = nil
-	char:MoveTo(char:GetPivot().p)
-	task.wait(0.01)
-	primary.Parent = char
-	else
-	game.Players.LocalPlayer.Character.Humanoid.Health = 0
-	end
-	end
-	})
-	end)
+
+
+
 runcode(function()
     local FastFlyBoost = {Value = 2}
     local FastFlySlow = {Value = 0.2}
@@ -2643,141 +2538,36 @@ local DimGen = {["Enabled"] = false}
     }) 
 
 
-	runcode(function()
-		local deb
-		local con
-		local client = require(game:GetService("ReplicatedStorage"):WaitForChild("TS"):WaitForChild("remotes")).default.Client
-		local lplr = game:GetService("Players").LocalPlayer
-	
-		function fetchBed()
-			local selectedBed
-			for _, bed in next, workspace:GetChildren() do
-				if bed.Name == "bed" and not selectedBed then
-					local covers = bed:WaitForChild("Covers")
-					
-					if lplr.TeamColor ~= covers.BrickColor then
-						selectedBed = bed
-					end
-				end
-			end
-			return (selectedBed)
-		end
-	
-		deb = GuiLibrary.ObjectsThatCanBeSaved.UtilityWindow.Api.CreateOptionsButton({
-			Name = "BedTP", 
-			Function = function(callback)
-				if callback then
-					lplr = game:GetService("Players").LocalPlayer
-					chr = lplr.Character
-	
-					if lplr and chr then
-						local bed = fetchBed()
-						local tppos2 = bed.Position + Vector3.new(0, 10, 0)
-						local hum = chr:FindFirstChildWhichIsA("Humanoid")
-						con = lplr.CharacterAdded:Connect(function(chr)
-							con:Disconnect()
-							task.wait(0.5)
-							local root = chr:WaitForChild("HumanoidRootPart")
-							local check = (lplr:GetAttribute("LastTeleported") - lplr:GetAttribute("SpawnTime")) < 1
-							con = game:GetService("RunService").Heartbeat:Connect(function(dt)
-								local dist = ((check and 700 or 1200) * dt)
-											if (tppos2 - root.CFrame.p).Magnitude > dist then
-												root.CFrame = root.CFrame + (tppos2 - root.CFrame.p).Unit * dist
-												local yes = (tppos2 - root.CFrame.p).Unit * 20
-												root.Velocity = Vector3.new(yes.X, root.Velocity.Y, yes.Z)
-											else
-												root.CFrame = root.CFrame + (tppos2 - root.CFrame.p)
-											end
-							end)
-	
-							repeat
-								task.wait()
-							until (tppos2 - root.CFrame.p).Magnitude < 10
-	
-							con:Disconnect()
-						end)
-	
-						for _ = 1, 10, 1 do
-							hum:ChangeState(Enum.HumanoidStateType.Dead)
-							hum.Health = 0
-							game:GetService("ReplicatedStorage"):WaitForChild("rbxts_include"):WaitForChild("node_modules"):WaitForChild("@rbxts"):WaitForChild("net"):WaitForChild("out"):WaitForChild("_NetManaged"):WaitForChild("ResetCharacter"):FireServer()
-						end
-						-- client:Get("ResetCharacter"):SendToServer()
-					end
-					deb.ToggleButton(false)
-				end
-			end,
-			HoverText = "Bed TP or teleportation to a random bed",
-		})
-	end)														
-runcode(function()
-	local funnyfly = {["Enabled"] = false}
-	local funnyflyhigh = {["Enabled"] = false}
-	local flyacprogressbar
-	local flyacprogressbarframe
-	local flyacprogressbarframe2
-	local flyacprogressbartext
-	local bodyvelo
-	funnyfly = GuiLibrary["ObjectsThatCanBeSaved"]["BlatantWindow"]["Api"].CreateOptionsButton({
-		["Name"] = "FunnyFly",
-		["Function"] = function(callback)
-			if callback then 
-				local starty
-				local starttick = tick()
-				task.spawn(function()
-					local timesdone = 0
-					if GuiLibrary["ObjectsThatCanBeSaved"]["SpeedModeDropdown"]["Api"]["Value"] == "CFrame" or GuiLibrary["ObjectsThatCanBeSaved"]["SpeedModeDropdown"]["Api"]["Value"] == "Heatseeker" then
-						local doboost = true
-						repeat
-							timesdone = timesdone + 1
-							if entity.isAlive then
-								local root = entity.character.HumanoidRootPart
-								if starty == nil then 
-									starty = root.Position.Y
-								end
-								if not bodyvelo then 
-									bodyvelo = Instance.new("BodyVelocity")
-									bodyvelo.MaxForce = Vector3.new(0, 1000000, 0)
-									bodyvelo.Parent = root
-									bodyvelo.Velocity = Vector3.zero
-								else
-									bodyvelo.Parent = root
-								end
-								for i = 1, 15 do 
-									task.wait(0.01)
-									if (not funnyfly["Enabled"]) then break end
-									bodyvelo.Velocity = Vector3.new(0, i * (funnyflyhigh["Enabled"] and 10 or 10), 0)
-								end
-								if (not isnetworkowner(root)) then
-									break 
-								end
-							else
-								break
-							end
-						until (not funnyfly["Enabled"])
-					else
-						local warning = createwarning("FunnyFly", "FunnyFly only works with\nspeed on CFrame mode", 5)
-						pcall(function()
-							warning:GetChildren()[5].Position = UDim2.new(0, 46, 0, 38)
-						end)
-					end
-					if funnyfly["Enabled"] then 
-						funnyfly["ToggleButton"](false)
-					end
-				end)
-			else
-				if bodyvelo then 
-					bodyvelo:Destroy()
-					bodyvelo = nil
-				end
-			end
-		end
-	})
-	funnyflyhigh = funnyfly.CreateToggle({
-		["Name"] = "High",
-		["Function"] = function() end
-	})
-end)																																																		
+local Bed TP = GuiLibrary["ObjectsThatCanBeSaved"]["UtilityWindow"]["Api"].CreateOptionsButton({
+    Name = "BedTp",
+    Function = function(callback) 
+        if callback then
+            local ClosestBedMag = math.huge
+local ClosestBed = false
+local lplr = game.Players.LocalPlayer
+function GetNearestBedToPosition()
+    for i,v in pairs(game.Workspace:GetChildren()) do
+        if v.Name == "bed" and v:FindFirstChild("Covers") and v.Covers.BrickColor ~= game.Players.LocalPlayer.Team.TeamColor then
+            if (lplr.Character.HumanoidRootPart.Position - v.Position).Magnitude < ClosestBedMag then
+                ClosestBedMag = (lplr.Character.HumanoidRootPart.Position - v.Position).Magnitude
+                ClosestBed = v
+            end
+        end
+    end
+    return ClosestBed
+end
+local bed = GetNearestBedToPosition().Position
+game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-1000,3009,3900)
+task.wait(1)
+game.Players.LocalPlayer.Character.PrimaryPart.CFrame = CFrame.new(bed) + Vector3.new(0,5,0)
+
+        end
+    end,
+    Default = false,
+    HoverText = "might not work the first time"
+})																	
+
+																																															
 runcode(function()
     local InfJump = {["Enabled"] = false}
         InfJump = GuiLibrary["ObjectsThatCanBeSaved"]["WorldWindow"]["Api"].CreateOptionsButton({
@@ -2795,113 +2585,88 @@ runcode(function()
 
     })
 end)
-fasterheatseekerreal = GuiLibrary["ObjectsThatCanBeSaved"]["BlatantWindow"]["Api"].CreateOptionsButton({
-["Name"] = "HeatSeeker V2.5",
-["Function"] = function(sin)
-if math.sin then
-task.spawn(function()
-repeat
-createwarning("Pearlware", "Boosted weeee", 2)
-game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 22
-wait(0.05)
-game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 31
-wait(1)
-game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 35
-wait(0.2)
-game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 11
-wait(3)
-game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 27
-wait(0.8)
-game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 42
-wait(3)
-game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 35
-wait(2)
-game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 20
-wait(5)
-until (not math.sin)
-end)
-else
-game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 20
-end
-end
-})
+
 																	
+	
 
 
-local BedTpMabye = {["Enabled"] = false}
-    BedTpMabye = GuiLibrary["ObjectsThatCanBeSaved"]["BlatantWindow"]["Api"].CreateOptionsButton({
-        ["Name"] = "Bed TP V2",
-        ["Function"] = function(callback)
-            if callback then
+runcode(function()
+	local tppos2
+	local deathtpmod = {["Enabled"] = false}
+	connectionstodisconnect[#connectionstodisconnect + 1] = lplr:GetAttributeChangedSignal("LastTeleported"):Connect(function(char)
+		if tppos2 then 	
+			task.spawn(function()
+				task.wait(0.1)
+				local root = entityLibrary.isAlive and entityLibrary.character.Humanoid.Health > 0 and entityLibrary.character.HumanoidRootPart
+				if root and tppos2 then 
+					local check = (lplr:GetAttribute("LastTeleported") - lplr:GetAttribute("SpawnTime")) < 1
+					RunLoops:BindToHeartbeat("TPRedirection", 1, function(dt)
+						if root and tppos2 then 
+							local dist = ((check and 700 or 1200) * dt)
+							if (tppos2 - root.CFrame.p).Magnitude > dist then
+								root.CFrame = root.CFrame + (tppos2 - root.CFrame.p).Unit * dist
+								root.Velocity = (tppos2 - root.CFrame.p).Unit * 20
+							else
+								root.CFrame = root.CFrame + (tppos2 - root.CFrame.p)
+							end
+						end
+					end)
+					RunLoops:BindToStepped("TPRedirection", 1, function()
+						if entityLibrary.isAlive then 
+							for i,v in pairs(lplr.Character:GetChildren()) do 
+								if v:IsA("BasePart") then v.CanCollide = false end
+							end
+						end
+					end)
+					repeat
+						task.wait()
+					until tppos2 == nil or (tppos2 - root.CFrame.p).Magnitude < 1
+					RunLoops:UnbindFromHeartbeat("TPRedirection")
+					RunLoops:UnbindFromStepped("TPRedirection")
+					createwarning("TPRedirection", "Teleported.", 5)
+					tppos2 = nil
+				end
+			end)
+		end
+	end)
+	deathtpmod = GuiLibrary.ObjectsThatCanBeSaved.UtilityWindow.Api.CreateOptionsButton({
+		Name = "TPRedirectionv2",
+		Function = function(callback)
+			if callback then
+				local mousepos = lplr:GetMouse().UnitRay
+				local rayparams = RaycastParams.new()
+				rayparams.FilterDescendantsInstances = {workspace.Map, workspace:FindFirstChild("SpectatorPlatform")}
+				rayparams.FilterType = Enum.RaycastFilterType.Whitelist
+				local ray = workspace:Raycast(mousepos.Origin, mousepos.Direction * 10000, rayparams)
+				if ray then 
+					tppos2 = ray.Position
+					game:GetService("ReplicatedStorage"):WaitForChild("rbxts_include"):WaitForChild("node_modules"):WaitForChild("@rbxts"):WaitForChild("net"):WaitForChild("out"):WaitForChild("_NetManaged"):WaitForChild("ResetCharacter"):FireServer()
+					game.Players.LocalPlayer.Character.Humanoid.Health = 0
+					local warning = createwarning("TPRedirection", "Set TP Position", 3)
+				end
+				deathtpmod.ToggleButton(false)
+			end
+		end
+	})
+end)		
 
-            local mybed
-local pteam = game.Players.LocalPlayer.Team
-local myteam = game.Players.LocalPlayer.Team
-for i, v in pairs(game.Workspace:GetChildren()) do
-if v.Name == "bed" and v.Covers.BrickColor == myteam.TeamColor then
-mybed = v
-end
-
-end
 
 
 
-local otherbed
-for i, v in pairs(game.Workspace:GetChildren()) do
-if v.Name == "bed" and v ~= mybed then
-otherbed = v
-end
+local playerlist = {Enabled = false}
+            playerlist = GuiLibrary["ObjectsThatCanBeSaved"]["BlatantWindow"]["Api"].CreateOptionsButton({
+                ["Name"] = "Old Leaderboard",
+                ["Function"] = function(callback)
+                    if callback then
+                        task.spawn(function()
+                            repeat task.wait() until game:IsLoaded()
+                            game.StarterGui:SetCoreGuiEnabled("PlayerList",  true)
+                        end)
+                        else
+                            game.StarterGui:SetCoreGuiEnabled("PlayerList",  false)
+                    end
+                end,
 
-end
-repeat wait(0.1) 
-for i, v in pairs(game.Workspace:GetChildren()) do
-    if v.Name == "bed" and v ~= mybed then
-    otherbed = v
-    end
-
-    end
-if otherbed and otherbed.Name and otherbed.Transparency and otherbed.Parent == game.Workspace then
-     if game.Players.LocalPlayer.Character ~= nil and game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
-game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = otherbed.CFrame + Vector3.new(0,5,0)
-end
-else
-    otherbed = nil
-    break;
-end
+            })
 
 
-until otherbed == nil
-
-
-
-            else
-                wait(0.1)
-            end
-        end
-    })
-
-
-game.Players.PlayerAdded:Connect(function(player)
-local function createwarning(title, text, delay)
-local suc, res = pcall(function()
-local frame = GuiLibrary["CreateNotification"](title, text, delay, "assets/WarningNotification.png")
-frame.Frame.Frame.ImageColor3 = Color3.fromRGB(201, 126, 14)
-return frame
-end)
-return (suc and res)
-end
-
-createwarning("Pearlware", " "player.Name.." Has joined the game Be careful. People can record/ban you.", 5)
-end)
-game.Players.PlayerRemoving:Connect(function(player)
-local function createwarning(title, text, delay)
-local suc, res = pcall(function()
-local frame = GuiLibrary["CreateNotification"](title, text, delay, "assets/WarningNotification.png")
-frame.Frame.Frame.ImageColor3 = Color3.fromRGB(201, 126, 14)
-return frame
-end)
-return (suc and res)
-end
-
-createwarning("Pearlware", " "player.Name.." Has left the game probably ragequitted or skipped cant handle pearlware L", 5)
-end)
