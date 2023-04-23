@@ -2671,7 +2671,74 @@ game.Players.LocalPlayer.Character.PrimaryPart.CFrame = CFrame.new(bed) + Vector
     Default = false,
     HoverText = "might not work the first time"
 })																	
-																																																		
+runcode(function()
+	local funnyfly = {["Enabled"] = false}
+	local funnyflyhigh = {["Enabled"] = false}
+	local flyacprogressbar
+	local flyacprogressbarframe
+	local flyacprogressbarframe2
+	local flyacprogressbartext
+	local bodyvelo
+	funnyfly = GuiLibrary["ObjectsThatCanBeSaved"]["BlatantWindow"]["Api"].CreateOptionsButton({
+		["Name"] = "FunnyFly",
+		["Function"] = function(callback)
+			if callback then 
+				local starty
+				local starttick = tick()
+				task.spawn(function()
+					local timesdone = 0
+					if GuiLibrary["ObjectsThatCanBeSaved"]["SpeedModeDropdown"]["Api"]["Value"] == "CFrame" or GuiLibrary["ObjectsThatCanBeSaved"]["SpeedModeDropdown"]["Api"]["Value"] == "Heatseeker" then
+						local doboost = true
+						repeat
+							timesdone = timesdone + 1
+							if entity.isAlive then
+								local root = entity.character.HumanoidRootPart
+								if starty == nil then 
+									starty = root.Position.Y
+								end
+								if not bodyvelo then 
+									bodyvelo = Instance.new("BodyVelocity")
+									bodyvelo.MaxForce = Vector3.new(0, 1000000, 0)
+									bodyvelo.Parent = root
+									bodyvelo.Velocity = Vector3.zero
+								else
+									bodyvelo.Parent = root
+								end
+								for i = 1, 15 do 
+									task.wait(0.01)
+									if (not funnyfly["Enabled"]) then break end
+									bodyvelo.Velocity = Vector3.new(0, i * (funnyflyhigh["Enabled"] and 10 or 10), 0)
+								end
+								if (not isnetworkowner(root)) then
+									break 
+								end
+							else
+								break
+							end
+						until (not funnyfly["Enabled"])
+					else
+						local warning = createwarning("FunnyFly", "FunnyFly only works with\nspeed on CFrame mode", 5)
+						pcall(function()
+							warning:GetChildren()[5].Position = UDim2.new(0, 46, 0, 38)
+						end)
+					end
+					if funnyfly["Enabled"] then 
+						funnyfly["ToggleButton"](false)
+					end
+				end)
+			else
+				if bodyvelo then 
+					bodyvelo:Destroy()
+					bodyvelo = nil
+				end
+			end
+		end
+	})
+	funnyflyhigh = funnyfly.CreateToggle({
+		["Name"] = "High",
+		["Function"] = function() end
+	})
+end)																																																		
 runcode(function()
     local InfJump = {["Enabled"] = false}
         InfJump = GuiLibrary["ObjectsThatCanBeSaved"]["WorldWindow"]["Api"].CreateOptionsButton({
