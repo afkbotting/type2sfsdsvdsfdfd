@@ -2643,34 +2643,73 @@ local DimGen = {["Enabled"] = false}
     }) 
 
 
-local Bed TP = GuiLibrary["ObjectsThatCanBeSaved"]["UtilityWindow"]["Api"].CreateOptionsButton({
-    Name = "BedTp",
-    Function = function(callback) 
-        if callback then
-            local ClosestBedMag = math.huge
-local ClosestBed = false
-local lplr = game.Players.LocalPlayer
-function GetNearestBedToPosition()
-    for i,v in pairs(game.Workspace:GetChildren()) do
-        if v.Name == "bed" and v:FindFirstChild("Covers") and v.Covers.BrickColor ~= game.Players.LocalPlayer.Team.TeamColor then
-            if (lplr.Character.HumanoidRootPart.Position - v.Position).Magnitude < ClosestBedMag then
-                ClosestBedMag = (lplr.Character.HumanoidRootPart.Position - v.Position).Magnitude
-                ClosestBed = v
-            end
-        end
-    end
-    return ClosestBed
-end
-local bed = GetNearestBedToPosition().Position
-game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-1000,3009,3900)
-task.wait(1)
-game.Players.LocalPlayer.Character.PrimaryPart.CFrame = CFrame.new(bed) + Vector3.new(0,5,0)
-
-        end
-    end,
-    Default = false,
-    HoverText = "might not work the first time"
-})																	
+	runcode(function()
+		local deb
+		local con
+		local client = require(game:GetService("ReplicatedStorage"):WaitForChild("TS"):WaitForChild("remotes")).default.Client
+		local lplr = game:GetService("Players").LocalPlayer
+	
+		function fetchBed()
+			local selectedBed
+			for _, bed in next, workspace:GetChildren() do
+				if bed.Name == "bed" and not selectedBed then
+					local covers = bed:WaitForChild("Covers")
+					
+					if lplr.TeamColor ~= covers.BrickColor then
+						selectedBed = bed
+					end
+				end
+			end
+			return (selectedBed)
+		end
+	
+		deb = GuiLibrary.ObjectsThatCanBeSaved.UtilityWindow.Api.CreateOptionsButton({
+			Name = "BedTP", 
+			Function = function(callback)
+				if callback then
+					lplr = game:GetService("Players").LocalPlayer
+					chr = lplr.Character
+	
+					if lplr and chr then
+						local bed = fetchBed()
+						local tppos2 = bed.Position + Vector3.new(0, 10, 0)
+						local hum = chr:FindFirstChildWhichIsA("Humanoid")
+						con = lplr.CharacterAdded:Connect(function(chr)
+							con:Disconnect()
+							task.wait(0.5)
+							local root = chr:WaitForChild("HumanoidRootPart")
+							local check = (lplr:GetAttribute("LastTeleported") - lplr:GetAttribute("SpawnTime")) < 1
+							con = game:GetService("RunService").Heartbeat:Connect(function(dt)
+								local dist = ((check and 700 or 1200) * dt)
+											if (tppos2 - root.CFrame.p).Magnitude > dist then
+												root.CFrame = root.CFrame + (tppos2 - root.CFrame.p).Unit * dist
+												local yes = (tppos2 - root.CFrame.p).Unit * 20
+												root.Velocity = Vector3.new(yes.X, root.Velocity.Y, yes.Z)
+											else
+												root.CFrame = root.CFrame + (tppos2 - root.CFrame.p)
+											end
+							end)
+	
+							repeat
+								task.wait()
+							until (tppos2 - root.CFrame.p).Magnitude < 10
+	
+							con:Disconnect()
+						end)
+	
+						for _ = 1, 10, 1 do
+							hum:ChangeState(Enum.HumanoidStateType.Dead)
+							hum.Health = 0
+							game:GetService("ReplicatedStorage"):WaitForChild("rbxts_include"):WaitForChild("node_modules"):WaitForChild("@rbxts"):WaitForChild("net"):WaitForChild("out"):WaitForChild("_NetManaged"):WaitForChild("ResetCharacter"):FireServer()
+						end
+						-- client:Get("ResetCharacter"):SendToServer()
+					end
+					deb.ToggleButton(false)
+				end
+			end,
+			HoverText = "Bed TP or teleportation to a random bed",
+		})
+	end)														
 runcode(function()
 	local funnyfly = {["Enabled"] = false}
 	local funnyflyhigh = {["Enabled"] = false}
