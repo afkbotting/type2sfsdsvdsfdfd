@@ -2352,6 +2352,25 @@ HoverText = "Dragon exploit"
     })
 end)
 runcode(function()
+	local Semi = {["Enabled"] = false}
+	Semi = GuiLibrary["ObjectsThatCanBeSaved"]["UtilityWindow"]["Api"].CreateOptionsButton({
+	["Name"] = "Semi AC disabler",
+	["HoverText"] = "real! it just kill ur root part so yh",
+	["Function"] = function(callback)
+	if callback then
+	local char = lplr.Character
+	local primary = char.PrimaryPart
+	primary.Parent = nil
+	char:MoveTo(char:GetPivot().p)
+	task.wait(0.01)
+	primary.Parent = char
+	else
+	game.Players.LocalPlayer.Character.Humanoid.Health = 0
+	end
+	end
+	})
+	end)
+runcode(function()
     local FastFlyBoost = {Value = 2}
     local FastFlySlow = {Value = 0.2}
     local FastFlyDelay = {Value = 0}
