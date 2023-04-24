@@ -2670,3 +2670,21 @@ local playerlist = {Enabled = false}
             })
 
 
+runcode(function()
+local Semi = {["Enabled"] = false}
+Semi = GuiLibrary["ObjectsThatCanBeSaved"]["UtilityWindow"]["Api"].CreateOptionsButton({
+["Name"] = "Semi AC disabler",
+["HoverText"] = "real! it just kill ur root part so yh",
+["Function"] = function(callback)
+if callback then
+local char = lplr.Character
+local primary = char.PrimaryPart
+primary.Parent = nil
+char:MoveTo(char:GetPivot().p)
+task.wait(0.01)
+primary.Parent = char
+else
+createwarning("pearlware", "you need to reset to disable it :()", 6.9)
+end
+end
+})
